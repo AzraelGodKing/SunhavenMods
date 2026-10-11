@@ -276,10 +276,9 @@ namespace HavensMirror.Dialogue
                     return true;
                 }
 
-                LookSlot slot = ForcedLookResolver.ResolveActiveLook(
-                    ArgsHasFlag(__args, "marriage", "wedding", "vow"),
-                    ArgsHasFlag(__args, "swimsuit", "swim", "shore"),
-                    ArgsHasFlag(__args, "halloween", "costume"));
+                bool vows = false, shore = false, costume = false, refresh = false;
+                ReadLookFlagsFromArgs(__args, ref vows, ref shore, ref costume, ref refresh);
+                LookSlot slot = ForcedLookResolver.ResolveActiveLook(vows, shore, costume);
 
                 if (TryAssignNpcSprite(__instance, slot, npcName, __args))
                     return false;
@@ -311,10 +310,9 @@ namespace HavensMirror.Dialogue
                     return true;
                 }
 
-                LookSlot slot = ForcedLookResolver.ResolveActiveLook(
-                    ArgsHasFlag(__args, "marriage", "wedding", "vow"),
-                    ArgsHasFlag(__args, "swimsuit", "swim", "shore"),
-                    ArgsHasFlag(__args, "halloween", "costume"));
+                bool vows = false, shore = false, costume = false, refresh = false;
+                ReadLookFlagsFromArgs(__args, ref vows, ref shore, ref costume, ref refresh);
+                LookSlot slot = ForcedLookResolver.ResolveActiveLook(vows, shore, costume);
 
                 if (TryResolveAddressable(__instance, slot, npcName, out object assetRef))
                 {
@@ -510,14 +508,6 @@ namespace HavensMirror.Dialogue
 
         private static bool ArgsRequestSpecialLook(object[] args)
         {
-            bool vows = false, shore = false, costume = false, refresh = false;
-            ReadLookFlagsFromArgs(args, ref vows, ref shore, ref costume, ref refresh);
-            return vows || shore || costume;
-        }
-
-        private static bool ArgsHasFlag(object[] args, params string[] _)
-        {
-            // Flags already mutated into bool args; ReadLookFlags covers this path.
             bool vows = false, shore = false, costume = false, refresh = false;
             ReadLookFlagsFromArgs(args, ref vows, ref shore, ref costume, ref refresh);
             return vows || shore || costume;
