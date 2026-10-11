@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "TheVault",
-  "version_number": "4.3.0",
+  "version_number": "4.3.1",
   "website_url": "https://www.azraelsmods.com/sun-haven/the-vault/",
   "description": "Full rework of The Vault system: per-character encrypted vault, UI/HUD, auto-deposit, shop and inventory vault integration (keys/currency via bag checks)—TheVault/TheVault.csproj.",
   "dependencies": ["BepInEx-BepInExPack-5.4.2100"]

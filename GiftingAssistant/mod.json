@@ -3,11 +3,11 @@
   "name": "Gifting Assistant",
   "game": "sun-haven",
   "description": "Initial release: per-character gift roster, loved/liked suggestions with icons, preferred gifts, heart bars, gifted-today tracking, priority sort, Ctrl+G UI, 16 languages. Optional Birthday Reminder, Sun Haven Todo, and Haven's Almanac.",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "screenshots": [],
   "download": {
-    "file": "GiftingAssistant-1.1.3.zip",
-    "url": "https://github.com/AzraelGodKing/SunhavenMod/releases/download/GiftingAssistant-v1.1.3/GiftingAssistant-1.1.3.zip"
+    "file": "GiftingAssistant-1.1.4.zip",
+    "url": "https://github.com/AzraelGodKing/SunhavenMod/releases/download/GiftingAssistant-v1.1.4/GiftingAssistant-1.1.4.zip"
   },
   "links": {
     "steam": null,

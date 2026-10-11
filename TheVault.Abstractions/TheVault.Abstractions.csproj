@@ -7,10 +7,10 @@
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <Description>Small reference assembly for mods integrating with The Vault (no game references).</Description>
-    <Version>4.3.0</Version>
-    <AssemblyVersion>4.3.0.0</AssemblyVersion>
-    <FileVersion>4.3.0.0</FileVersion>
-    <InformationalVersion>4.3.0</InformationalVersion>
+    <Version>4.3.1</Version>
+    <AssemblyVersion>4.3.1.0</AssemblyVersion>
+    <FileVersion>4.3.1.0</FileVersion>
+    <InformationalVersion>4.3.1</InformationalVersion>
   </PropertyGroup>
 
 </Project>

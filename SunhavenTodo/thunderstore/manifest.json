@@ -1,6 +1,6 @@
-{
+﻿{
   "name": "SunHavenTodo",
-  "version_number": "2.1.2",
+  "version_number": "2.1.3",
   "website_url": "https://www.azraelsmods.com/sun-haven/sunhaven-todo/",
   "description": "In-game task tracker for farming goals, quests, and daily tasks",
   "dependencies": ["BepInEx-BepInExPack-5.4.2100"]

@@ -3,11 +3,11 @@
   "name": "Crop Optimizer",
   "game": "sun-haven",
   "description": "Crop forecast HUD with seasonal planning helpers and soft Todo/Birthday/Vault integrations",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "screenshots": [],
   "download": {
-    "file": "CropOptimizer-2.3.0.zip",
-    "url": "https://github.com/AzraelGodKing/SunhavenMod/releases/download/CropOptimizer-v2.3.0/CropOptimizer-2.3.0.zip"
+    "file": "CropOptimizer-2.3.1.zip",
+    "url": "https://github.com/AzraelGodKing/SunhavenMod/releases/download/CropOptimizer-v2.3.1/CropOptimizer-2.3.1.zip"
   },
   "links": {
     "steam": null,

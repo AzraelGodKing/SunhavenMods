@@ -1,46 +1,46 @@
 ﻿{
   "com.azraelgodking.squirrelsbirthdayreminder": {
-    "version": "2.1.3",
+    "version": "2.1.4",
     "name": "A Squirrel's Birthday Reminder",
     "description": "Never miss an NPC birthday - get reminders and gift suggestions",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/493",
     "nexus_file_group_id": "1311370",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/SquirrelsBirthdayReminder/",
     "thunderstoreName": "SquirrelsBirthdayReminder",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed the duplicate Ctrl+Alt+B/A debug hotkeys (Ctrl+Shift+B/A still work with DebugMode on) and unused code."
   },
   "com.azraelgodking.havensbirthright": {
-    "version": "3.1.3",
+    "version": "3.1.4",
     "name": "Haven's Birthright",
     "description": "Unique racial bonuses and abilities for all 12 playable races",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/487",
     "nexus_file_group_id": "1297555",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensBirthright/",
     "thunderstoreName": "HavensBirthright",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed empty patch files and unused code. No gameplay change."
   },
   "com.azraelgodking.sunhavenmuseumutilitytracker": {
-    "version": "3.1.2",
+    "version": "3.1.3",
     "name": "Sunhaven Museum Utility Tracker",
     "description": "Track museum donation progress across all three halls",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/490",
     "nexus_file_group_id": "1309168",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/SMUT/",
     "thunderstoreName": "SMUT",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed the hidden F10/F11 debug keys (F11 clashed with the Haven Dev Tools overlay) and unused code."
   },
   "com.azraelgodking.sunhaventodo": {
-    "version": "2.1.2",
+    "version": "2.1.3",
     "name": "Sun Haven Todo",
     "description": "In-game task tracker for farming goals, quests, and daily tasks",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/491",
     "nexus_file_group_id": "1310599",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/SunHavenTodo/",
     "thunderstoreName": "SunHavenTodo",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed unused internal API. No change to your todo lists."
   },
   "com.azraelgodking.thevault": {
-    "version": "4.3.0",
+    "version": "4.3.1",
     "name": "The Vault",
     "description": "The Vault 3 — per-character vault, encrypted saves, HUD, auto-deposit, shop and inventory vault integration, Custom tab & mod API.",
     "vault_save_breaking": false,
@@ -49,37 +49,37 @@
     "nexus_file_group_id": "1305781",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/TheVault/",
     "thunderstoreName": "TheVault",
-    "changelog": "New save format: vault files get an integrity check, so a corrupted or edited file is refused and the backup is used instead. Opening a vault no longer depends on Steam finishing startup first. Older vault files upgrade automatically on first load; after that, earlier Vault versions can't read them."
+    "changelog": "Maintenance release: removed unused code and a Harmony probe that never matched. No change to vault behavior or saves."
   },
   "com.azraelgodking.havendevtools": {
-    "version": "2.1.2",
+    "version": "2.1.3",
     "name": "HavenDevTools",
     "description": "Developer utilities for mod debugging and game state inspection",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/495",
     "nexus_file_group_id": "1316842",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavenDevTools/",
     "thunderstoreName": "HavenDevTools",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: the startup log and ToggleKey setting no longer say the debug window needs authorization (it never did)."
   },
   "com.azraelgodking.senpaischest": {
-    "version": "3.1.3",
+    "version": "3.1.4",
     "name": "Senpai's Chest",
     "description": "Smart chest auto-sorting with custom rules by item, type, category, property, or player groups. Manage Groups tab for custom subcategories.",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/496",
     "nexus_file_group_id": "1317103",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/SenpaisChest/",
     "thunderstoreName": "SenpaisChest",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed unreachable code and an unused debug patch. No change to chests."
   },
   "com.azraelgodking.havensalmanac": {
-    "version": "2.2.2",
+    "version": "2.2.3",
     "name": "Haven's Almanac",
     "description": "Unified mod dashboard - HUD, full dashboard, and daily morning briefing aggregating data from all installed mods",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/501",
     "nexus_file_group_id": "7326779",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensAlmanac/",
     "thunderstoreName": "HavensAlmanac",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\". A relationship value that can't be read is now logged once instead of silently showing 0."
+    "changelog": "Maintenance release: removed leftover Haven Dev Tools authorization text and unused code. No change to the almanac."
   },
   "com.azraelgodking.fasterraces": {
     "version": "2.1.2",
@@ -102,14 +102,14 @@
     "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
   },
   "com.azraelgodking.cropoptimizer": {
-    "version": "2.3.0",
+    "version": "2.3.1",
     "name": "Crop Optimizer",
     "description": "Crop forecast HUD with seasonal planning helpers and soft Todo/Birthday/Vault integrations",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/500",
     "nexus_file_group_id": "7320911",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/CropOptimizer/",
     "thunderstoreName": "CropOptimizer",
-    "changelog": "Crops that can be mana infused but aren't yet get purple corner highlights (toggle: Highlights.HighlightUninfusedManaCrops)."
+    "changelog": "Maintenance release: removed Todo and Birthday integrations that never ran, so the startup health log no longer lists them. Highlights and Vault support are unchanged."
   },
   "com.azraelgodking.havensrespec": {
     "version": "2.1.4",
@@ -122,14 +122,14 @@
     "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
   },
   "com.azraelgodking.giftingassistant": {
-    "version": "1.1.3",
+    "version": "1.1.4",
     "name": "Gifting Assistant",
     "description": "Initial release: per-character gift roster, loved/liked suggestions with icons, preferred gifts, heart bars, gifted-today tracking, priority sort, Ctrl+G UI, 16 languages. Optional Birthday Reminder, Sun Haven Todo, and Haven's Almanac.",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/507",
     "nexus_file_group_id": "7597922",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/GiftingAssistant/",
     "thunderstoreName": "GiftingAssistant",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Maintenance release: removed unused code. No change to gifting."
   },
   "com.azraelgodking.havensmirror": {
     "version": "1.0.2",

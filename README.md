@@ -1,4 +1,4 @@
-# Sun Haven Mods
+﻿# Sun Haven Mods
 
 BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_Haven/) — vault, QoL, integrations, and docs. **Published versions and download links** live in [`docs/versions.json`](docs/versions.json) (also drives the [mod hub](https://www.azraelsmods.com/sun-haven/)). Each mod folder also has a `mod.json` for the public mod website.
 
@@ -6,19 +6,19 @@ BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_H
 
 | Mod | Folder | Version |
 |-----|--------|---------|
-| Senpai's Chest | [`SenpaisChest/`](SenpaisChest/) | 3.1.3 |
-| Sun Haven Todo | [`SunhavenTodo/`](SunhavenTodo/) | 2.1.2 |
-| Sun Haven Museum Utility Tracker (S.M.U.T.) | [`SunHavenMuseumUtilityTracker/`](SunHavenMuseumUtilityTracker/) | 3.1.2 |
-| The Vault | [`TheVault/`](TheVault/) | 4.3.0 |
-| Haven's Birthright | [`HavensBirthright/`](HavensBirthright/) | 3.1.3 |
-| Haven's Almanac | [`HavensAlmanac/`](HavensAlmanac/) | 2.2.2 |
-| A Squirrel's Birthday Reminder | [`BirthdayReminder/`](BirthdayReminder/) | 2.1.3 |
-| Haven Dev Tools | [`HavenDevTools/`](HavenDevTools/) | 2.1.2 |
+| Senpai's Chest | [`SenpaisChest/`](SenpaisChest/) | 3.1.4 |
+| Sun Haven Todo | [`SunhavenTodo/`](SunhavenTodo/) | 2.1.3 |
+| Sun Haven Museum Utility Tracker (S.M.U.T.) | [`SunHavenMuseumUtilityTracker/`](SunHavenMuseumUtilityTracker/) | 3.1.3 |
+| The Vault | [`TheVault/`](TheVault/) | 4.3.1 |
+| Haven's Birthright | [`HavensBirthright/`](HavensBirthright/) | 3.1.4 |
+| Haven's Almanac | [`HavensAlmanac/`](HavensAlmanac/) | 2.2.3 |
+| A Squirrel's Birthday Reminder | [`BirthdayReminder/`](BirthdayReminder/) | 2.1.4 |
+| Haven Dev Tools | [`HavenDevTools/`](HavenDevTools/) | 2.1.3 |
 | Trinket Fortune | [`TrinketFortune/`](TrinketFortune/) | 2.1.3 |
 | Faster Races | [`FasterRaces/`](FasterRaces/) | 2.1.2 |
-| Crop Optimizer | [`CropOptimizer/`](CropOptimizer/) | 2.3.0 |
+| Crop Optimizer | [`CropOptimizer/`](CropOptimizer/) | 2.3.1 |
 | Haven's Respec | [`HavensRespec/`](HavensRespec/) | 2.1.4 |
-| Gifting Assistant | [`GiftingAssistant/`](GiftingAssistant/) | 1.1.3 |
+| Gifting Assistant | [`GiftingAssistant/`](GiftingAssistant/) | 1.1.4 |
 | Haven's Mirror | [`HavensMirror/`](HavensMirror/) | 1.0.2 |
 
 Per-mod READMEs and Thunderstore packages describe features, hotkeys, and config in detail.
