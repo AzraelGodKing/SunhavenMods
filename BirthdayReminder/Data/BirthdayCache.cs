@@ -158,17 +158,6 @@ namespace BirthdayReminder.Data
         }
 
         /// <summary>
-        /// Get all birthdays for a specific season
-        /// </summary>
-        public static List<NPCBirthday> GetBirthdaysForSeason(string season)
-        {
-            return _allBirthdays
-                .Where(b => string.Equals(b.Season, season, StringComparison.OrdinalIgnoreCase))
-                .OrderBy(b => b.Day)
-                .ToList();
-        }
-
-        /// <summary>
         /// Get a specific NPC's birthday
         /// </summary>
         public static NPCBirthday GetBirthday(string npcName)

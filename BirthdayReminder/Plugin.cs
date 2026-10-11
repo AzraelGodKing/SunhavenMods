@@ -51,7 +51,6 @@ namespace BirthdayReminder
 
         // Character tracking for save switching
         private static string _currentCharacterName;
-        private static bool _isCharacterLoaded;
 
         // Instance references
         private BirthdayManager _manager;
@@ -319,7 +318,6 @@ namespace BirthdayReminder
             {
                 Log.LogInfo("[BirthdayReminder] Main menu detected - hiding HUD and resetting state");
                 _staticHUD?.Hide();
-                _isCharacterLoaded = false;
                 _currentCharacterName = null;
                 return;
             }
@@ -597,78 +595,8 @@ namespace BirthdayReminder
 
                 // Hide HUD until we check birthdays
                 _staticHUD?.Hide();
-
-                _isCharacterLoaded = true;
             }
         }
-
-        public static string CurrentCharacter => _currentCharacterName;
-        public static bool IsCharacterLoaded => _isCharacterLoaded;
-
-        #region Debug Methods
-
-        /// <summary>
-        /// Debug: Add a test birthday to verify HUD works
-        /// </summary>
-        private void DebugAddTestBirthday()
-        {
-            Log.LogInfo("[DEBUG] Adding test birthday...");
-
-            EnsureUIComponentsExist();
-            _staticManager?.DebugAddTestBirthday("Test NPC", "Loves: Diamonds, Gold");
-
-            if (_staticManager != null && _staticManager.HasBirthdays)
-            {
-                _staticHUD?.Show();
-                Log.LogInfo("[DEBUG] Test birthday added and HUD shown");
-            }
-        }
-
-        /// <summary>
-        /// Debug: Refresh birthday check
-        /// </summary>
-        private void DebugRefreshBirthdays()
-        {
-            Log.LogInfo("[DEBUG] Ctrl+Shift+R pressed - Manual refresh triggered");
-            EnsureUIComponentsExist();
-
-            // Use ManualRefresh which sets a status message
-            _staticManager?.ManualRefresh();
-
-            Log.LogInfo($"[DEBUG] Found {_staticManager?.TodaysBirthdays.Count ?? 0} birthdays");
-
-            // Always show the HUD on manual refresh
-            _staticHUD?.Show();
-        }
-
-        /// <summary>
-        /// Debug: Clear all birthdays
-        /// </summary>
-        private void DebugClearBirthdays()
-        {
-            Log.LogInfo("[DEBUG] Clearing all birthdays...");
-            _staticManager?.DebugClearBirthdays();
-            _staticHUD?.Hide();
-            Log.LogInfo("[DEBUG] Birthdays cleared and HUD hidden");
-        }
-
-        /// <summary>
-        /// Debug: Load ALL NPC birthdays
-        /// </summary>
-        private void DebugLoadAllBirthdays()
-        {
-            Log.LogInfo("[DEBUG] Loading all NPC birthdays...");
-            EnsureUIComponentsExist();
-            _staticManager?.DebugLoadAllBirthdays();
-
-            if (_staticManager != null && _staticManager.HasBirthdays)
-            {
-                _staticHUD?.Show();
-                Log.LogInfo($"[DEBUG] Loaded {_staticManager.TodaysBirthdays.Count} birthdays");
-            }
-        }
-
-        #endregion
 
         private void OnDestroy()
         {
@@ -740,7 +668,7 @@ namespace BirthdayReminder
                 else
                 {
                     Plugin.Log?.LogInfo("[PlayerPatches] No birthdays found today - HUD will not show automatically");
-                    Plugin.Log?.LogInfo("[PlayerPatches] Use Ctrl+Alt+B to add a test birthday for testing");
+                    Plugin.Log?.LogInfo("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
                 }
             }
             catch (Exception ex)
@@ -879,34 +807,7 @@ namespace BirthdayReminder
                 Plugin.GetHUD()?.Toggle();
             }
 
-            // Test Mode: Ctrl+Alt+B - Add test birthday
-            if (Plugin.StaticDebugMode && ctrlPressed && altPressed && !shiftPressed && Input.GetKeyDown(Plugin.StaticToggleKey))
-            {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Alt+B pressed - adding test birthday");
-                Plugin.EnsureUIComponentsExist();
-                Plugin.GetManager()?.DebugAddTestBirthday("Test NPC", "Loves: Diamonds, Gold");
-                var hud = Plugin.GetHUD();
-                if (Plugin.GetManager()?.HasBirthdays == true && hud != null)
-                {
-                    Plugin.Log?.LogInfo($"[PersistentRunner] Showing HUD - birthdays: {Plugin.GetManager()?.TodaysBirthdays?.Count}");
-                    hud.Show();
-                    Plugin.Log?.LogInfo($"[PersistentRunner] HUD visible: {hud.IsVisible}");
-                }
-                else
-                {
-                    Plugin.Log?.LogWarning($"[PersistentRunner] Cannot show HUD - manager: {Plugin.GetManager() != null}, hud: {hud != null}");
-                }
-            }
-
-            // Test Mode: Ctrl+Alt+A - Load ALL birthdays
-            if (Plugin.StaticDebugMode && ctrlPressed && altPressed && !shiftPressed && Input.GetKeyDown(KeyCode.A))
-            {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Alt+A pressed - loading all birthdays");
-                Plugin.EnsureUIComponentsExist();
-                Plugin.GetManager()?.DebugLoadAllBirthdays();
-            }
-
-            // Debug: Ctrl+Shift+B - Add test birthday
+            // Debug: Ctrl+Shift+B - Add test birthday (documented in DebugMode config)
             if (Plugin.StaticDebugMode && ctrlPressed && shiftPressed && !altPressed && Input.GetKeyDown(Plugin.StaticToggleKey))
             {
                 Plugin.EnsureUIComponentsExist();
