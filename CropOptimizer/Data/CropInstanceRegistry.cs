@@ -14,22 +14,10 @@ namespace CropOptimizer.Data
             ActiveCropIds.Add(cropObject.GetInstanceID());
         }
 
-        public static void Unregister(Object cropObject)
-        {
-            if (cropObject == null)
-                return;
-            ActiveCropIds.Remove(cropObject.GetInstanceID());
-        }
-
         public static void UnregisterById(int instanceId)
         {
             if (instanceId != 0)
                 ActiveCropIds.Remove(instanceId);
-        }
-
-        public static bool IsKnownActive(int instanceId)
-        {
-            return ActiveCropIds.Contains(instanceId);
         }
 
         public static void PruneExcept(HashSet<int> liveIds)
