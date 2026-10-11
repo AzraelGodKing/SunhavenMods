@@ -1,6 +1,6 @@
 # Senpai's Chest
 
-**Version 3.1.3** — Smart chests with configurable item rules for hands-free storage organization in Sun Haven. Chest labels, rules by item/category/type/property/group, per-character saves.
+**Version 3.1.4** — Smart chests with configurable item rules for hands-free storage organization in Sun Haven. Chest labels, rules by item/category/type/property/group, per-character saves.
 
 **2.2.4:** Chest labels now anchor from chest sprite world bounds (top-center), fixing cases where labels appeared offset instead of directly above the chest. Museum-detected Todo tasks now include destination hall and item icon metadata for richer Todo/HUD display. Added a new **By Category** option: **Undonated Items** (museum-needed items via S.M.U.T), and the category now only appears when S.M.U.T. is installed. Adding a rule now auto-enables Smart Chest by default (configurable via `AutoEnableSmartChestOnRuleAdd`). Config file now uses `BepInEx/config/SenpaisChest.cfg` (auto-migrates values from the legacy GUID-named config on first load).
 

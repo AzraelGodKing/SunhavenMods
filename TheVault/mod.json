@@ -3,10 +3,10 @@
   "name": "The Vault",
   "game": "sun-haven",
   "description": "The Vault 3 — per-character vault, encrypted saves, HUD, auto-deposit, shop and inventory vault integration, Custom tab & mod API.",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "screenshots": [],
   "download": {
-    "file": "TheVault-4.3.0.zip"
+    "file": "TheVault-4.3.1.zip"
   },
   "links": {
     "steam": null,

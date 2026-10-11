@@ -3,10 +3,10 @@
   "name": "Senpai's Chest",
   "game": "sun-haven",
   "description": "Smart chest auto-sorting with custom rules by item, type, category, property, or player groups. Manage Groups tab for custom subcategories.",
-  "version": "3.1.3",
+  "version": "3.1.4",
   "screenshots": [],
   "download": {
-    "file": "SenpaisChest-3.1.3.zip"
+    "file": "SenpaisChest-3.1.4.zip"
   },
   "links": {
     "steam": null,

@@ -1,6 +1,6 @@
 # Sun Haven Todo
 
-**Version 2.1.2** — In-game task tracker for farming goals, quests, and daily tasks. Categories, priorities, per-character saves, parchment-style UI. Default hotkey: **Ctrl+T**.
+**Version 2.1.3** — In-game task tracker for farming goals, quests, and daily tasks. Categories, priorities, per-character saves, parchment-style UI. Default hotkey: **Ctrl+T**.
 
 **1.1.7:** Museum-detected tasks now show destination hall (`The Hall of Gems`, `The Hall of Culture`, or `Aquarium`) and render the associated item icon in both Todo UI and HUD. Long task titles now wrap and task rows expand in both Todo UI and HUD so text is no longer cut off. Runtime autosave was moved to the hidden persistent keepalive runner, so Todo survives plugin lifecycle cleanup without relying on `Plugin.Update`. Config file now uses `BepInEx/config/SunhavenTodo.cfg` (auto-migrates values from the legacy GUID-named config on first load).
 
