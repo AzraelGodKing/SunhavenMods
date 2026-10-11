@@ -17,8 +17,6 @@ using UnityEngine;
 namespace CropOptimizer
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency("com.azraelgodking.sunhaventodo", BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency("com.azraelgodking.squirrelsbirthdayreminder", BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency("com.azraelgodking.thevault", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -50,8 +48,6 @@ namespace CropOptimizer
                 ModDiagnostics.LogModStartup(Log, PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION,
                     ModHealthIntegrationSummary.Build(
                         ("DevTools", SuitePluginGuids.DevTools),
-                        ("Todo", SuitePluginGuids.SunhavenTodo),
-                        ("Birthday", SuitePluginGuids.BirthdayReminder),
                         ("Vault", SuitePluginGuids.TheVault)),
                     mode: "disabled");
                 return;
@@ -92,8 +88,6 @@ namespace CropOptimizer
             ModDiagnostics.LogModStartup(Log, PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION,
                 ModHealthIntegrationSummary.Build(
                     ("DevTools", SuitePluginGuids.DevTools),
-                    ("Todo", SuitePluginGuids.SunhavenTodo),
-                    ("Birthday", SuitePluginGuids.BirthdayReminder),
                     ("Vault", SuitePluginGuids.TheVault)));
         }
 

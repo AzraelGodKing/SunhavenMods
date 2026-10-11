@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-10-11
+
+- **Crop Optimizer unused-code cleanup:** Deleted never-constructed `BirthdayIntegration` / `TodoIntegration`, plus their Todo/Birthday `BepInDependency` soft-deps and `ModHealthIntegrationSummary` entries so the health log no longer claims integrations that do not run. Dropped the unused `TodoSoftClient` / `TodoManagerReflection` links from `CropOptimizer.csproj`. Removed unused `CropInstanceRegistry.Unregister` / `IsKnownActive` and `CropTileReflection.MeasureFarmTileScreenPixels`. Vault integration is unchanged. No mod version bump.
+
 ## 2026-10-10
 
 - **SharedUtilities `VaultCsvault3.cs` (AZR-243):** CSVAULT3 format kept free of Unity/BepInEx so `TheVault.Tests` links it directly. PBKDF2-HMAC-SHA256 is implemented in-file (tested against `Rfc2898DeriveBytes`) so it does not depend on Mono's SHA-256 PBKDF2 support. Derived keys are cached per character for the session, so only the first load or save pays the 100,000-iteration cost. `SharedCodeRevision` bumped to `2026.10.10`.

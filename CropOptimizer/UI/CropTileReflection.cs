@@ -132,26 +132,6 @@ namespace CropOptimizer.UI
             return false;
         }
 
-        /// <summary>Screen-space width of one farm tile at the given grid cell (for highlight sizing).</summary>
-        public static float MeasureFarmTileScreenPixels(Camera camera, Vector2Int tile)
-        {
-            if (camera == null)
-                return 52f;
-
-            if (!TryGetFarmTileCenterWorld(tile, out Vector3 center))
-                return 52f;
-
-            Vector3 east = center;
-            if (TryGetFarmTileCenterWorld(new Vector2Int(tile.x + 1, tile.y), out Vector3 neighbor))
-                east = neighbor;
-            else
-                east = center + new Vector3(Mathf.Max(0.25f, _gridCellSize.x), 0f, 0f);
-
-            Vector3 screenA = camera.WorldToScreenPoint(center);
-            Vector3 screenB = camera.WorldToScreenPoint(east);
-            return Mathf.Max(12f, Mathf.Abs(screenB.x - screenA.x));
-        }
-
         /// <summary>Best anchor for drawing tile corner brackets on a crop.</summary>
         public static bool TryGetCropHighlightCenter(Component crop, out Vector3 world)
         {
