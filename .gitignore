@@ -32,6 +32,7 @@ packages/
 
 # Local/CI staging outputs (workflows recreate these each run)
 builds/
+.build/
 
 # Local secrets for tooling
 .env

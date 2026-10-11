@@ -19,7 +19,7 @@
 
 ## Vault save data
 
-Routine updates aim **not** to wipe your vault. If a build **cannot** keep compatibility, maintainers publish a clear warning at the **top of the GitHub README**, in **Thunderstore/Nexus** text, the **changelog** (what to back up), and an **in-game / log** notice when needed — see **`TheVault/SAVE_COMPATIBILITY.md`** in the repo.
+Routine updates aim **not** to wipe your vault. If a build **cannot** keep compatibility, maintainers publish a clear warning at the **top of the GitHub README**, in **Thunderstore/Nexus** text, the **changelog** (what to back up), and an **in-game / log** notice when needed — see **`maintainer-docs/ATOMIC_SAVE_POLICY.md`** in the repo.
 
 ## For mod authors
 
