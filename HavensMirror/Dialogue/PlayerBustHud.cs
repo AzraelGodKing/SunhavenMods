@@ -25,6 +25,8 @@ namespace HavensMirror.Dialogue
         /// <summary>Typical NPC dialogue bust height when no NPC Image is available.</summary>
         private const float FallbackBustHeight = 250f;
         private const float FallbackAspect = 0.83f;
+        /// <summary>Longer than vanilla's 0.02s CancelDialogue hide delay.</summary>
+        private const float HideCheckDelay = 0.1f;
 
         private static PlayerBustHud _instance;
         private static bool _loggedLayout;
@@ -36,6 +38,7 @@ namespace HavensMirror.Dialogue
         private bool _ready;
         private Image _npcBust;
         private Coroutine _relayoutRoutine;
+        private Coroutine _hideRoutine;
 
         /// <summary>
         /// Attach to the DialogueController host (preferred) or any dialogue UI root.
@@ -357,6 +360,7 @@ namespace HavensMirror.Dialogue
 
         public void Hide()
         {
+            CancelPendingHide();
             if (_relayoutRoutine != null)
             {
                 StopCoroutine(_relayoutRoutine);
@@ -365,6 +369,39 @@ namespace HavensMirror.Dialogue
 
             if (_image != null)
                 _image.gameObject.SetActive(false);
+        }
+
+        /// <summary>
+        /// Vanilla hides the NPC bust in a short delayed call that the next PushDialogue
+        /// kills, so the bust survives option-to-node transitions. Follow that outcome.
+        /// </summary>
+        public void HideWhenNpcBustCloses()
+        {
+            if (!isActiveAndEnabled)
+            {
+                Hide();
+                return;
+            }
+
+            CancelPendingHide();
+            _hideRoutine = StartCoroutine(HideIfNpcBustClosed());
+        }
+
+        private IEnumerator HideIfNpcBustClosed()
+        {
+            yield return new WaitForSecondsRealtime(HideCheckDelay);
+            _hideRoutine = null;
+            if (_npcBust == null || !_npcBust.gameObject.activeInHierarchy)
+                Hide();
+        }
+
+        private void CancelPendingHide()
+        {
+            if (_hideRoutine == null)
+                return;
+
+            StopCoroutine(_hideRoutine);
+            _hideRoutine = null;
         }
 
         /// <summary>
@@ -379,6 +416,7 @@ namespace HavensMirror.Dialogue
                 return;
             }
 
+            CancelPendingHide();
             EnsureVisual();
             if (!_ready || _image == null)
             {

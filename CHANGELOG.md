@@ -8,6 +8,8 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 **Sunhaven Todo** — unused API cleanup
 - Removed unused `ShowUI` / `HideUI` / `IsCharacterDataLoaded`, `ClearData`, the string `AddTodo` overload, `GetTodosByPriority`, `SearchTodos`, and `TodoSaveSystem.Delete`. Suite mods already go through `TodoSoftClient` (`GetTodoManager` + `AddTodo(TodoItem)`).
+**Haven's Mirror** — AZR-450
+- **Fix:** Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation. It still closes with the NPC's portrait when the conversation ends. Reported by AnnaBanana4411.
 
 **The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
 - **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
