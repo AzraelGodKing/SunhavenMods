@@ -97,19 +97,6 @@ namespace SenpaisChest.Data
             return g;
         }
 
-        public void RenameGroup(string oldName, string newName)
-        {
-            if (string.IsNullOrWhiteSpace(oldName) || string.IsNullOrWhiteSpace(newName)) return;
-            var oldKey = oldName.Trim();
-            var newKey = newName.Trim();
-            if (!_groups.TryGetValue(oldKey, out var g)) return;
-            if (_groups.ContainsKey(newKey) && !string.Equals(oldKey, newKey, StringComparison.OrdinalIgnoreCase)) return;
-            _groups.Remove(oldKey);
-            g.Name = newKey;
-            _groups[newKey] = g;
-            _isDirty = true;
-        }
-
         public void RemoveGroup(string name)
         {
             if (!string.IsNullOrEmpty(name) && _groups.Remove(name.Trim()))

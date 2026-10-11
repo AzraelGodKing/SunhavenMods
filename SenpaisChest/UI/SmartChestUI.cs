@@ -90,7 +90,6 @@ namespace SenpaisChest.UI
         internal const string GroupSearchFieldControlName = "SmartChestGroupItemSearch";
         internal const string WildcardPatternControlName = "SmartChestWildcardPattern";
 
-        // Color palette — dark navy theme with gold accents
         private readonly Color _bgDark = new Color(0.15f, 0.16f, 0.24f, 1f);
         private readonly Color _borderGold = new Color(0.75f, 0.65f, 0.30f, 1f);
         private readonly Color _goldText = new Color(0.95f, 0.85f, 0.35f, 1f);
@@ -211,8 +210,6 @@ namespace SenpaisChest.UI
         private bool _stylesDirty = true;
 
         public bool IsVisible => _isVisible;
-        /// <summary>True when config is drawn inside the chest UI panel (we should not block closing the chest).</summary>
-        public bool IsEmbedded => false;
 
         /// <summary>True when we should block Backspace/UICancel from reaching the game (only when our search field has keyboard focus). When false, e.g. when the cheat enabler chat is focused, we do not block so that mod can receive input.</summary>
         internal static bool ShouldBlockGameInput(SmartChestUI ui)
@@ -251,11 +248,6 @@ namespace SenpaisChest.UI
             _contentHeight = WindowHeight;
         }
 
-        public void Show()
-        {
-            _isVisible = true;
-        }
-
         /// <summary>Full cleanup when chest closes. Clears note and config, closes chest.</summary>
         public void Hide()
         {
@@ -292,14 +284,6 @@ namespace SenpaisChest.UI
         {
             GUIUtility.keyboardControl = 0;
             GUI.FocusControl(null);
-        }
-
-        public void Toggle()
-        {
-            if (_isVisible)
-                Hide();
-            else
-                Show();
         }
 
         public void ToggleForChest(Chest chest)
@@ -497,10 +481,10 @@ namespace SenpaisChest.UI
 
         private void DrawWindow(int windowId)
         {
-            DrawConfigContent(new Rect(0, 0, _windowRect.width, _windowRect.height), withWindowChrome: true);
+            DrawConfigContent(new Rect(0, 0, _windowRect.width, _windowRect.height));
         }
 
-        private void DrawConfigContent(Rect rect, bool withWindowChrome)
+        private void DrawConfigContent(Rect rect)
         {
             if (Event.current.type == UnityEngine.EventType.KeyDown)
             {
@@ -512,61 +496,46 @@ namespace SenpaisChest.UI
                 }
             }
 
-            bool compact = !withWindowChrome;
-            bool useParchmentTheme = withWindowChrome;
+            float titleBarHeight = Scaled(36f);
+            float outerBorder = Scaled(5f);
+            float innerBorderW = Scaled(1f);
 
-            if (withWindowChrome)
+            if (_configInnerBorderTex != null)
             {
-                float titleBarHeight = Scaled(36f);
-                float outerBorder = Scaled(5f);
-                float innerBorderW = Scaled(1f);
-
-                if (_configInnerBorderTex != null)
-                {
-                    float innerX = outerBorder;
-                    float innerY = outerBorder;
-                    float innerW = rect.width - outerBorder * 2;
-                    float innerH = rect.height - outerBorder * 2;
-                    GUI.DrawTexture(new Rect(innerX, innerY, innerW, innerBorderW), _configInnerBorderTex);
-                    GUI.DrawTexture(new Rect(innerX, innerY + innerH - innerBorderW, innerW, innerBorderW), _configInnerBorderTex);
-                    GUI.DrawTexture(new Rect(innerX, innerY, innerBorderW, innerH), _configInnerBorderTex);
-                    GUI.DrawTexture(new Rect(innerX + innerW - innerBorderW, innerY, innerBorderW, innerH), _configInnerBorderTex);
-                }
-
-                if (_configTitleBarTex != null)
-                    GUI.DrawTexture(new Rect(0, 0, rect.width, titleBarHeight), _configTitleBarTex);
-                GUILayout.BeginArea(new Rect(0, 0, rect.width, titleBarHeight));
-                GUILayout.BeginHorizontal();
-                GUILayout.FlexibleSpace();
-                GUILayout.Label(ModLocalization.T("chest.config.title"), _configTitleStyle, GUILayout.ExpandWidth(true));
-                GUILayout.FlexibleSpace();
-                if (GUILayout.Button("X", _closeButtonStyle, GUILayout.Width(Scaled(28)), GUILayout.Height(Scaled(24))))
-                    HideConfig();
-                GUILayout.Space(Scaled(4));
-                GUILayout.EndHorizontal();
-                GUILayout.EndArea();
-
-                GUILayout.Space(titleBarHeight + Scaled(2));
-                if (_configGoldSeparatorTex != null)
-                {
-                    var sepRect = GUILayoutUtility.GetRect(rect.width - Scaled(24), Scaled(2));
-                    GUI.DrawTexture(sepRect, _configGoldSeparatorTex);
-                }
-                GUILayout.Space(Scaled(8));
+                float innerX = outerBorder;
+                float innerY = outerBorder;
+                float innerW = rect.width - outerBorder * 2;
+                float innerH = rect.height - outerBorder * 2;
+                GUI.DrawTexture(new Rect(innerX, innerY, innerW, innerBorderW), _configInnerBorderTex);
+                GUI.DrawTexture(new Rect(innerX, innerY + innerH - innerBorderW, innerW, innerBorderW), _configInnerBorderTex);
+                GUI.DrawTexture(new Rect(innerX, innerY, innerBorderW, innerH), _configInnerBorderTex);
+                GUI.DrawTexture(new Rect(innerX + innerW - innerBorderW, innerY, innerBorderW, innerH), _configInnerBorderTex);
             }
 
-            if (withWindowChrome)
-                GUILayout.Space(4);
-            const float colSpacing = 8f;
-            float colWidth = compact ? (rect.width - colSpacing) / 2f : 0f;
-            if (compact)
-            {
-                GUILayout.BeginHorizontal(GUILayout.Width(rect.width));
-                GUILayout.BeginVertical(GUILayout.Width(colWidth));
-            }
-
+            if (_configTitleBarTex != null)
+                GUI.DrawTexture(new Rect(0, 0, rect.width, titleBarHeight), _configTitleBarTex);
+            GUILayout.BeginArea(new Rect(0, 0, rect.width, titleBarHeight));
             GUILayout.BeginHorizontal();
-            bool newEnabled = GUILayout.Toggle(_currentData.IsEnabled, " Smart Chest Enabled", useParchmentTheme ? _chestToggleStyle : _toggleStyle);
+            GUILayout.FlexibleSpace();
+            GUILayout.Label(ModLocalization.T("chest.config.title"), _configTitleStyle, GUILayout.ExpandWidth(true));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("X", _closeButtonStyle, GUILayout.Width(Scaled(28)), GUILayout.Height(Scaled(24))))
+                HideConfig();
+            GUILayout.Space(Scaled(4));
+            GUILayout.EndHorizontal();
+            GUILayout.EndArea();
+
+            GUILayout.Space(titleBarHeight + Scaled(2));
+            if (_configGoldSeparatorTex != null)
+            {
+                var sepRect = GUILayoutUtility.GetRect(rect.width - Scaled(24), Scaled(2));
+                GUI.DrawTexture(sepRect, _configGoldSeparatorTex);
+            }
+            GUILayout.Space(Scaled(8));
+
+            GUILayout.Space(4);
+            GUILayout.BeginHorizontal();
+            bool newEnabled = GUILayout.Toggle(_currentData.IsEnabled, " Smart Chest Enabled", _chestToggleStyle);
             if (newEnabled != _currentData.IsEnabled)
             {
                 _currentData.IsEnabled = newEnabled;
@@ -575,20 +544,17 @@ namespace SenpaisChest.UI
             }
             GUILayout.EndHorizontal();
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR, _configGoldSeparatorTex);
                 GUILayout.Space(6);
             }
-            else
-                GUILayout.Space(compact ? 4 : 8);
 
-            var sectionHeaderStyle = useParchmentTheme ? _configSectionHeaderBoxStyle : (compact ? _chestSectionHeaderStyle : _sectionHeaderStyle);
-            GUILayout.Label(ModLocalization.T("chest.section.rules"), sectionHeaderStyle);
-            GUILayout.Space(compact ? 2 : 4);
+            GUILayout.Label(ModLocalization.T("chest.section.rules"), _configSectionHeaderBoxStyle);
+            GUILayout.Space(4);
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR2 = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR2, _configGoldSeparatorTex);
@@ -597,26 +563,23 @@ namespace SenpaisChest.UI
 
             if (_currentData.Rules.Count == 0)
             {
-                GUILayout.Label(ModLocalization.T("chest.rules.none"), useParchmentTheme ? _chestLabelDimStyle : (compact ? _chestLabelDimStyle : _labelDimStyle));
+                GUILayout.Label(ModLocalization.T("chest.rules.none"), _chestLabelDimStyle);
             }
             else
             {
-                float ruleItemHeight = compact ? 24f : 36f;
-                float maxRulesHeight = compact ? 100f : 180f;
+                float ruleItemHeight = 36f;
+                float maxRulesHeight = 180f;
                 float rulesHeight = Mathf.Min(_currentData.Rules.Count * ruleItemHeight, maxRulesHeight);
                 GUILayout.BeginVertical(GUILayout.Height(rulesHeight));
                 int removeIndex = -1;
                 for (int i = 0; i < _currentData.Rules.Count; i++)
                 {
-                    var ruleBoxStyle = useParchmentTheme ? _chestRuleBoxStyle : (compact ? _chestRuleBoxStyle : _ruleBoxStyle);
-                    var ruleTextStyle = useParchmentTheme ? _chestRuleTextStyle : (compact ? _chestRuleTextStyle : _ruleTextStyle);
-                    var removeBtnStyle = useParchmentTheme ? _chestRemoveRuleBtnStyle : (compact ? _chestRemoveRuleBtnStyle : _removeRuleBtnStyle);
-                    GUILayout.BeginHorizontal(ruleBoxStyle);
-                    GUILayout.Label($"{i + 1}. {GetRuleDisplayText(_currentData.Rules[i])}", ruleTextStyle, GUILayout.ExpandWidth(true));
-                    if (GUILayout.Button("X", removeBtnStyle, GUILayout.Width(26), GUILayout.Height(22)))
+                    GUILayout.BeginHorizontal(_chestRuleBoxStyle);
+                    GUILayout.Label($"{i + 1}. {GetRuleDisplayText(_currentData.Rules[i])}", _chestRuleTextStyle, GUILayout.ExpandWidth(true));
+                    if (GUILayout.Button("X", _chestRemoveRuleBtnStyle, GUILayout.Width(26), GUILayout.Height(22)))
                         removeIndex = i;
                     GUILayout.EndHorizontal();
-                    GUILayout.Space(compact ? 1 : 2);
+                    GUILayout.Space(2);
                 }
                 GUILayout.EndVertical();
                 if (removeIndex >= 0)
@@ -627,91 +590,86 @@ namespace SenpaisChest.UI
                 }
             }
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR3 = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR3, _configGoldSeparatorTex);
                 GUILayout.Space(8);
             }
-            else
-                GUILayout.Space(compact ? 4 : 10);
 
-            GUILayout.Label(ModLocalization.T("chest.section.addRule"), sectionHeaderStyle);
-            GUILayout.Space(compact ? 2 : 6);
+            GUILayout.Label(ModLocalization.T("chest.section.addRule"), _configSectionHeaderBoxStyle);
+            GUILayout.Space(6);
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR4 = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR4, _configGoldSeparatorTex);
                 GUILayout.Space(4);
             }
 
-            GUILayout.Label(ModLocalization.T("chest.presets"), useParchmentTheme ? _chestLabelBoldStyle : _labelBoldStyle);
+            GUILayout.Label(ModLocalization.T("chest.presets"), _chestLabelBoldStyle);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(ModLocalization.T("chest.preset.equipment"), useParchmentTheme ? _chestSelectorStyle : _selectorStyle, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28)))
+            if (GUILayout.Button(ModLocalization.T("chest.preset.equipment"), _chestSelectorStyle, GUILayout.Height(24)))
                 ApplyPreset("Equipment");
-            if (GUILayout.Button(ModLocalization.T("chest.preset.consumables"), useParchmentTheme ? _chestSelectorStyle : _selectorStyle, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28)))
+            if (GUILayout.Button(ModLocalization.T("chest.preset.consumables"), _chestSelectorStyle, GUILayout.Height(24)))
                 ApplyPreset("Consumables");
-            if (GUILayout.Button(ModLocalization.T("chest.preset.crafting"), useParchmentTheme ? _chestSelectorStyle : _selectorStyle, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28)))
+            if (GUILayout.Button(ModLocalization.T("chest.preset.crafting"), _chestSelectorStyle, GUILayout.Height(24)))
                 ApplyPreset("Crafting");
             GUILayout.EndHorizontal();
-            GUILayout.Space(compact ? 4 : 6);
+            GUILayout.Space(6);
 
             GUILayout.BeginHorizontal();
-            DrawSelectorButton(0, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
-            DrawSelectorButton(1, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
-            DrawSelectorButton(2, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
+            DrawSelectorButton(0, GUILayout.Height(24));
+            DrawSelectorButton(1, GUILayout.Height(24));
+            DrawSelectorButton(2, GUILayout.Height(24));
             GUILayout.EndHorizontal();
-            GUILayout.Space(compact ? 1 : 2);
+            GUILayout.Space(2);
             GUILayout.BeginHorizontal();
-            DrawSelectorButton(3, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
-            DrawSelectorButton(4, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
+            DrawSelectorButton(3, GUILayout.Height(24));
+            DrawSelectorButton(4, GUILayout.Height(24));
             if (IsSeparateWildcardRuleEnabled())
-                DrawSelectorButton(5, useParchmentTheme || compact, GUILayout.Height((useParchmentTheme || compact) ? 24 : 28));
+                DrawSelectorButton(5, GUILayout.Height(24));
             GUILayout.EndHorizontal();
-            GUILayout.Space(compact ? 1 : 2);
+            GUILayout.Space(2);
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(ModLocalization.T("chest.manageGroups"), useParchmentTheme ? _configCloseBottomStyle : _closeBottomButtonStyle, GUILayout.ExpandWidth(true), GUILayout.Height((useParchmentTheme || compact) ? 22 : 26)))
+            if (GUILayout.Button(ModLocalization.T("chest.manageGroups"), _configCloseBottomStyle, GUILayout.ExpandWidth(true), GUILayout.Height(22)))
                 _groupsWindowVisible = true;
             GUILayout.EndHorizontal();
-            GUILayout.Space(compact ? 4 : 8);
+            GUILayout.Space(8);
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR5 = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR5, _configGoldSeparatorTex);
                 GUILayout.Space(4);
             }
 
-            DrawRuleInput(useParchmentTheme || compact, useWhiteSearchField: useParchmentTheme);
-            GUILayout.Space(compact ? 4 : 8);
+            DrawRuleInput();
+            GUILayout.Space(8);
 
-            if (useParchmentTheme && _configGoldSeparatorTex != null)
+            if (_configGoldSeparatorTex != null)
             {
                 var sepR6 = GUILayoutUtility.GetRect(rect.width - 24, 2);
                 GUI.DrawTexture(sepR6, _configGoldSeparatorTex);
                 GUILayout.Space(6);
             }
 
-            var addBtnStyle = useParchmentTheme ? _chestAddButtonStyle : (compact ? _chestAddButtonStyle : _addButtonStyle);
-            if (GUILayout.Button(ModLocalization.T("chest.addRule"), addBtnStyle, GUILayout.Height((useParchmentTheme || compact) ? 24 : 30)))
+            if (GUILayout.Button(ModLocalization.T("chest.addRule"), _chestAddButtonStyle, GUILayout.Height(24)))
                 AddRule();
 
-            // Bulk-apply: copy this chest's rules to all same-name smart chests
             if (_currentData.Rules.Count > 0)
             {
                 int sameNameCount = _manager.CountSameNameChests(_chestId);
                 if (sameNameCount > 0)
                 {
-                    GUILayout.Space(compact ? 2 : 4);
-                    var bulkBtnStyle = useParchmentTheme ? _chestSelectorStyle : (compact ? _chestSelectorStyle : _selectorStyle);
+                    GUILayout.Space(4);
                     bool confirmActive = _confirmCopyRules && Time.unscaledTime <= _confirmCopyRulesUntil;
                     if (!confirmActive)
                         _confirmCopyRules = false;
                     string bulkLabel = confirmActive
                         ? $"Click Again to Confirm ({sameNameCount})"
                         : $"Copy Rules to All \"{_currentData.ChestName}\" ({sameNameCount})";
-                    if (GUILayout.Button(bulkLabel, bulkBtnStyle, GUILayout.Height(Scaled((useParchmentTheme || compact) ? 24f : 28f))))
+                    if (GUILayout.Button(bulkLabel, _chestSelectorStyle, GUILayout.Height(Scaled(24f))))
                     {
                         if (confirmActive)
                         {
@@ -730,93 +688,33 @@ namespace SenpaisChest.UI
                 }
             }
 
-            if (compact)
+            if (_configGoldSeparatorTex != null)
             {
-                GUILayout.EndVertical();
-                GUILayout.Space(colSpacing);
-                GUILayout.BeginVertical(GUILayout.Width(colWidth));
-                DrawEmbeddedRightColumn(compact);
-                GUILayout.EndVertical();
-                GUILayout.EndHorizontal();
+                var sepR7 = GUILayoutUtility.GetRect(rect.width - 24, 2);
+                GUI.DrawTexture(sepR7, _configGoldSeparatorTex);
+                GUILayout.Space(8);
             }
-            else
-            {
-                if (useParchmentTheme && _configGoldSeparatorTex != null)
-                {
-                    var sepR7 = GUILayoutUtility.GetRect(rect.width - 24, 2);
-                    GUI.DrawTexture(sepR7, _configGoldSeparatorTex);
-                    GUILayout.Space(8);
-                }
-                else
-                    GUILayout.Space(12);
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button(ModLocalization.T("chest.removeSmartChest"), useParchmentTheme ? _configRemoveButtonStyle : _dangerButtonStyle, GUILayout.Height(Scaled(28f))))
-                {
-                    _manager.RemoveSmartChest(_chestId, userInitiated: true);
-                    SaveIfDirty();
-                    HideConfig();
-                }
-                GUILayout.Space(Scaled(8f));
-                if (GUILayout.Button(ModLocalization.T("chest.close"), useParchmentTheme ? _configCloseBottomStyle : _closeBottomButtonStyle, GUILayout.Height(Scaled(28f))))
-                    HideConfig();
-                GUILayout.EndHorizontal();
-            }
-
-            if (withWindowChrome)
-            {
-                if (Event.current.type == UnityEngine.EventType.Repaint)
-                {
-                    var lastRect = GUILayoutUtility.GetLastRect();
-                    _contentHeight = lastRect.yMax + Scaled(24f);
-                }
-                GUI.DragWindow(new Rect(0, 0, rect.width, Scaled(28)));
-            }
-
-            if (Event.current.type == UnityEngine.EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace)
-                Event.current.Use();
-        }
-
-        private void DrawEmbeddedRightColumn(bool compact)
-        {
-            GUILayout.Space(4);
-            GUILayout.Label(ModLocalization.T("chest.summary"), _chestSectionHeaderStyle, GUILayout.ExpandWidth(true));
-            int ruleCount = _currentData?.Rules?.Count ?? 0;
-            string status = _currentData?.IsEnabled == true ? "Active" : "Disabled";
-            GUILayout.BeginVertical(_chestRuleBoxStyle);
-            GUILayout.Label(ModLocalization.T("chest.summary.rules", ruleCount, status), _chestLabelStyle, GUILayout.ExpandWidth(true));
-            if (ruleCount > 0)
-            {
-                GUILayout.Label(ModLocalization.T("chest.summary.accepts"), _chestLabelBoldStyle, GUILayout.ExpandWidth(true));
-                for (int i = 0; i < ruleCount; i++)
-                    GUILayout.Label($"  • {GetRuleDisplayText(_currentData.Rules[i])}", _chestLabelDimStyle, GUILayout.ExpandWidth(true));
-            }
-            GUILayout.EndVertical();
-            GUILayout.Space(4);
-            GUILayout.Label(ModLocalization.T("chest.tips.header"), _chestSectionHeaderStyle, GUILayout.ExpandWidth(true));
-            GUILayout.BeginVertical(_chestRuleBoxStyle);
-            GUILayout.Label(ModLocalization.T("chest.tips.filter"), _chestRuleTextStyle, GUILayout.ExpandWidth(true));
-            GUILayout.Label(ModLocalization.T("chest.tips.transfer"), _chestRuleTextStyle, GUILayout.ExpandWidth(true));
-            if (IsSeparateWildcardRuleEnabled())
-            {
-                GUILayout.Label(ModLocalization.T("chest.tips.wildcard"), _chestRuleTextStyle,
-                    GUILayout.ExpandWidth(true));
-            }
-            else
-            {
-                GUILayout.Label(ModLocalization.T("chest.tips.wildcardGroups"), _chestRuleTextStyle,
-                    GUILayout.ExpandWidth(true));
-            }
-            GUILayout.EndVertical();
-            GUILayout.Space(8);
-            if (GUILayout.Button(ModLocalization.T("chest.removeSmartChest"), _chestDangerButtonStyle, GUILayout.Height(20), GUILayout.ExpandWidth(true)))
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button(ModLocalization.T("chest.removeSmartChest"), _configRemoveButtonStyle, GUILayout.Height(Scaled(28f))))
             {
                 _manager.RemoveSmartChest(_chestId, userInitiated: true);
                 SaveIfDirty();
                 HideConfig();
             }
-            GUILayout.Space(2);
-            if (GUILayout.Button(ModLocalization.T("chest.close"), _chestCloseButtonStyle, GUILayout.Height(20), GUILayout.ExpandWidth(true)))
+            GUILayout.Space(Scaled(8f));
+            if (GUILayout.Button(ModLocalization.T("chest.close"), _configCloseBottomStyle, GUILayout.Height(Scaled(28f))))
                 HideConfig();
+            GUILayout.EndHorizontal();
+
+            if (Event.current.type == UnityEngine.EventType.Repaint)
+            {
+                var lastRect = GUILayoutUtility.GetLastRect();
+                _contentHeight = lastRect.yMax + Scaled(24f);
+            }
+            GUI.DragWindow(new Rect(0, 0, rect.width, Scaled(28)));
+
+            if (Event.current.type == UnityEngine.EventType.KeyDown && Event.current.keyCode == KeyCode.Backspace)
+                Event.current.Use();
         }
 
         private void DrawGroupsWindow(int windowId)
@@ -1032,21 +930,19 @@ namespace SenpaisChest.UI
             GUILayout.EndArea();
         }
 
-        private void DrawSelectorButton(int index, bool compact, params GUILayoutOption[] options)
+        private void DrawSelectorButton(int index, params GUILayoutOption[] options)
         {
-            var style = compact
-                ? ((index == _selectedRuleType) ? _chestSelectorActiveStyle : _chestSelectorStyle)
-                : ((index == _selectedRuleType) ? _selectorActiveStyle : _selectorStyle);
+            var style = (index == _selectedRuleType) ? _chestSelectorActiveStyle : _chestSelectorStyle;
             if (GUILayout.Button(RuleTypeNames[index], style, options))
                 _selectedRuleType = index;
         }
 
-        private void DrawRuleInput(bool useChestStyles, bool useWhiteSearchField = false)
+        private void DrawRuleInput()
         {
-            var labelBold = useChestStyles ? _chestLabelBoldStyle : _labelBoldStyle;
-            var label = useChestStyles ? _chestLabelStyle : _labelStyle;
-            var labelDim = useChestStyles ? _chestLabelDimStyle : _labelDimStyle;
-            var searchFieldStyle = useWhiteSearchField ? _configSearchFieldStyle : (useChestStyles ? _chestSearchFieldStyle : _textFieldStyle);
+            var labelBold = _chestLabelBoldStyle;
+            var label = _chestLabelStyle;
+            var labelDim = _chestLabelDimStyle;
+            var searchFieldStyle = _configSearchFieldStyle;
 
             switch (_selectedRuleType)
             {
@@ -1089,9 +985,7 @@ namespace SenpaisChest.UI
                                 GUI.DrawTexture(barRect, Texture2D.whiteTexture);
                                 GUI.color = Color.white;
                             }
-                            var resultStyle = useChestStyles
-                                ? ((result.Key == _selectedItemId) ? _chestSearchResultSelectedStyle : _chestSearchResultStyle)
-                                : ((result.Key == _selectedItemId) ? _searchResultSelectedStyle : _searchResultStyle);
+                            var resultStyle = (result.Key == _selectedItemId) ? _chestSearchResultSelectedStyle : _chestSearchResultStyle;
                             if (GUILayout.Button(resultLabel, resultStyle, GUILayout.Height(22)))
                             {
                                 _selectedItemId = result.Key;
@@ -1114,17 +1008,17 @@ namespace SenpaisChest.UI
                     var categoryNames = GetCategoryNames();
                     if (_selectedCategory < 0 || _selectedCategory >= categoryNames.Length)
                         _selectedCategory = 0;
-                    DrawOptionGrid(categoryNames, ref _selectedCategory, 3, useChestStyles);
+                    DrawOptionGrid(categoryNames, ref _selectedCategory, 3);
                     break;
 
                 case 2: // ByItemType
                     GUILayout.Label(ModLocalization.T("chest.rule.itemType"), labelBold);
-                    DrawOptionGrid(ItemTypeNames, ref _selectedItemType, 3, useChestStyles);
+                    DrawOptionGrid(ItemTypeNames, ref _selectedItemType, 3);
                     break;
 
                 case 3: // ByProperty
                     GUILayout.Label(ModLocalization.T("chest.rule.property"), labelBold);
-                    DrawOptionGrid(PropertyDisplayNames, ref _selectedProperty, useChestStyles ? 3 : 2, useChestStyles);
+                    DrawOptionGrid(PropertyDisplayNames, ref _selectedProperty, 3);
                     break;
 
                 case 4: // ByGroup
@@ -1139,9 +1033,7 @@ namespace SenpaisChest.UI
                         for (int i = 0; i < groups.Count; i++)
                         {
                             var g = groups[i];
-                            var grpStyle = useChestStyles
-                                ? (i == _selectedGroup ? _chestSearchResultSelectedStyle : _chestSearchResultStyle)
-                                : (i == _selectedGroup ? _searchResultSelectedStyle : _searchResultStyle);
+                            var grpStyle = i == _selectedGroup ? _chestSearchResultSelectedStyle : _chestSearchResultStyle;
                             string grpLabel = $"{g.Name} ({g.ItemIds?.Count ?? 0} items)";
                             if (GUILayout.Button(grpLabel, grpStyle, GUILayout.Height(24)))
                                 _selectedGroup = i;
@@ -1167,10 +1059,10 @@ namespace SenpaisChest.UI
             }
         }
 
-        private void DrawOptionGrid(string[] options, ref int selected, int columns, bool useChestStyles = false)
+        private void DrawOptionGrid(string[] options, ref int selected, int columns)
         {
-            var selStyle = useChestStyles ? _chestSelectorStyle : _selectorStyle;
-            var selActiveStyle = useChestStyles ? _chestSelectorActiveStyle : _selectorActiveStyle;
+            var selStyle = _chestSelectorStyle;
+            var selActiveStyle = _chestSelectorActiveStyle;
             int rows = (options.Length + columns - 1) / columns;
             for (int row = 0; row < rows; row++)
             {
