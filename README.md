@@ -1,4 +1,4 @@
-﻿# Sun Haven Mods
+# Sun Haven Mods
 
 BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_Haven/) — vault, QoL, integrations, and docs. **Published versions and download links** live in [`docs/versions.json`](docs/versions.json) (also drives the [mod hub](https://www.azraelsmods.com/sun-haven/)). Each mod folder also has a `mod.json` for the public mod website.
 
@@ -19,7 +19,7 @@ BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_H
 | Crop Optimizer | [`CropOptimizer/`](CropOptimizer/) | 2.3.0 |
 | Haven's Respec | [`HavensRespec/`](HavensRespec/) | 2.1.4 |
 | Gifting Assistant | [`GiftingAssistant/`](GiftingAssistant/) | 1.1.3 |
-| Haven's Mirror | [`HavensMirror/`](HavensMirror/) | 1.0.1 |
+| Haven's Mirror | [`HavensMirror/`](HavensMirror/) | 1.0.2 |
 
 Per-mod READMEs and Thunderstore packages describe features, hotkeys, and config in detail.
 
