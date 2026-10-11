@@ -14,7 +14,6 @@ namespace SunhavenTodo.Data
         private readonly List<TodoItem> _activeTodosCache = new List<TodoItem>();
         private readonly List<TodoItem> _completedTodosCache = new List<TodoItem>();
         private readonly Dictionary<TodoCategory, List<TodoItem>> _todosByCategoryCache = new Dictionary<TodoCategory, List<TodoItem>>();
-        private readonly Dictionary<TodoPriority, List<TodoItem>> _todosByPriorityCache = new Dictionary<TodoPriority, List<TodoItem>>();
 
         public event Action OnTodosChanged;
         public event Action OnDataLoaded;
@@ -30,15 +29,6 @@ namespace SunhavenTodo.Data
             RebuildTodoIndex();
             InvalidateQueryCaches();
             OnDataLoaded?.Invoke();
-        }
-
-        public void ClearData()
-        {
-            _todoData = null;
-            _currentCharacter = null;
-            _isDirty = false;
-            _todoById.Clear();
-            InvalidateQueryCaches();
         }
 
         public TodoListData GetData()
@@ -63,12 +53,6 @@ namespace SunhavenTodo.Data
             _isDirty = true;
             InvalidateQueryCaches();
             OnTodosChanged?.Invoke();
-        }
-
-        public void AddTodo(string title, string description = "", TodoPriority priority = TodoPriority.Normal, TodoCategory category = TodoCategory.General)
-        {
-            var item = new TodoItem(title, description, priority, category);
-            AddTodo(item);
         }
 
         public TodoItem GetTodo(string id)
@@ -181,12 +165,6 @@ namespace SunhavenTodo.Data
             return _todosByCategoryCache.TryGetValue(category, out var todos) ? todos : Array.Empty<TodoItem>();
         }
 
-        public IReadOnlyList<TodoItem> GetTodosByPriority(TodoPriority priority)
-        {
-            EnsureQueryCaches();
-            return _todosByPriorityCache.TryGetValue(priority, out var todos) ? todos : Array.Empty<TodoItem>();
-        }
-
         public IReadOnlyList<TodoItem> GetActiveTodos()
         {
             EnsureQueryCaches();
@@ -197,17 +175,6 @@ namespace SunhavenTodo.Data
         {
             EnsureQueryCaches();
             return _completedTodosCache;
-        }
-
-        public IEnumerable<TodoItem> SearchTodos(string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                return GetAllTodos();
-
-            var lowerQuery = query.ToLower();
-            return GetAllTodos().Where(i =>
-                i.Title.ToLower().Contains(lowerQuery) ||
-                (i.Description != null && i.Description.ToLower().Contains(lowerQuery)));
         }
 
         public TodoItem GetTodoById(string id)
@@ -268,7 +235,6 @@ namespace SunhavenTodo.Data
             _activeTodosCache.Clear();
             _completedTodosCache.Clear();
             _todosByCategoryCache.Clear();
-            _todosByPriorityCache.Clear();
 
             if (_todoData?.Items != null)
             {
@@ -288,13 +254,6 @@ namespace SunhavenTodo.Data
                         _todosByCategoryCache[todo.Category] = categoryList;
                     }
                     categoryList.Add(todo);
-
-                    if (!_todosByPriorityCache.TryGetValue(todo.Priority, out var priorityList))
-                    {
-                        priorityList = new List<TodoItem>();
-                        _todosByPriorityCache[todo.Priority] = priorityList;
-                    }
-                    priorityList.Add(todo);
                 }
             }
 

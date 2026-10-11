@@ -66,7 +66,7 @@ USAGE EXAMPLES
        {
            // Clean up when returning to menu
            CloseWindow();
-           ClearData();
+           ResetState();
        }
    }
 
