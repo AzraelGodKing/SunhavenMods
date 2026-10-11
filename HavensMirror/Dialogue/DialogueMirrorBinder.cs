@@ -219,7 +219,9 @@ namespace HavensMirror.Dialogue
         {
             try
             {
-                PlayerBustHud.Instance?.Hide();
+                // Talk(key) cancels then pushes the next node on every dialogue option;
+                // vanilla keeps the NPC bust, so only hide once it has really closed.
+                PlayerBustHud.Instance?.HideWhenNpcBustCloses();
             }
             catch (Exception ex)
             {
