@@ -65,19 +65,6 @@ namespace GiftingAssistant.Data
             return entries;
         }
 
-        public static int CountPendingByPriority(GiftPriority minimumPriority)
-        {
-            int count = 0;
-            foreach (var entry in GetSortedRosterEntries())
-            {
-                if (entry.IsGiftedToday || entry.Priority < minimumPriority)
-                    continue;
-                count++;
-            }
-
-            return count;
-        }
-
         private static List<RosterEntrySnapshot> BuildSortedSnapshots(GiftRosterManager manager)
         {
             var snapshots = new List<RosterEntrySnapshot>();
