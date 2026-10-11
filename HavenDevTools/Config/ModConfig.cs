@@ -59,7 +59,7 @@ namespace HavenDevTools.Config
                 "Hotkeys",
                 "ToggleKey",
                 KeyCode.F11,
-                "Key to toggle the debug window (requires authorization)"
+                "Key to toggle the debug window"
             );
 
             OverlayToggleKey = config.Bind(

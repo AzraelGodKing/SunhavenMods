@@ -485,24 +485,6 @@
         "zh-TW": "未授权",
         "uk": "Авторизовано "
     },
-    "almanac.provider.devtools.notAuthorized": {
-        "en": "Not Authorized",
-        "da": "Ikke autoriseret",
-        "de": "Nicht autorisiert",
-        "es": "No autorizado",
-        "fr": "Non autorisé",
-        "it": "Non Autorizzato",
-        "ja": "許可されていません",
-        "ko": "인증되지 않았습니다",
-        "nl": "Geen toegang",
-        "pt": "Não autorizado",
-        "pt-BR":  "Não autorizado",
-        "ru": "Не Авторизировано",
-        "sv": "Inte auktoriserad",
-        "zh-CN": "未授权",
-        "zh-TW": "未授权",
-        "uk": "Не дозволено"
-    },
     "almanac.provider.devtools.player": {
         "en": "Player: {0}",
         "da": "Spiller: {0}",

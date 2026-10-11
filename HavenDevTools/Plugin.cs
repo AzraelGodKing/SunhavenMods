@@ -115,7 +115,7 @@ namespace HavenDevTools
                 Log.LogInfo($"{PluginInfo.PLUGIN_NAME} loaded successfully!");
                 ReportStartupHealth();
 
-                Log.LogInfo($"Press {ModConfig.ToggleKey.Value} to open the debug window (requires authorization)");
+                Log.LogInfo($"Press {ModConfig.ToggleKey.Value} to open the debug window");
                 Log.LogInfo($"Press {ModConfig.OverlayToggleKey.Value} to toggle the overlay");
                 Log.LogInfo($"Detected mods - TheVault: {HasTheVault}, SMUT: {HasSMUT}, Birthright: {HasHavensBirthright}, SenpaisChest: {HasSenpaisChest}, Birthday: {HasBirthdayReminder}, Todo: {HasSunhavenTodo}, Almanac: {HasHavensAlmanac}, TrinketFortune: {HasTrinketFortune}");
             }
@@ -363,7 +363,6 @@ namespace HavenDevTools
 
         #region Public API
 
-        public static bool IsAuthorized => true;
         public static string CurrentPlayerName => _currentPlayerName;
 
         public static ItemInspector GetItemInspector() => _staticItemInspector;
