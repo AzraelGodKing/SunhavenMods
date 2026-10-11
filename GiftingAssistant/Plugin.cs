@@ -536,7 +536,6 @@ namespace GiftingAssistant
         public static void HideUI() => _staticWindow?.Hide();
 
         public static GiftRosterManager GetManager() => _staticManager;
-        public static GiftingWindow GetWindow() => _staticWindow;
 
         internal static void TickAutoSave()
         {

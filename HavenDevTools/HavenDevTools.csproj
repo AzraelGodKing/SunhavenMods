@@ -6,7 +6,6 @@
     <AssemblyName>HavenDevTools</AssemblyName>
     <RootNamespace>HavenDevTools</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SunhavenModUiProject>true</SunhavenModUiProject>
   </PropertyGroup>
 
