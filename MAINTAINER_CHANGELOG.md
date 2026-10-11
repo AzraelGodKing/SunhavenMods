@@ -7,6 +7,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-11
 
 - **Gifting Assistant dead-code cleanup:** Removed unused `Plugin.GetWindow`, `GiftGameData.FormatRelationshipHearts` / `GetMaxHeartsForPoints` (UI uses `RelationshipHeartRules.GetMaxHearts`), `GiftingAssistantAlmanacData.CountPendingByPriority` (Almanac counts from `GetSortedRosterEntries`), and `PlayerInventoryReader.HasItem`. Dropped unused `PersistentRunnerBase.cs` and `SceneHelpers.cs` Compile links from `GiftingAssistant.csproj` (still linked by Birthright, Crop Optimizer, and Haven's Mirror). No player-facing change; no version bump.
+- **Shared config helper:** The Vault, Haven Dev Tools, Crop Optimizer, and Haven's Birthright now call `ConfigFileHelper.CreateNamedConfig` (same wrapper as Almanac / Gifting) instead of private copies that matched the helper. Dropped unused `AllowUnsafeBlocks` from TheVault, HavensAlmanac, HavensBirthright, and HavenDevTools csproj files (no `unsafe` in the repo).
 
 ## 2026-10-10
 

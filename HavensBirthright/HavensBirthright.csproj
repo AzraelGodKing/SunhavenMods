@@ -6,7 +6,6 @@
     <AssemblyName>HavensBirthright</AssemblyName>
     <RootNamespace>HavensBirthright</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <!-- BepInEx References -->

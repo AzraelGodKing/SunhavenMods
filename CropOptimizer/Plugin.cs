@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
@@ -231,18 +230,11 @@ namespace CropOptimizer
 
         private static ConfigFile CreateNamedConfig()
         {
-            string configPath = Path.Combine(Paths.ConfigPath, "CropOptimizer.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to CropOptimizer.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
+            return ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "CropOptimizer.cfg",
+                message => Log?.LogWarning(message)
+            );
         }
     }
 }
