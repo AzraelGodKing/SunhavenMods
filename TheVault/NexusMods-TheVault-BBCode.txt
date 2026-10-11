@@ -2,7 +2,7 @@
 
 Sun Haven BepInEx mod: per-character vault, encrypted saves, HUD, auto-deposit—with shops and in-game costs (keys, etc.) reading and spending vault balances via your bag when the game uses inventory checks.
 
-[quote][b]Your vault save:[/b] Normal updates are not meant to erase your vault. Per-character balances live in this mod's encrypted vault data; when the save format changes, maintainers intend to [b]migrate[/b] old data forward. If a release cannot keep compatibility, it will be called out loudly in the README, store descriptions, and changelog — with backup steps. See [b]SAVE_COMPATIBILITY.md[/b] in the mod package for the maintainer policy.[/quote]
+[quote][b]Your vault save:[/b] Normal updates are not meant to erase your vault. Per-character balances live in this mod's encrypted vault data; when the save format changes, maintainers intend to [b]migrate[/b] old data forward. If a release cannot keep compatibility, it will be called out loudly in the README, store descriptions, and changelog — with backup steps. See [b]maintainer-docs/ATOMIC_SAVE_POLICY.md[/b] in the repo for the maintainer policy.[/quote]
 
 [b]Ship both[/b] [b]TheVault.dll[/b] and [b]TheVault.Abstractions.dll[/b] together in [b]BepInEx/plugins/TheVault[/b] (or the same folder). Dependent mods may reference only the abstractions assembly.
 

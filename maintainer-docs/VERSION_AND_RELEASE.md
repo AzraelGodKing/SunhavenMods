@@ -25,10 +25,10 @@ Requires `ADMIN_PUSH_TOKEN` (or a branch policy that allows `GITHUB_TOKEN` pushe
 2. **Propagate the version everywhere** the maintainer script knows about (plugin source, Thunderstore manifest, readmes, etc.):
    - From the repo root on **Windows** (PowerShell), either:
      - **Bump and sync:**  
-       `.\scripts\pre-push-build.ps1 -Mod <modkey> -Bump patch`  
+       `.\scripts\version\pre-push-build.ps1 -Mod <modkey> -Bump patch`  
        (use `minor` or `major` when appropriate), **or**
      - **Sync only** (version already edited in `versions.json`):  
-       `.\scripts\pre-push-build.ps1 -Mod <modkey>`  
+       `.\scripts\version\pre-push-build.ps1 -Mod <modkey>`  
 
    Mod keys match the workflow picker: `senpaischest`, `havensbirthright`, `sunhavenmuseumutilitytracker`, `squirrelsbirthdayreminder`, `sunhaventodo`, `thevault`, `havendevtools`, `havensalmanac`, `fasterraces`, `trinketfortune`, `cropoptimizer`, `havensrespec`, `giftingassistant`, etc. Use `-All` for every mod (see script help).
 
@@ -76,7 +76,7 @@ Required matrix fields per row: `modKey`, `jsonKey`, `modDir`, `pluginFile`, `dl
 
 ## Automatic sync on merge (optional drift repair)
 
-The workflow [`.github/workflows/sync-mod-versions.yml`](../.github/workflows/sync-mod-versions.yml) runs on every push to `main`. It executes `.\scripts\pre-push-build.ps1 -All -SyncOnly` (no `dotnet build`), then `python3 scripts/version/verify-version-consistency.py`. If any tracked file was behind `docs/versions.json`, it commits and pushes with message `chore: sync mod versions from versions.json [skip ci]` so the job does not re-trigger in a loop.
+The workflow [`.github/workflows/sync-mod-versions.yml`](../.github/workflows/sync-mod-versions.yml) runs on every push to `main`. It executes `.\scripts\version\pre-push-build.ps1 -All -SyncOnly` (no `dotnet build`), then `python3 scripts/version/verify-version-consistency.py`. If any tracked file was behind `docs/versions.json`, it commits and pushes with message `chore: sync mod versions from versions.json [skip ci]` so the job does not re-trigger in a loop.
 
 **Source of truth remains `docs/versions.json`.** The workflow only copies those values into plugin sources and store metadata; it does not invent new semver bumps.
 

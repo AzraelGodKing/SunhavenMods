@@ -5,11 +5,11 @@ namespace TheVault
 {
     /// <summary>
     /// Flip <see cref="ThisReleaseMayBreakVaultSaves"/> to true only when shipping a build that cannot
-    /// migrate vault data forward, following <c>SAVE_COMPATIBILITY.md</c>.
+    /// migrate vault data forward, following <c>maintainer-docs/ATOMIC_SAVE_POLICY.md</c>.
     /// </summary>
     public static class VaultSaveCompatibility
     {
-        /// <summary>Must match the release process in SAVE_COMPATIBILITY.md before setting true.</summary>
+        /// <summary>Must match the release process in maintainer-docs/ATOMIC_SAVE_POLICY.md before setting true.</summary>
         public const bool ThisReleaseMayBreakVaultSaves = false;
 
         public static void WarnIfBreakingRelease(ManualLogSource log)
@@ -21,7 +21,7 @@ namespace TheVault
                 "================================================================================\n" +
                 "The Vault — VAULT SAVE COMPATIBILITY WARNING\n" +
                 "This release may NOT preserve your existing vault data. Do not continue unless\n" +
-                "you have backed up the paths listed in the mod README (SAVE_COMPATIBILITY.md).\n" +
+                "you have backed up the paths listed in the mod README (ATOMIC_SAVE_POLICY.md).\n" +
                 "================================================================================");
 
             try
