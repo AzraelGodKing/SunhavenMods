@@ -10,15 +10,12 @@ namespace TheVault.Patches
     /// </summary>
     public static class GameSavePatches
     {
-        public static int LastLoadedSlot { get; private set; } = -1;
-
         public static string LastLoadedCharacterName { get; private set; } = null;
 
         public static void ResetLastLoadedSlot()
         {
-            LastLoadedSlot = -1;
             LastLoadedCharacterName = null;
-            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedSlot and LastLoadedCharacterName");
+            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedCharacterName");
         }
 
         public static void OnLoadCharacterAny(object[] __args, MethodBase __originalMethod)
@@ -40,9 +37,6 @@ namespace TheVault.Patches
 
                 string sourceMethod = __originalMethod != null ? __originalMethod.Name : "LoadCharacter";
                 Plugin.Log?.LogDebug($"GameSave.{sourceMethod} invoked (slot={characterNumber})");
-
-                if (characterNumber >= 0)
-                    LastLoadedSlot = characterNumber;
 
                 if (GameSave.Instance?.Saves == null ||
                     characterNumber < 0 ||

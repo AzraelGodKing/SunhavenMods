@@ -601,24 +601,6 @@ namespace TheVault
             _staticVaultUI?.SetScale(s);
         }
 
-        /// <summary>
-        /// Reload config from disk and re-apply to UI and static state.
-        /// Call after the player edits the config file, or from a keybind.
-        /// </summary>
-        public void ReloadConfig()
-        {
-            try
-            {
-                ConfigFile.Reload();
-                ApplyConfigToState();
-                Log?.LogInfo("[The Vault] Config reloaded from file");
-            }
-            catch (Exception ex)
-            {
-                Log?.LogError($"[The Vault] Config reload failed: {ex.Message}");
-            }
-        }
-
         // --- Config getters/setters for in-game Settings UI (values persist to config file) ---
         public static KeyCode GetConfigToggleKey() => Instance?._toggleKey?.Value ?? KeyCode.V;
         public static void SetConfigToggleKey(KeyCode k) { if (Instance?._toggleKey != null) Instance._toggleKey.Value = k; }
@@ -915,8 +897,8 @@ namespace TheVault
                         typeof(SaveLoadPatches), "OnReturnToMenu");
                 }
 
-                // Patch item pickup for auto-deposit
-                PatchItemPickup(playerType);
+                // Patch inventory AddItem for auto-deposit (GetAmount/HasEnough/RemoveItem too)
+                PatchItemPickup();
 
                 // Block inventory clicks that pass through the IMGUI vault window (AZR-438).
                 VaultPointerGuard.Apply(_harmony);
@@ -960,36 +942,6 @@ namespace TheVault
 
                 _harmony.Patch(original, postfix: new HarmonyMethod(postfix));
                 Log.LogInfo($"Successfully patched {targetType.Name}.{methodName}");
-            }
-            catch (Exception ex)
-            {
-                Log.LogError($"Failed to patch {targetType.Name}.{methodName}: {ex.Message}");
-            }
-        }
-
-        private void PatchMethodPrefix(Type targetType, string methodName, Type patchType, string patchMethodName, Type[] parameters = null)
-        {
-            try
-            {
-                var original = parameters == null
-                    ? AccessTools.Method(targetType, methodName)
-                    : AccessTools.Method(targetType, methodName, parameters);
-
-                if (original == null)
-                {
-                    Log.LogWarning($"Could not find method {targetType.Name}.{methodName}. Available methods: {DescribeAvailableMethods(targetType)}");
-                    return;
-                }
-
-                var prefix = AccessTools.Method(patchType, patchMethodName);
-                if (prefix == null)
-                {
-                    Log.LogWarning($"Could not find patch method {patchType.Name}.{patchMethodName}");
-                    return;
-                }
-
-                _harmony.Patch(original, prefix: new HarmonyMethod(prefix));
-                Log.LogInfo($"Successfully patched {targetType.Name}.{methodName} (prefix)");
             }
             catch (Exception ex)
             {
@@ -1061,26 +1013,8 @@ namespace TheVault
             }
         }
 
-        private void PatchItemPickup(Type playerType)
+        private void PatchItemPickup()
         {
-            var pickupMethod = AccessTools.Method(playerType, "Pickup");
-            if (pickupMethod != null)
-            {
-                var prefix = AccessTools.Method(typeof(ItemPatches), "OnPlayerPickupPrefix");
-                var postfix = AccessTools.Method(typeof(ItemPatches), "OnPlayerPickup");
-                if (prefix != null)
-                {
-                    _harmony.Patch(pickupMethod,
-                        prefix: new HarmonyMethod(prefix),
-                        postfix: postfix != null ? new HarmonyMethod(postfix) : null);
-                    Log.LogInfo($"Patched {playerType.Name}.Pickup for auto-deposit");
-                }
-            }
-            else
-            {
-                Log.LogWarning("Could not find Pickup method on Player");
-            }
-
             var inventoryType = typeof(Inventory);
             var invMethods = inventoryType.GetMethods(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             var itemType = typeof(Item);

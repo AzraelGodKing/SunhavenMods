@@ -452,17 +452,6 @@ namespace TheVault.Patches
         }
 
         /// <summary>
-        /// PREFIX patch for Player.Pickup method.
-        /// Signature: Pickup(int item, int amount = 1, bool rollForExtra = false)
-        /// We always return true to let the original method run - the AddItem POSTFIX will handle auto-deposit.
-        /// This ensures the native notification system triggers.
-        /// </summary>
-        public static bool OnPlayerPickupPrefix(int item, int amount, bool rollForExtra)
-        {
-            return true; // Let original run; AddItem prefix handles auto-deposit
-        }
-
-        /// <summary>
         /// Postfix patch for Inventory.AddItem(int item, int amount, bool sendNotification).
         /// Parameter names must match the game method exactly for Harmony binding.
         /// </summary>
