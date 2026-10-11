@@ -46,9 +46,6 @@ namespace SenpaisChest
         /// </summary>
         private static string _gameplaySessionCharacter;
 
-        /// <summary>True after <see cref="OnApplicationQuit"/>.</summary>
-        private static bool _applicationQuitting;
-
         private Harmony _harmony;
         private SmartChestManager _manager;
         private SmartChestSaveSystem _saveSystem;
@@ -318,15 +315,6 @@ namespace SenpaisChest
                     Log.LogWarning("Could not find Wish.PlayerInput type for UICancel blocking");
                 }
 
-                // Chest.OnDisable → cleanup our data only when the chest is actually removed from the world
-                // (ChestManager.RemoveInventory is also called when the player opens a chest, so we must not use that)
-                var chestOnDisable = AccessTools.Method(typeof(Chest), "OnDisable");
-                if (chestOnDisable != null)
-                {
-                    _harmony.Patch(chestOnDisable, postfix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnChestOnDisable_Postfix))));
-                    Log.LogInfo("Patched Chest.OnDisable (cleanup when chest removed from world)");
-                }
-
                 // Chest Labels (labels above chests - enabled via config)
                 ApplyChestLabelPatches();
 
@@ -422,14 +410,6 @@ namespace SenpaisChest
                 _museumTodoIntegration?.Reset();
                 _staticManager?.SetCharacterName(characterName);
 
-                // Sun Haven may call InitializeAsOwner on every map load — do not reload from disk
-                // or we overwrite in-memory rules (same guard as OnSceneLoaded).
-                if (string.Equals(_gameplaySessionCharacter, characterName, StringComparison.Ordinal))
-                {
-                    Log?.LogDebug($"[SenpaisChest] Skip disk reload on InitializeAsOwner — '{characterName}' already active");
-                    return;
-                }
-
                 var data = _staticSaveSystem?.Load(characterName);
                 _staticManager?.LoadData(data);
                 _gameplaySessionCharacter = characterName;
@@ -463,32 +443,6 @@ namespace SenpaisChest
             catch (Exception ex)
             {
                 Log?.LogDebug($"[SenpaisChest] Could not schedule chest button: {ex.Message}");
-            }
-        }
-
-        /// <summary>
-        /// Chest.OnDisable fires when the player opens a UI, during area changes, and on pickup.
-        /// Sun Haven does not use SceneManager unload hooks we can rely on, so we never delete rules here —
-        /// only the UI "Remove Smart Chest" action (or clearing all rules) removes saved config.
-        /// </summary>
-        private static void OnChestOnDisable_Postfix(Chest __instance)
-        {
-            try
-            {
-                if (_applicationQuitting || !Application.isPlaying)
-                    return;
-                if (__instance == null)
-                    return;
-
-                var id = SmartChestManager.GetChestId(__instance);
-                if (string.IsNullOrEmpty(id))
-                    return;
-
-                Log?.LogDebug($"[SenpaisChest] OnDisable for chest {id} — rules kept (not treated as removal)");
-            }
-            catch (Exception ex)
-            {
-                Log?.LogError($"[SenpaisChest] OnChestOnDisable_Postfix: {ex.Message}");
             }
         }
 
@@ -550,9 +504,8 @@ namespace SenpaisChest
 
         private static bool OnChestEndInteract_Prefix(Chest __instance, int interactType)
         {
-            if (CurrentInteractingChest == __instance && _staticUI != null && _staticUI.IsVisible && !_staticUI.IsEmbedded)
+            if (CurrentInteractingChest == __instance && _staticUI != null && _staticUI.IsVisible)
             {
-                // Block the chest from closing only when the floating config window is open (not when embedded panel is shown)
                 return false;
             }
 
@@ -779,7 +732,6 @@ namespace SenpaisChest
 
         private void OnApplicationQuit()
         {
-            _applicationQuitting = true;
             Log?.LogInfo("Application quitting — saving data");
             _staticSaveSystem?.Save();
         }
