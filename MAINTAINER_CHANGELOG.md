@@ -11,6 +11,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 - **Shared config helper:** The Vault, Haven Dev Tools, Crop Optimizer, and Haven's Birthright now call `ConfigFileHelper.CreateNamedConfig` (same wrapper as Almanac / Gifting) instead of private copies that matched the helper. Dropped unused `AllowUnsafeBlocks` from TheVault, HavensAlmanac, HavensBirthright, and HavenDevTools csproj files (no `unsafe` in the repo).
 - **HavenDevTools leftover auth lock:** Startup log and ToggleKey config description no longer say the debug window requires authorization. Almanac `DevToolsDataProvider` always uses the authorized path; removed unreachable `almanac.provider.devtools.notAuthorized` locale keys. Deleted unused `Plugin.IsAuthorized`.
 - **Haven's Mirror look dispatch:** `ArgsHasFlag` ignored its flag-name arguments and returned `vows||shore||costume` for every call, so `ResolveActiveLook` treated any special-look arg as Vows. Initial-bust prefixes now pass the individual bools from `ReadLookFlagsFromArgs`. Collapsed the tautology in `ResolveActiveLook` (any parsed ForcedLook already returned that slot). No HavensMirror test project; full builds need game DLLs.
+- **Haven's Mirror leftover loops:** Deleted unused `GalleryReloadLoop.cs` and `GalleryFolderSyncLoop.cs`. They were never added as components; `MirrorPersistentRunner` already owns reload hotkey and folder sync.
 
 ## 2026-10-10
 
