@@ -40,7 +40,5 @@ namespace GiftingAssistant.Game
                 return 0;
             }
         }
-
-        public static bool HasItem(int itemId) => GetAmount(itemId) > 0;
     }
 }

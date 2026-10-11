@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-10-11
+
+- **Gifting Assistant dead-code cleanup:** Removed unused `Plugin.GetWindow`, `GiftGameData.FormatRelationshipHearts` / `GetMaxHeartsForPoints` (UI uses `RelationshipHeartRules.GetMaxHearts`), `GiftingAssistantAlmanacData.CountPendingByPriority` (Almanac counts from `GetSortedRosterEntries`), and `PlayerInventoryReader.HasItem`. Dropped unused `PersistentRunnerBase.cs` and `SceneHelpers.cs` Compile links from `GiftingAssistant.csproj` (still linked by Birthright, Crop Optimizer, and Haven's Mirror). No player-facing change; no version bump.
+
 ## 2026-10-10
 
 - **SharedUtilities `VaultCsvault3.cs` (AZR-243):** CSVAULT3 format kept free of Unity/BepInEx so `TheVault.Tests` links it directly. PBKDF2-HMAC-SHA256 is implemented in-file (tested against `Rfc2898DeriveBytes`) so it does not depend on Mono's SHA-256 PBKDF2 support. Derived keys are cached per character for the session, so only the first load or save pays the 100,000-iteration cost. `SharedCodeRevision` bumped to `2026.10.10`.

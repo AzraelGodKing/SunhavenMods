@@ -264,33 +264,6 @@ namespace GiftingAssistant.Game
             return points;
         }
 
-        /// <summary>
-        /// Heart bar string matching the game's RelationshipHUD tiers (5 points per heart).
-        /// </summary>
-        public static string FormatRelationshipHearts(float points)
-        {
-            int maxHearts = GetMaxHeartsForPoints(points);
-            int fullHearts = Mathf.Clamp(Mathf.FloorToInt(points / 5f), 0, maxHearts);
-            int emptyHearts = maxHearts - fullHearts;
-
-            var sb = new System.Text.StringBuilder(maxHearts);
-            for (int i = 0; i < fullHearts; i++)
-                sb.Append('\u2665');
-            for (int i = 0; i < emptyHearts; i++)
-                sb.Append('\u2661');
-            return sb.ToString();
-        }
-
-        /// <summary>Max heart slots for a relationship tier (mirrors Wish.RelationshipHUD).</summary>
-        public static int GetMaxHeartsForPoints(float points)
-        {
-            if (points >= 75f)
-                return 20;
-            if (points >= 50f)
-                return 15;
-            return 10;
-        }
-
         /// <summary>Marks the gifted-today cache stale (e.g. new in-game day).</summary>
         public static void InvalidateGiftedTodayCache()
         {
