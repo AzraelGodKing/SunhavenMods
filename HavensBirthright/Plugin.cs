@@ -6,7 +6,6 @@ using HarmonyLib;
 using SunhavenMods.Shared;
 using System;
 using System.Linq;
-using System.IO;
 using UnityEngine;
 
 namespace HavensBirthright
@@ -267,18 +266,11 @@ namespace HavensBirthright
 
         private static ConfigFile CreateNamedConfig()
         {
-            string configPath = Path.Combine(Paths.ConfigPath, "HavensBirthright.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to HavensBirthright.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
+            return ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "HavensBirthright.cfg",
+                message => Log?.LogWarning(message)
+            );
         }
 
         private void OnApplicationQuit()

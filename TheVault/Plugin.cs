@@ -10,7 +10,6 @@ using HarmonyLib;
 using SunhavenMods.Shared;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
@@ -231,18 +230,11 @@ namespace TheVault
 
         private static ConfigFile CreateNamedConfig()
         {
-            string configPath = Path.Combine(Paths.ConfigPath, "TheVault.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to TheVault.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
+            return ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "TheVault.cfg",
+                message => Log?.LogWarning(message)
+            );
         }
 
         /// <summary>
