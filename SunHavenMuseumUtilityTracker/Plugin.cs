@@ -232,9 +232,6 @@ namespace SunHavenMuseumUtilityTracker
             _trackerUI.SetToggleKey(_toggleKey.Value, _requireCtrl.Value);
             _staticTrackerUI = _trackerUI;
 
-            // Debug helpers (F10 toggles; not gated behind a config flag yet)
-            uiObject.AddComponent<DebugMode>();
-
             Logger.LogInfo("UI components created");
         }
 
@@ -371,7 +368,6 @@ namespace SunHavenMuseumUtilityTracker
         #region Public API
 
         public static DonationManager GetDonationManager() => _staticDonationManager;
-        public static MuseumTrackerUI GetTrackerUI() => _staticTrackerUI;
 
         public static void SaveData()
         {
@@ -443,7 +439,7 @@ namespace SunHavenMuseumUtilityTracker
             string currentScene = SceneManager.GetActiveScene().name;
             if (currentScene != _lastScene)
             {
-                Plugin.Log?.LogInfo($"[PersistentRunner] Scene changed: '{_lastScene}' -> '{currentScene}'");
+                Plugin.Log?.LogDebug($"[PersistentRunner] Scene changed: '{_lastScene}' -> '{currentScene}'");
                 _lastScene = currentScene;
             }
         }

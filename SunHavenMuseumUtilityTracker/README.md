@@ -61,11 +61,6 @@ Fishing (treasures), seasonal fish tanks, Nel’Vari fish tank, Withergate fish 
 | Expand / collapse bundle | Click the bundle header |
 | **Sync with Game** | Button in the tracker window |
 
-### Debug helpers (optional)
-
-- **F10** — toggles verbose discovery logging (progress-key inspection). Intended for troubleshooting.
-- **F11** — while debug logging is on, forces the same sync routine as the UI button.
-
 ---
 
 ## Installation
