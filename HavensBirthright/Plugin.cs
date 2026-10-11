@@ -50,9 +50,6 @@ namespace HavensBirthright
                 RacialConfig.Initialize(ConfigFile);
                 AbilityConfig.Initialize(ConfigFile);
 
-                // Cache static keybind for BirthrightRunner to access
-                StaticAbilityToggleKey = AbilityConfig.ActiveAbilityToggleKey.Value;
-
                 _checkForUpdates = ConfigFile.Bind(
                     "Updates",
                     "CheckForUpdates",
