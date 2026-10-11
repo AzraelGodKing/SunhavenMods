@@ -308,24 +308,6 @@ data = {
         "zh-TW": "\u4f9d\u9810\u8a08\u50f9\u503c\u6392\u540d\u7684\u4f5c\u7269:",
         "uk": "\u041d\u0430\u0439\u043a\u0440\u0430\u0449\u0456 \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u0438 \u0437\u0430 \u043f\u0440\u043e\u0433\u043d\u043e\u0437\u043e\u0432\u0430\u043d\u043e\u044e \u0432\u0430\u0440\u0442\u0456\u0441\u0442\u044e:"
     },
-    "almanac.provider.devtools.notAuthorized": {
-        "en": "Not Authorized",
-        "da": "Ikke autoriseret",
-        "de": "Nicht autorisiert",
-        "es": "No autorizado",
-        "fr": "Non autoris\u00e9",
-        "it": "Non autorizzato",
-        "ja": "\u672a\u8a8d\u8a3c",
-        "ko": "\ubbf8\uc778\uc99d",
-        "nl": "Niet geautoriseerd",
-        "pt": "N\u00e3o autorizado",
-        "pt-BR": "N\u00e3o autorizado",
-        "ru": "\u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043e",
-        "sv": "Ej auktoriserad",
-        "zh-CN": "\u672a\u6388\u6743",
-        "zh-TW": "\u672a\u6388\u6b0a",
-        "uk": "\u041d\u0435 \u0430\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043e"
-    },
     "almanac.provider.museum.percent": {
         "en": "{0:F1}% complete",
         "da": "{0:F1}% f\u00e6rdig",
