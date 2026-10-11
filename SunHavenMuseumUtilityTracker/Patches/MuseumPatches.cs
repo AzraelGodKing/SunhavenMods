@@ -478,15 +478,6 @@ namespace SunHavenMuseumUtilityTracker.Patches
                 Plugin.Log?.LogInfo($"  '{kvp.Key}' -> {kvp.Value} ({item?.Name ?? "unknown"})");
             }
         }
-
-        /// <summary>
-        /// Enable or disable debug logging.
-        /// </summary>
-        public static void SetDebugLogging(bool enabled)
-        {
-            _debugLogging = enabled;
-            Plugin.Log?.LogInfo($"[MuseumPatches] Debug logging: {enabled}");
-        }
     }
 
     /// <summary>

@@ -51,9 +51,6 @@ namespace SunHavenMuseumUtilityTracker.UI
         private Dictionary<string, int> _cachedGameDonationCounts = new Dictionary<string, int>();
         private Dictionary<string, bool> _cachedGameCompleteStatus = new Dictionary<string, bool>();
         private Coroutine _cacheRefreshCoroutine;
-#pragma warning disable CS0414 // Field is assigned but never used
-        private bool _isCacheRefreshing = false;
-#pragma warning restore CS0414
 
         // Styles
         private bool _stylesInitialized;
@@ -250,7 +247,6 @@ namespace SunHavenMuseumUtilityTracker.UI
         /// </summary>
         private IEnumerator RefreshGameProgressCacheCoroutine()
         {
-            _isCacheRefreshing = true;
             _cachedGameDonationCounts.Clear();
             _cachedGameCompleteStatus.Clear();
 
@@ -274,7 +270,6 @@ namespace SunHavenMuseumUtilityTracker.UI
                 }
             }
 
-            _isCacheRefreshing = false;
             _cacheRefreshCoroutine = null;
         }
 
@@ -288,7 +283,6 @@ namespace SunHavenMuseumUtilityTracker.UI
                 StopCoroutine(_cacheRefreshCoroutine);
                 _cacheRefreshCoroutine = null;
             }
-            _isCacheRefreshing = false;
 
             _cachedGameDonationCounts.Clear();
             _cachedGameCompleteStatus.Clear();

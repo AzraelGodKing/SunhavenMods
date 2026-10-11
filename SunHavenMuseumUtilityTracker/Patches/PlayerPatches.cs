@@ -19,7 +19,6 @@ namespace SunHavenMuseumUtilityTracker.Patches
         private const float SaveAndResetDedupSeconds = 1.5f;
 
         public static bool IsDataLoaded => _isDataLoaded;
-        public static string LoadedCharacterName => _loadedCharacterName;
 
         /// <summary>
         /// Called when player is initialized in-game.

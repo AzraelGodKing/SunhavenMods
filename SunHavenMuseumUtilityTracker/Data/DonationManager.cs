@@ -205,23 +205,6 @@ namespace SunHavenMuseumUtilityTracker.Data
         }
 
         /// <summary>
-        /// Checks if the entire museum is complete.
-        /// </summary>
-        public bool IsMuseumComplete()
-        {
-            return MuseumContent.GetAllSections().All(IsSectionComplete);
-        }
-
-        /// <summary>
-        /// Gets completion percentage for a bundle.
-        /// </summary>
-        public float GetBundleCompletionPercent(MuseumBundle bundle)
-        {
-            var stats = GetBundleStats(bundle);
-            return stats.total > 0 ? (float)stats.donated / stats.total * 100f : 0f;
-        }
-
-        /// <summary>
         /// Gets completion percentage for a section.
         /// </summary>
         public float GetSectionCompletionPercent(MuseumSection section)

@@ -50,8 +50,6 @@ Other mods can read donation state via [b]Plugin.GetDonationManager()[/b] when i
 [tr][td][b]Sync with Game[/b][/td][td]Button in tracker window[/td][/tr]
 [/table]
 
-[b]Debug (optional):[/b] [b]F10[/b] — verbose discovery logging · [b]F11[/b] — with debug on, forces same sync as UI button.
-
 [line]
 
 [size=4][b]Requirements[/b][/size]
