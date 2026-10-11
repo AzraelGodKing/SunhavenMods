@@ -60,11 +60,7 @@ namespace HavensMirror.Look
         public static LookSlot ResolveActiveLook(bool vows, bool shore, bool costume)
         {
             if (TryParseForced(out LookSlot forced))
-            {
-                if (forced == LookSlot.Vows || forced == LookSlot.Shore || forced == LookSlot.Costume)
-                    return forced;
                 return forced;
-            }
 
             if (vows) return LookSlot.Vows;
             if (shore) return LookSlot.Shore;
