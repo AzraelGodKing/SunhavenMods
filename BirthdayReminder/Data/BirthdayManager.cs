@@ -241,7 +241,7 @@ namespace BirthdayReminder.Data
                 foreach (var npc in npcBirthdays)
                 {
                     string rawNpcName = npc.NPCName ?? "";
-                    string displayNpcName = NormalizeNpcName(rawNpcName);
+                    string displayNpcName = GiftPatches.NormalizeNpcName(rawNpcName);
                     if (string.IsNullOrEmpty(displayNpcName))
                         continue;
 
@@ -335,7 +335,7 @@ namespace BirthdayReminder.Data
         public void MarkGifted(string npcName)
         {
             if (_giftTracking == null) return;
-            npcName = NormalizeNpcName(npcName);
+            npcName = GiftPatches.NormalizeNpcName(npcName);
             if (string.IsNullOrEmpty(npcName)) return;
 
             _giftTracking.MarkGifted(npcName);
@@ -354,7 +354,7 @@ namespace BirthdayReminder.Data
             if (giftedItem == null || _favoriteGiftStore == null || _todaysBirthdays == null)
                 return;
 
-            string normalizedName = NormalizeNpcName(npcName);
+            string normalizedName = GiftPatches.NormalizeNpcName(npcName);
             if (string.IsNullOrEmpty(normalizedName))
                 return;
 
@@ -376,26 +376,6 @@ namespace BirthdayReminder.Data
             Plugin.Log?.LogInfo($"[BirthdayManager] Recorded favorite gift for {normalizedName}: {giftedName}");
         }
 
-        private static string NormalizeNpcName(string npcName)
-        {
-            if (string.IsNullOrWhiteSpace(npcName))
-                return "";
-
-            var parts = npcName
-                .Split(new[] { '+' }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(p => p.Trim())
-                .Where(p => !string.IsNullOrEmpty(p))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-
-            if (parts.Count == 0)
-                return npcName.Trim();
-            if (parts.Count == 1)
-                return parts[0];
-
-            return string.Join("+", parts);
-        }
-
         /// <summary>
         /// Finds the best-matching known NPC name for a given raw name using
         /// case-insensitive comparison and Levenshtein distance as a fallback.
@@ -407,7 +387,7 @@ namespace BirthdayReminder.Data
         {
             if (string.IsNullOrWhiteSpace(rawName)) return rawName;
 
-            var normalized = NormalizeNpcName(rawName);
+            var normalized = GiftPatches.NormalizeNpcName(rawName);
             // Exact case-insensitive match first
             var exact = knownNames.FirstOrDefault(k =>
                 string.Equals(k, normalized, StringComparison.OrdinalIgnoreCase));
@@ -507,29 +487,6 @@ namespace BirthdayReminder.Data
             _todaysBirthdays.Clear();
             _giftTracking = null;
             OnBirthdaysUpdated?.Invoke();
-        }
-
-        /// <summary>
-        /// Debug: Log current state
-        /// </summary>
-        public void DebugLogState()
-        {
-            Plugin.Log?.LogInfo($"[DEBUG] === Birthday Manager State ===");
-            Plugin.Log?.LogInfo($"[DEBUG] Current Character: {_currentCharacter ?? "None"}");
-            Plugin.Log?.LogInfo($"[DEBUG] Birthdays Today: {_todaysBirthdays.Count}");
-
-            foreach (var birthday in _todaysBirthdays)
-            {
-                Plugin.Log?.LogInfo($"[DEBUG]   - {birthday.NPCName} (Gifted: {birthday.HasBeenGifted})");
-            }
-
-            if (_giftTracking != null)
-            {
-                Plugin.Log?.LogInfo($"[DEBUG] Gift Tracking: {_giftTracking.Season} {_giftTracking.Day}, Year {_giftTracking.Year}");
-                Plugin.Log?.LogInfo($"[DEBUG] Gifted NPCs: {string.Join(", ", _giftTracking.GiftedNPCs)}");
-            }
-
-            Plugin.Log?.LogInfo($"[DEBUG] === End State ===");
         }
 
         /// <summary>
@@ -1062,57 +1019,6 @@ namespace BirthdayReminder.Data
         }
 
         /// <summary>
-        /// Try to get NPC gift preferences
-        /// </summary>
-        private void GetNPCGiftPreferences(object npc, Type npcType, NPCBirthday birthday)
-        {
-            try
-            {
-                // Look for loved/liked gifts properties
-                var lovedGiftsProp = AccessTools.Property(npcType, "LovedGifts")
-                                     ?? AccessTools.Property(npcType, "lovedGifts");
-                var likedGiftsProp = AccessTools.Property(npcType, "LikedGifts")
-                                     ?? AccessTools.Property(npcType, "likedGifts");
-
-                if (lovedGiftsProp != null)
-                {
-                    var lovedGifts = lovedGiftsProp.GetValue(npc) as System.Collections.IEnumerable;
-                    if (lovedGifts != null)
-                    {
-                        foreach (var gift in lovedGifts)
-                        {
-                            string giftName = GetItemName(gift);
-                            if (!string.IsNullOrEmpty(giftName))
-                            {
-                                birthday.LovedGifts.Add(giftName);
-                            }
-                        }
-                    }
-                }
-
-                if (likedGiftsProp != null)
-                {
-                    var likedGifts = likedGiftsProp.GetValue(npc) as System.Collections.IEnumerable;
-                    if (likedGifts != null)
-                    {
-                        foreach (var gift in likedGifts)
-                        {
-                            string giftName = GetItemName(gift);
-                            if (!string.IsNullOrEmpty(giftName))
-                            {
-                                birthday.LikedGifts.Add(giftName);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogWarning($"[BirthdayManager] Error getting gift preferences: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Get item name from item object or ID
         /// </summary>
         private string GetItemName(object item)
@@ -1133,28 +1039,6 @@ namespace BirthdayReminder.Data
             var itemNameProp = AccessTools.Property(item.GetType(), "name")
                                ?? AccessTools.Property(item.GetType(), "Name");
             return itemNameProp?.GetValue(item)?.ToString();
-        }
-
-        /// <summary>
-        /// Build a gift hint string for display
-        /// </summary>
-        private string BuildGiftHint(NPCBirthday npc)
-        {
-            var hints = new List<string>();
-
-            if (npc.LovedGifts.Count > 0)
-            {
-                var loved = string.Join(", ", npc.LovedGifts.Take(3));
-                hints.Add($"Loves: {loved}");
-            }
-
-            if (npc.LikedGifts.Count > 0 && hints.Count == 0)
-            {
-                var liked = string.Join(", ", npc.LikedGifts.Take(3));
-                hints.Add($"Likes: {liked}");
-            }
-
-            return hints.Count > 0 ? hints[0] : "";
         }
     }
 }
