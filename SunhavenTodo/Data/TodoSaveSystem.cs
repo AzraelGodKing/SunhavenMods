@@ -97,26 +97,6 @@ namespace SunhavenTodo.Data
             return data;
         }
 
-        public void Delete(string characterName)
-        {
-            if (string.IsNullOrEmpty(characterName))
-                return;
-
-            var filePath = GetSaveFilePath(characterName);
-            if (File.Exists(filePath))
-            {
-                try
-                {
-                    File.Delete(filePath);
-                    Plugin.Log?.LogInfo($"Deleted todo list for {characterName}");
-                }
-                catch (Exception ex)
-                {
-                    Plugin.Log?.LogError($"Failed to delete todo list: {ex.Message}");
-                }
-            }
-        }
-
         #region JSON Serialization (manual — replaces unreliable JsonUtility)
         // Serialization logic lives in TodoJson.cs (no BepInEx dependency) so it
         // can be linked into the unit-test project without stubs.

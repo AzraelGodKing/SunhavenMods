@@ -512,26 +512,9 @@ namespace SunhavenTodo
             _staticTodoUI?.Toggle();
         }
 
-        public static void ShowUI()
-        {
-            EnsureUIComponentsExist();
-            _staticTodoUI?.Show();
-        }
-
-        public static void HideUI()
-        {
-            _staticTodoUI?.Hide();
-        }
-
         public static TodoManager GetTodoManager() => _staticTodoManager;
         public static TodoUI GetTodoUI() => _staticTodoUI;
         public static TodoHUD GetTodoHUD() => _staticTodoHUD;
-
-        /// <summary>True when todo data is loaded for the active character.</summary>
-        public static bool IsCharacterDataLoaded =>
-            _staticTodoManager != null &&
-            !string.IsNullOrEmpty(_staticTodoManager.CurrentCharacter) &&
-            _staticTodoManager.GetData() != null;
 
         public static void ToggleHUD()
         {

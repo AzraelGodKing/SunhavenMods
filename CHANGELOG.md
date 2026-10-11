@@ -6,6 +6,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Sunhaven Todo** — unused API cleanup
+- Removed unused `ShowUI` / `HideUI` / `IsCharacterDataLoaded`, `ClearData`, the string `AddTodo` overload, `GetTodosByPriority`, `SearchTodos`, and `TodoSaveSystem.Delete`. Suite mods already go through `TodoSoftClient` (`GetTodoManager` + `AddTodo(TodoItem)`).
+
 **The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
 - **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
 - **Fix:** The save key no longer depends on whether Steam finished loading before the mod started, so a vault saved in one session is not unreadable in the next.
