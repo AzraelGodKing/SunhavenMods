@@ -132,13 +132,13 @@
     "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
   },
   "com.azraelgodking.havensmirror": {
-    "version": "1.0.1",
+    "version": "1.0.2",
     "name": "Haven's Mirror",
     "description": "Custom player dialogue bust portraits from a PNG gallery folder, with optional NPC look override and hotkey reload",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/538",
     "nexus_file_group_id": "8035296",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensMirror/",
     "thunderstoreName": "HavensMirror",
-    "changelog": "Update checks now share one version-list download per game launch across all installed mods, and a version that can't be compared reports a failed check instead of \"up to date\"."
+    "changelog": "Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation."
   }
 }
