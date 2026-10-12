@@ -139,7 +139,6 @@ namespace HavensBirthright
             PlayerPatches.ResetRaceDetection();
             Patches.CombatPatches.ResetNineLives();
             GameApis.ResetAllApiCaches();
-            AbilityPatches.ResetReflectionCache();
 
             var runner = Plugin.GetRunner();
             runner?.ResetRunnerTimersOnly();
