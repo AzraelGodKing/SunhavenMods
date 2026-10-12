@@ -668,7 +668,8 @@ namespace BirthdayReminder
                 else
                 {
                     Plugin.Log?.LogInfo("[PlayerPatches] No birthdays found today - HUD will not show automatically");
-                    Plugin.Log?.LogInfo("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
+                    if (Plugin.StaticDebugMode)
+                        Plugin.Log?.LogDebug("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
                 }
             }
             catch (Exception ex)
