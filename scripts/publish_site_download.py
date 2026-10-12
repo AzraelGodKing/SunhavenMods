@@ -12,11 +12,13 @@ import argparse
 import hashlib
 import json
 import os
+import random
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -33,6 +35,8 @@ def slug_from_mod_dir(mod_dir: str) -> str:
 
 BUCKET = "azraels-mods"
 MANIFEST_KEY = "downloads.json"
+MANIFEST_ATTEMPTS = 5
+MISSING_KEY = "The specified key does not exist"
 
 
 def file_name(slug: str, version: str) -> str:
@@ -55,9 +59,65 @@ def record_upload(manifest: dict | None, entry: dict) -> dict:
     return {"updatedAt": entry["uploadedAt"], "files": files}
 
 
+def is_recorded(manifest: dict | None, entry: dict) -> bool:
+    files = (manifest or {}).get("files") or {}
+    current = files.get(f"{entry['game']}/{entry['slug']}") or {}
+    return current.get("version") == entry["version"] and current.get("sha256") == entry["sha256"]
+
+
 def wrangler(args: list[str]) -> subprocess.CompletedProcess[str]:
     command = ["npx", "--yes", "wrangler@4", "r2", "object", *args]
     return subprocess.run(command, check=False, text=True, capture_output=True)
+
+
+def read_manifest(path: Path, run=wrangler) -> dict | None:
+    """The bucket's downloads.json, an empty one if it does not exist yet, or None if it could not be read."""
+    path.unlink(missing_ok=True)
+    got = run(["get", f"{BUCKET}/{MANIFEST_KEY}", "--file", str(path), "--remote"])
+    if got.returncode != 0:
+        if MISSING_KEY in (got.stdout or "") + (got.stderr or ""):
+            return {"updatedAt": None, "files": {}}
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
+def publish_manifest(root: Path, entry: dict, run=wrangler, sleep=time.sleep) -> bool:
+    """Add this release to downloads.json and confirm it is still there afterwards.
+
+    Releases that run at the same time each rewrite the whole file, so a parallel
+    job can drop this entry. Re-read after a pause and write again until it stays.
+    """
+    path = root / "downloads.json"
+    sleep(random.uniform(0, 10))
+    for attempt in range(1, MANIFEST_ATTEMPTS + 1):
+        manifest = read_manifest(path, run)
+        if manifest is None:
+            print(f"Could not read {MANIFEST_KEY} (attempt {attempt}); it was left as it is.", file=sys.stderr)
+        elif is_recorded(manifest, entry):
+            return True
+        else:
+            path.write_text(json.dumps(record_upload(manifest, entry), indent=2) + "\n", encoding="utf-8")
+            put = run(
+                [
+                    "put",
+                    f"{BUCKET}/{MANIFEST_KEY}",
+                    "--file",
+                    str(path),
+                    "--remote",
+                    "--content-type",
+                    "application/json; charset=utf-8",
+                    "--cache-control",
+                    "public, max-age=60",
+                ]
+            )
+            if put.returncode != 0:
+                detail = ((put.stdout or "") + "\n" + (put.stderr or "")).strip()
+                print(detail or f"wrangler failed ({put.returncode})", file=sys.stderr)
+        sleep(random.uniform(5, 15))
+    return is_recorded(read_manifest(path, run), entry)
 
 
 def main() -> int:
@@ -101,28 +161,16 @@ def main() -> int:
         print("npx is required to upload with wrangler", file=sys.stderr)
         return 1
 
+    entry = {
+        "game": args.game,
+        "slug": slug,
+        "version": args.version,
+        "sha256": sha256,
+        "bytes": len(data),
+        "uploadedAt": uploaded_at,
+    }
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        manifest_path = root / "downloads.json"
-        got = wrangler(["get", f"{BUCKET}/{MANIFEST_KEY}", "--file", str(manifest_path), "--remote"])
-        manifest: dict = {"updatedAt": None, "files": {}}
-        if got.returncode == 0 and manifest_path.is_file():
-            try:
-                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError:
-                manifest = {"updatedAt": None, "files": {}}
-        nxt = record_upload(
-            manifest,
-            {
-                "game": args.game,
-                "slug": slug,
-                "version": args.version,
-                "sha256": sha256,
-                "bytes": len(data),
-                "uploadedAt": uploaded_at,
-            },
-        )
-        manifest_path.write_text(json.dumps(nxt, indent=2) + "\n", encoding="utf-8")
         checksum_path = root / "file.sha256"
         checksum_path.write_text(f"{sha256}  {file_name(slug, args.version)}\n", encoding="utf-8")
 
@@ -137,17 +185,6 @@ def main() -> int:
                 "--content-type",
                 "text/plain; charset=utf-8",
             ],
-            [
-                "put",
-                f"{BUCKET}/{MANIFEST_KEY}",
-                "--file",
-                str(manifest_path),
-                "--remote",
-                "--content-type",
-                "application/json; charset=utf-8",
-                "--cache-control",
-                "public, max-age=60",
-            ],
         ]
         for item in uploads:
             result = wrangler(item)
@@ -155,6 +192,13 @@ def main() -> int:
                 detail = (result.stdout + "\n" + result.stderr).strip()
                 print(detail or f"wrangler failed ({result.returncode})", file=sys.stderr)
                 return result.returncode or 1
+        if not publish_manifest(root, entry):
+            print(
+                f"::warning::{key} was uploaded but {MANIFEST_KEY} does not record it. "
+                "The website still finds the zip when mod.json names this version.",
+                file=sys.stderr,
+            )
+            return 0
     print(f"recorded {args.game}/{slug} {args.version}")
     return 0
 
