@@ -38,8 +38,6 @@ namespace HavensAlmanac.Integration
 
         public void DrawDashboardSection()
         {
-            string status = ModLocalization.T("almanac.provider.devtools.authorized");
-            GUILayout.Label(ModLocalization.T("almanac.provider.devtools.status", status));
             if (!string.IsNullOrEmpty(_playerName))
                 GUILayout.Label(ModLocalization.T("almanac.provider.devtools.player", _playerName));
         }

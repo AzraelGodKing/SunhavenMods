@@ -42,7 +42,7 @@ up so you don't forget today's tasks, birthdays, or museum windows.
 | Senpai's Chest | Configured smart chest count |
 | The Vault | Stored currency types |
 | Haven's Birthright | Current race and active racial bonuses |
-| Haven Dev Tools | Authorization status + player name |
+| Haven Dev Tools | Player name |
 | Crop Optimizer | Live crop forecast summary |
 | Gifting Assistant | Daily gift roster progress, pending NPCs, and priority breakdown |
 
