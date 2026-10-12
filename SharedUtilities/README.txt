@@ -9,7 +9,7 @@ FILES
 - PersistentRunnerBase.cs : Base class for MonoBehaviours that survive scene loads
 - SceneRootSurvivor.cs    : Optional Harmony postfix on Scene.GetRootGameObjects so registered DontDestroyOnLoad runners are omitted from unload lists (no third-party Keep Alive mod)
 - SceneHelpers.cs         : Scene detection utilities (menu vs game detection)
-- GUIStyleHelper.cs       : GUIStyle and Texture2D creation utilities
+- GUIStyleHelper.cs       : Cached solid Texture2D helpers
 - ReflectionHelper.cs     : Common reflection patterns with Harmony integration
 - TextInputFocusGuard.cs  : Shared “player is typing in chat/console/UI text field” detection so mod hotkeys can defer (CheatEnabler / Quantum Console friendly). Throttled (~0.25s shared cache), reflection cached after first lookup, no per-frame GetComponents. Link UnityEngine.UI and UnityEngine.IMGUIModule; uses 0Harmony for type resolution.
 
@@ -80,14 +80,8 @@ USAGE EXAMPLES
        // Safe to access Player.Instance
    }
 
-   if (SceneHelpers.IsMainMenu())
-   {
-       // Reset state for new game
-   }
+3. GUIStyleHelper - Cache a solid texture:
 
-3. GUIStyleHelper - Create cached styles:
-
-   private GUIStyle _windowStyle;
    private Texture2D _windowBg;
    private bool _stylesInit = false;
 
@@ -95,8 +89,7 @@ USAGE EXAMPLES
    {
        if (_stylesInit) return;
 
-       _windowBg = GUIStyleHelper.MakeSolidTexture(GUIStyleHelper.SunHavenColors.Parchment);
-       _windowStyle = GUIStyleHelper.CreateWindowStyle(_windowBg);
+       _windowBg = GUIStyleHelper.MakeSolidTexture(new Color(0.96f, 0.93f, 0.85f));
 
        _stylesInit = true;
    }

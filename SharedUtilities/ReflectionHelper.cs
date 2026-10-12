@@ -322,39 +322,6 @@ namespace SunhavenMods.Shared
         }
 
         /// <summary>
-        /// Gets all fields of a type (including inherited private fields).
-        /// </summary>
-        public static FieldInfo[] GetAllFields(Type type)
-        {
-            if (type == null)
-                return Array.Empty<FieldInfo>();
-
-            return type.GetFields(AllBindingFlags)
-                .Concat(type.BaseType != null && type.BaseType != typeof(object)
-                    ? GetAllFields(type.BaseType)
-                    : Enumerable.Empty<FieldInfo>())
-                .Distinct()
-                .ToArray();
-        }
-
-        /// <summary>
-        /// Gets all properties of a type (including inherited).
-        /// </summary>
-        public static PropertyInfo[] GetAllProperties(Type type)
-        {
-            if (type == null)
-                return Array.Empty<PropertyInfo>();
-
-            return type.GetProperties(AllBindingFlags)
-                .Concat(type.BaseType != null && type.BaseType != typeof(object)
-                    ? GetAllProperties(type.BaseType)
-                    : Enumerable.Empty<PropertyInfo>())
-                .GroupBy(p => p.Name)
-                .Select(g => g.First())
-                .ToArray();
-        }
-
-        /// <summary>
         /// Safely tries to get a value via reflection, returning default on failure.
         /// </summary>
         public static T TryGetValue<T>(object instance, string memberName, T defaultValue = default)

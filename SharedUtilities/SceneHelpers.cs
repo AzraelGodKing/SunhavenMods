@@ -70,12 +70,5 @@ namespace SunhavenMods.Shared
             return SceneManager.GetActiveScene().name;
         }
 
-        /// <summary>
-        /// Checks if the current scene is the main menu specifically.
-        /// </summary>
-        public static bool IsMainMenu()
-        {
-            return SceneManager.GetActiveScene().name == "MainMenu";
-        }
     }
 }
