@@ -81,7 +81,6 @@
 
   <ItemGroup>
     <Compile Include="..\SharedUtilities\CharacterSaveStore.cs" Link="Shared\CharacterSaveStore.cs" />
-    <Compile Include="..\SharedUtilities\ModHealthAggregator.cs" Link="Shared\ModHealthAggregator.cs" />
     <Compile Include="..\SharedUtilities\VersionChecker.cs" Link="Shared\VersionChecker.cs" />
     <Compile Include="..\SharedUtilities\SceneRootSurvivor.cs" Link="Shared\SceneRootSurvivor.cs" />
     <Compile Include="..\SharedUtilities\OvernightHookUtility.cs" Link="Shared\OvernightHookUtility.cs" />

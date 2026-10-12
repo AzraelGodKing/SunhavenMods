@@ -10,7 +10,6 @@ using SunhavenMods.Shared;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,8 +62,11 @@ namespace SenpaisChest
         {
             Instance = this;
             Log = Logger;
-            ConfigFile = CreateNamedConfig();
-            SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
+            ConfigFile = ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "SenpaisChest.cfg",
+                message => Log?.LogWarning(message));
+            ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
 
             Log.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}");
 
@@ -146,22 +148,6 @@ namespace SenpaisChest
             _updateRunner = _persistentRunner.AddComponent<SmartChestPersistentRunner>();
 
             Log.LogInfo("Created hidden PersistentRunner");
-        }
-
-        private static ConfigFile CreateNamedConfig()
-        {
-            string configPath = Path.Combine(Paths.ConfigPath, "SenpaisChest.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to SenpaisChest.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
         }
 
         public static void EnsureUIComponentsExist()
@@ -437,7 +423,7 @@ namespace SenpaisChest
                     _pendingChestPanel = chestUi;
                     _pendingChest = __instance;
                     _pendingChestButtonFrames = 3; // Wait 3 frames for UI to be fully initialized
-                    Log?.LogInfo($"[SenpaisChest] Scheduled embedded panel from Chest.Interact (will add in 3 frames) - UI active: {chestUi.activeInHierarchy}");
+                    Log?.LogDebug($"[SenpaisChest] Scheduled embedded panel from Chest.Interact (will add in 3 frames) - UI active: {chestUi.activeInHierarchy}");
                 }
             }
             catch (Exception ex)
@@ -531,7 +517,7 @@ namespace SenpaisChest
                 _pendingChestPanel = ui;
                 _pendingChest = chest;
                 _pendingChestButtonFrames = 3; // add panel after 3 frames so ChestUI.Start and layout are fully ready
-                Log?.LogInfo($"[SenpaisChest] Scheduled embedded panel (will add in 3 frames) - UI active: {ui.activeInHierarchy}");
+                Log?.LogDebug($"[SenpaisChest] Scheduled embedded panel (will add in 3 frames) - UI active: {ui.activeInHierarchy}");
             }
             catch (Exception ex)
             {
@@ -553,11 +539,11 @@ namespace SenpaisChest
             var panel = _pendingChestPanel;
             var c = _pendingChest;
             
-            Log?.LogInfo($"[SenpaisChest] Processing pending panel: panel={panel != null}, active={panel?.activeInHierarchy}, chest={c != null}");
+            Log?.LogDebug($"[SenpaisChest] Processing pending panel: panel={panel != null}, active={panel?.activeInHierarchy}, chest={c != null}");
             
             if (panel == null || !panel.activeInHierarchy)
             {
-                Log?.LogInfo($"[SenpaisChest] Skip add panel: panel null or inactive (panel={panel != null}, active={panel?.activeInHierarchy})");
+                Log?.LogDebug($"[SenpaisChest] Skip add panel: panel null or inactive (panel={panel != null}, active={panel?.activeInHierarchy})");
                 _pendingChestPanel = null;
                 _pendingChest = null;
                 return;
@@ -565,7 +551,7 @@ namespace SenpaisChest
 
             // Verify chest UI components exist
             var canvas = panel.GetComponentInParent<Canvas>();
-            Log?.LogInfo($"[SenpaisChest] Chest UI state - Canvas: {canvas != null}, Canvas active: {canvas?.gameObject.activeInHierarchy}, RenderMode: {canvas?.renderMode}");
+            Log?.LogDebug($"[SenpaisChest] Chest UI state - Canvas: {canvas != null}, Canvas active: {canvas?.gameObject.activeInHierarchy}, RenderMode: {canvas?.renderMode}");
 
             try
             {
@@ -599,7 +585,7 @@ namespace SenpaisChest
             var existingPanel = chestUiRoot.transform.Find(SenpaisChestConfigPanelName);
             if (existingPanel != null)
             {
-                Log?.LogInfo($"[SenpaisChest] Panel already exists, reusing - active: {existingPanel.gameObject.activeInHierarchy}");
+                Log?.LogDebug($"[SenpaisChest] Panel already exists, reusing - active: {existingPanel.gameObject.activeInHierarchy}");
                 var ui = GetUI();
                 if (ui != null)
                 {
@@ -637,7 +623,7 @@ namespace SenpaisChest
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = new Vector2(notePanelWidth, notePanelHeight);
                 
-                Log?.LogInfo($"[SenpaisChest] Panel RectTransform - anchorMin={rt.anchorMin}, anchorMax={rt.anchorMax}, sizeDelta={rt.sizeDelta}, rect={rt.rect}");
+                Log?.LogDebug($"[SenpaisChest] Panel RectTransform - anchorMin={rt.anchorMin}, anchorMax={rt.anchorMax}, sizeDelta={rt.sizeDelta}, rect={rt.rect}");
 
                 // Ensure the panel doesn't block raycasts (so it doesn't interfere with chest UI interaction)
                 var canvasGroup = panelGo.AddComponent<CanvasGroup>();
@@ -663,7 +649,7 @@ namespace SenpaisChest
                 if (ui != null)
                 {
                     ui.ShowNoteForChest(chest, panelGo);
-                    Log?.LogInfo($"[SenpaisChest] Added note panel (Press F9 to configure) - chestUiRoot active: {chestUiRoot.activeInHierarchy}, panel active: {panelGo.activeInHierarchy}, rect: {rt.rect}");
+                    Log?.LogDebug($"[SenpaisChest] Added note panel (Press F9 to configure) - chestUiRoot active: {chestUiRoot.activeInHierarchy}, panel active: {panelGo.activeInHierarchy}, rect: {rt.rect}");
                 }
                 else
                 {
