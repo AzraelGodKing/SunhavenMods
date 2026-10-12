@@ -6,6 +6,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ## 2026-10-12
 
+- **SMUT leftover dead code:** Removed unused museum-progress discovery (`DiscoverProgressKeyPatterns`, mapping dictionaries, `LogAllMappings`, no-op `ResetReflectionCache`, `IsGameProgressAvailable`), write-only `LastLoadedSlot`, identity `GetProgressKeyForBundle`, empty `ApplyResolvedAquariumFishIfNeeded`, unused `MarkDonatedByGameId` and `DonationData` `MuseumItem` overloads, and `PersistentRunner.CheckSceneChange`. Config creation now uses `ConfigFileHelper.CreateNamedConfig`. No player-visible change; no version bump.
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
 
 ## 2026-10-11

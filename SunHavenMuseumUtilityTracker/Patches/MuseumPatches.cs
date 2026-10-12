@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using SunHavenMuseumUtilityTracker.Data;
@@ -8,23 +7,12 @@ using SunHavenMuseumUtilityTracker.Data;
 namespace SunHavenMuseumUtilityTracker.Patches
 {
     /// <summary>
-    /// Debug utilities for museum progress inspection.
-    /// Note: Automatic tracking is not possible because Sun Haven only tracks
-    /// bundle completion, not individual item donations. Use manual tracking instead.
+    /// Reads museum bundle completion from GameSave world progress and syncs the tracker.
+    /// The game only stores bundle completion; individual donations are tracked manually
+    /// or via HungryMonster patches.
     /// </summary>
     public static class MuseumPatches
     {
-        // Maps progress key names to our item IDs (populated from game data)
-        private static Dictionary<string, string> _progressKeyToItemId = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-        // Maps game item IDs to progress keys (reverse lookup)
-        private static Dictionary<int, string> _gameIdToProgressKey = new Dictionary<int, string>();
-
-        private static bool _gameDataDiscovered = false;
-
-        // Log all progress key calls for debugging
-        private static bool _debugLogging = true;
-
         // GameSave progress access (reflection only — avoids compile-time Sirenix dependency from GameSave)
         private static Type _gameSaveRuntimeType;
         private static Func<object> _gameSaveInstanceGetter;
@@ -33,178 +21,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
         private static Func<object, string, bool> _getProgressBoolWorld;
 
         /// <summary>
-        /// Discover the actual progress key patterns used by the game.
-        /// Accesses MuseumCurator's static lists at runtime.
-        /// Called from debug mode for inspection purposes.
-        /// </summary>
-        public static void DiscoverProgressKeyPatterns()
-        {
-            if (_gameDataDiscovered) return;
-            _gameDataDiscovered = true;
-
-            Plugin.Log?.LogInfo("[DISCOVER] ======= Starting discovery of game progress key patterns =======");
-
-            try
-            {
-                // Find MuseumCurator type
-                Type curatorType = null;
-
-                Plugin.Log?.LogInfo("[DISCOVER] Searching for MuseumCurator type in all assemblies...");
-                int assemblyCount = 0;
-
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    assemblyCount++;
-                    try
-                    {
-                        curatorType = assembly.GetType("MuseumCurator");
-                        if (curatorType == null)
-                            curatorType = assembly.GetType("Wish.MuseumCurator");
-
-                        if (curatorType != null)
-                        {
-                            Plugin.Log?.LogInfo($"[DISCOVER] FOUND MuseumCurator in assembly: {assembly.GetName().Name}");
-                            Plugin.Log?.LogInfo($"[DISCOVER] Full type name: {curatorType.FullName}");
-                            break;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Plugin.Log?.LogDebug($"[MuseumPatches] Skipping assembly for MuseumCurator search: {ex.Message}");
-                    }
-                }
-
-                Plugin.Log?.LogInfo($"[DISCOVER] Searched {assemblyCount} assemblies");
-
-                if (curatorType == null)
-                {
-                    Plugin.Log?.LogWarning("[DISCOVER] Could not find MuseumCurator - trying AccessTools...");
-                    curatorType = AccessTools.TypeByName("MuseumCurator") ?? AccessTools.TypeByName("Wish.MuseumCurator");
-                }
-
-                if (curatorType == null)
-                {
-                    Plugin.Log?.LogError("[DISCOVER] MuseumCurator type NOT FOUND in any assembly!");
-
-                    // List all types containing "Museum" to help debug
-                    Plugin.Log?.LogInfo("[DISCOVER] Searching for any types containing 'Museum'...");
-                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                    {
-                        try
-                        {
-                            foreach (var type in assembly.GetTypes())
-                            {
-                                if (type.Name.Contains("Museum"))
-                                {
-                                    Plugin.Log?.LogInfo($"[DISCOVER] Found type: {type.FullName}");
-                                }
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Plugin.Log?.LogDebug($"[MuseumPatches] Skipping assembly for Museum types: {ex.Message}");
-                        }
-                    }
-                    return;
-                }
-
-                // Log all static fields on MuseumCurator
-                Plugin.Log?.LogInfo("[DISCOVER] Listing all static fields on MuseumCurator:");
-                var allFields = curatorType.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                foreach (var f in allFields)
-                {
-                    Plugin.Log?.LogInfo($"[DISCOVER]   Field: {f.Name} ({f.FieldType.Name})");
-                }
-
-                // Get all museum progress lists
-                string[] listNames = { "culturalMuseumProgress", "aquaticMuseumProgress", "miningMuseumProgress" };
-                int totalMapped = 0;
-
-                foreach (var listName in listNames)
-                {
-                    Plugin.Log?.LogInfo($"[DISCOVER] Looking for field: {listName}");
-                    var field = curatorType.GetField(listName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
-                    if (field == null)
-                    {
-                        Plugin.Log?.LogWarning($"[DISCOVER] Field '{listName}' NOT FOUND on MuseumCurator");
-                        continue;
-                    }
-
-                    Plugin.Log?.LogInfo($"[DISCOVER] Found field: {listName} (Type: {field.FieldType.FullName})");
-
-                    var list = field.GetValue(null);
-                    if (list == null)
-                    {
-                        Plugin.Log?.LogWarning($"[DISCOVER] Field '{listName}' is NULL");
-                        continue;
-                    }
-
-                    Plugin.Log?.LogInfo($"[DISCOVER] Processing {listName} (contains data)...");
-
-                    // The list is List<ValueTuple<string, int>>
-                    if (list is IEnumerable enumerable)
-                    {
-                        int itemCount = 0;
-                        foreach (var item in enumerable)
-                        {
-                            itemCount++;
-                            try
-                            {
-                                // Get Item1 (progress key) and Item2 (game item ID)
-                                var itemType = item.GetType();
-
-                                var item1Field = itemType.GetField("Item1");
-                                var item2Field = itemType.GetField("Item2");
-
-                                if (item1Field == null || item2Field == null)
-                                {
-                                    continue;
-                                }
-
-                                string progressKey = item1Field.GetValue(item) as string;
-                                int item2 = (int)item2Field.GetValue(item);
-
-                                Plugin.Log?.LogInfo($"[DISCOVER]   Entry: progressKey='{progressKey}', requiredOrId={item2}");
-
-                                if (!string.IsNullOrEmpty(progressKey))
-                                {
-                                    // Mining tuples: Item2 is per-bundle donation requirement (slot count), not a global item ID.
-                                    var museumItem = MuseumContent.FindByGameItemId(item2);
-                                    if (museumItem != null)
-                                    {
-                                        _progressKeyToItemId[progressKey] = museumItem.Id;
-                                        _gameIdToProgressKey[item2] = progressKey;
-                                        totalMapped++;
-                                        Plugin.Log?.LogInfo($"[DISCOVER]   MAPPED: '{progressKey}' -> {museumItem.Id} ({museumItem.Name})");
-                                    }
-                                    else
-                                    {
-                                        Plugin.Log?.LogInfo($"[DISCOVER]   (No single-item map) key='{progressKey}', value={item2}");
-                                    }
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Plugin.Log?.LogError($"[DISCOVER]   Error processing item {itemCount}: {ex.Message}");
-                            }
-                        }
-                        Plugin.Log?.LogInfo($"[DISCOVER] {listName} had {itemCount} entries");
-                    }
-                }
-
-                Plugin.Log?.LogInfo($"[MuseumPatches] Discovered {totalMapped} progress key mappings");
-                Plugin.Log?.LogInfo("[DISCOVER] NOTE: The game only tracks BUNDLE completion, not individual items.");
-                Plugin.Log?.LogInfo("[DISCOVER] Use manual tracking in the UI to mark individual donations.");
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogError($"[MuseumPatches] Error discovering patterns: {ex.Message}\n{ex.StackTrace}");
-            }
-        }
-
-        /// <summary>
         /// Sync our tracker with the game's existing museum progress (bundle-level only).
-        /// Called from debug mode for inspection purposes.
         /// NOTE: This only syncs COMPLETED bundles, not individual items.
         /// </summary>
         public static void SyncWithGameProgress(bool verboseLogging = true)
@@ -296,8 +113,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
             }
             catch (Exception ex)
             {
-                if (_debugLogging)
-                    Plugin.Log?.LogDebug($"[MuseumPatches] IsBundleCompleteInGame({progressKey}): {ex.Message}");
+                Plugin.Log?.LogDebug($"[MuseumPatches] IsBundleCompleteInGame({progressKey}): {ex.Message}");
                 return false;
             }
         }
@@ -323,8 +139,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
             }
             catch (Exception ex)
             {
-                if (_debugLogging)
-                    Plugin.Log?.LogDebug($"[MuseumPatches] TryGetGameSaveForWorldProgress: {ex.Message}");
+                Plugin.Log?.LogDebug($"[MuseumPatches] TryGetGameSaveForWorldProgress: {ex.Message}");
                 gs = null;
                 return false;
             }
@@ -405,15 +220,12 @@ namespace SunHavenMuseumUtilityTracker.Patches
             {
                 try
                 {
-                    string progressKey = MuseumContent.GetProgressKeyForBundle(bundleId);
-                    if (string.IsNullOrEmpty(progressKey)) continue;
-
                     var items = MuseumContent.GetItemsInBundle(bundleId);
-                    int gameDonationCount = GetBundleDonationCount(progressKey);
-                    bool isComplete = IsBundleCompleteInGame(progressKey, items.Count);
+                    int gameDonationCount = GetBundleDonationCount(bundleId);
+                    bool isComplete = IsBundleCompleteInGame(bundleId, items.Count);
 
                     if (verboseLogging)
-                        Plugin.Log?.LogDebug($"[SYNC] Bundle '{bundleId}' ({progressKey}): {gameDonationCount}/{items.Count} donated, complete={isComplete}");
+                        Plugin.Log?.LogDebug($"[SYNC] Bundle '{bundleId}': {gameDonationCount}/{items.Count} donated, complete={isComplete}");
 
                     if (isComplete)
                     {
@@ -451,32 +263,6 @@ namespace SunHavenMuseumUtilityTracker.Patches
             }
 
             return bundlesSynced;
-        }
-
-        /// <summary>
-        /// Check if game progress features are available.
-        /// </summary>
-        public static bool IsGameProgressAvailable() => TryGetGameSaveForWorldProgress(out _);
-
-        /// <summary>
-        /// Reset the reflection cache (call when character changes).
-        /// </summary>
-        public static void ResetReflectionCache()
-        {
-            // World progress is read live from GameSave; nothing to reset (kept for API compatibility).
-        }
-
-        /// <summary>
-        /// Log all currently discovered mappings for debugging.
-        /// </summary>
-        public static void LogAllMappings()
-        {
-            Plugin.Log?.LogInfo($"[MuseumPatches] Current mappings ({_progressKeyToItemId.Count} total):");
-            foreach (var kvp in _progressKeyToItemId)
-            {
-                var item = MuseumContent.FindById(kvp.Value);
-                Plugin.Log?.LogInfo($"  '{kvp.Key}' -> {kvp.Value} ({item?.Name ?? "unknown"})");
-            }
         }
     }
 
