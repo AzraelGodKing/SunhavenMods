@@ -84,7 +84,6 @@ namespace TheVault
         /// Full vault inspector (zeros, Debug tab, full HUD). Controlled by Haven Dev Tools config / UI, not TheVault.cfg.
         /// </summary>
         private static bool _debugFullVaultInspector;
-        private bool _wasInMenuScene = true;
         private bool _applicationQuitting;
 
         // Separate persistent object that survives game's UIHandler.UnloadGame cleanup
@@ -125,7 +124,6 @@ namespace TheVault
                 _saveSystem.SetAutoSaveIntervalSeconds(Mathf.Max(10f, _autoSaveInterval.Value));
                 _vaultManager.OnVaultLoaded += OnVaultDataLoaded;
 
-                // Create UI GameObject (RectTransform stretched to full screen for uGUI Canvas)
                 var uiObject = CreateTheVaultUiHost();
                 DontDestroyOnLoad(uiObject);
                 _vaultUI = uiObject.AddComponent<VaultUI>();
@@ -172,11 +170,6 @@ namespace TheVault
 
                 // Patch GameSave class for character loading detection
                 PatchGameSave();
-
-                // Subscribe to scene loading as a backup trigger for vault loading
-                // This is more reliable than patching game-specific methods that may not exist
-                SceneManager.sceneLoaded += OnSceneLoaded;
-                Log.LogInfo("Subscribed to SceneManager.sceneLoaded for vault loading");
 
                 // Check for updates
                 if (_checkForUpdates.Value)
@@ -237,9 +230,6 @@ namespace TheVault
             );
         }
 
-        /// <summary>
-        /// uGUI needs a <see cref="RectTransform"/> that spans the overlay; a plain Transform clips to a tiny default rect.
-        /// </summary>
         private static GameObject CreateTheVaultUiHost()
         {
             var go = new GameObject("TheVault_UI", typeof(RectTransform));
@@ -296,7 +286,6 @@ namespace TheVault
                     if (Instance != null)
                     {
                         Instance._vaultUI = _staticVaultUI;
-                        // uGUI disabled
                         Instance._vaultHUD = _staticVaultHUD;
                         _staticVaultHUD.SetEnabled(Instance._enableHUD.Value);
                         Instance.ApplyVaultHudPlacementFromConfig(_staticVaultHUD);
@@ -592,13 +581,6 @@ namespace TheVault
             {
                 Log?.LogError($"[The Vault] ApplyConfigToState failed: {ex.Message}");
             }
-        }
-
-        /// <summary>Apply window scale to the vault UI.</summary>
-        public void ApplyVaultWindowScaleToUi()
-        {
-            float s = GetValidatedWindowScale();
-            _staticVaultUI?.SetScale(s);
         }
 
         // --- Config getters/setters for in-game Settings UI (values persist to config file) ---
@@ -1238,8 +1220,6 @@ namespace TheVault
                 Log.LogWarning($"[CRITICAL] Current scene: {sceneName}");
                 Log.LogWarning($"[CRITICAL] Stack trace: {Environment.StackTrace}");
             }
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-
             // IMPORTANT: Do NOT unpatch Harmony here!
             // Harmony patches are global and will continue working even after this MonoBehaviour is destroyed.
             // If we unpatch, the LoadCharacter and InitializeAsOwner hooks stop working,
@@ -1289,22 +1269,6 @@ namespace TheVault
         public static void ToggleMainVaultWindow()
         {
             _staticVaultUI?.Toggle();
-        }
-
-        /// <summary>
-        /// Open the vault UI
-        /// </summary>
-        public static void OpenVault()
-        {
-            _staticVaultUI?.Show();
-        }
-
-        /// <summary>
-        /// Close the vault UI
-        /// </summary>
-        public static void CloseVault()
-        {
-            _staticVaultUI?.Hide();
         }
 
         /// <summary>
@@ -1435,43 +1399,9 @@ namespace TheVault
 
         private static bool TryMutateCurrency(VaultManager manager, string currencyId, int amount, bool add)
         {
-            if (manager == null || string.IsNullOrWhiteSpace(currencyId) || amount <= 0)
+            if (manager == null)
                 return false;
-
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixSeasonal, StringComparison.Ordinal))
-            {
-                string token = currencyId.Substring(VaultCurrencyIds.PrefixSeasonal.Length);
-                if (!Enum.TryParse(token, out SeasonalTokenType type))
-                    return false;
-                return add ? manager.AddSeasonalTokens(type, amount) : manager.RemoveSeasonalTokens(type, amount);
-            }
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixCommunity, StringComparison.Ordinal))
-            {
-                string id = currencyId.Substring(VaultCurrencyIds.PrefixCommunity.Length);
-                return add ? manager.AddCommunityTokens(id, amount) : manager.RemoveCommunityTokens(id, amount);
-            }
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixKey, StringComparison.Ordinal))
-            {
-                string id = currencyId.Substring(VaultCurrencyIds.PrefixKey.Length);
-                return add ? manager.AddKeys(id, amount) : manager.RemoveKeys(id, amount);
-            }
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixSpecial, StringComparison.Ordinal))
-            {
-                string id = currencyId.Substring(VaultCurrencyIds.PrefixSpecial.Length);
-                return add ? manager.AddSpecial(id, amount) : manager.RemoveSpecial(id, amount);
-            }
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixOrb, StringComparison.Ordinal))
-            {
-                string id = currencyId.Substring(VaultCurrencyIds.PrefixOrb.Length);
-                return add ? manager.AddOrbs(id, amount) : manager.RemoveOrbs(id, amount);
-            }
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixCustom, StringComparison.Ordinal))
-            {
-                string id = currencyId.Substring(VaultCurrencyIds.PrefixCustom.Length);
-                return add ? manager.AddCustomCurrency(id, amount) : manager.RemoveCustomCurrency(id, amount);
-            }
-
-            return false;
+            return add ? manager.AddCurrency(currencyId, amount) : manager.RemoveCurrency(currencyId, amount);
         }
 
         private readonly struct QuickConvertRule

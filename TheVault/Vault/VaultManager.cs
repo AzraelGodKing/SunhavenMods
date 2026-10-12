@@ -171,11 +171,6 @@ namespace TheVault.Vault
             return true;
         }
 
-        public bool HasSeasonalTokens(SeasonalTokenType type, int amount)
-        {
-            return GetSeasonalTokens(type) >= amount;
-        }
-
         #endregion
 
         #region Community Tokens
@@ -210,11 +205,6 @@ namespace TheVault.Vault
 
             OnCurrencyChanged?.Invoke($"community_{tokenId}", oldValue, current - amount);
             return true;
-        }
-
-        public bool HasCommunityTokens(string tokenId, int amount)
-        {
-            return GetCommunityTokens(tokenId) >= amount;
         }
 
         #endregion
@@ -254,11 +244,6 @@ namespace TheVault.Vault
             return true;
         }
 
-        public bool HasKeys(string keyId, int amount)
-        {
-            return GetKeys(keyId) >= amount;
-        }
-
         #endregion
 
         #region Special (uses Tickets storage for backwards compatibility)
@@ -295,17 +280,6 @@ namespace TheVault.Vault
             return true;
         }
 
-        public bool HasSpecial(string specialId, int amount)
-        {
-            return GetSpecial(specialId) >= amount;
-        }
-
-        // Legacy methods for backwards compatibility
-        public int GetTickets(string ticketId) => GetSpecial(ticketId);
-        public bool AddTickets(string ticketId, int amount) => AddSpecial(ticketId, amount);
-        public bool RemoveTickets(string ticketId, int amount) => RemoveSpecial(ticketId, amount);
-        public bool HasTickets(string ticketId, int amount) => HasSpecial(ticketId, amount);
-
         #endregion
 
         #region Orbs
@@ -340,11 +314,6 @@ namespace TheVault.Vault
 
             OnCurrencyChanged?.Invoke(VaultCurrencyIds.PrefixOrb + orbId, oldValue, current - amount);
             return true;
-        }
-
-        public bool HasOrbs(string orbId, int amount)
-        {
-            return GetOrbs(orbId) >= amount;
         }
 
         #endregion
@@ -383,11 +352,6 @@ namespace TheVault.Vault
             return true;
         }
 
-        public bool HasCustomCurrency(string currencyId, int amount)
-        {
-            return GetCustomCurrency(currencyId) >= amount;
-        }
-
         #endregion
 
         #region Generic Currency Operations
@@ -397,37 +361,92 @@ namespace TheVault.Vault
         /// </summary>
         public int GetCurrency(string fullCurrencyId)
         {
-            if (string.IsNullOrEmpty(fullCurrencyId)) return 0;
+            if (!VaultCurrencyIds.TryDispatch(fullCurrencyId, out var kind, out var remainder))
+                return 0;
 
-            // Parse the currency ID to determine type
-            if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixSeasonal))
+            switch (kind)
             {
-                string typeName = fullCurrencyId.Substring(VaultCurrencyIds.PrefixSeasonal.Length);
-                if (Enum.TryParse<SeasonalTokenType>(typeName, out var tokenType))
-                    return GetSeasonalTokens(tokenType);
+                case VaultCurrencyKind.Seasonal:
+                    return Enum.TryParse<SeasonalTokenType>(remainder, out var tokenType)
+                        ? GetSeasonalTokens(tokenType)
+                        : 0;
+                case VaultCurrencyKind.Community:
+                    return GetCommunityTokens(remainder);
+                case VaultCurrencyKind.Key:
+                    return GetKeys(remainder);
+                case VaultCurrencyKind.Special:
+                    return GetSpecial(remainder);
+                case VaultCurrencyKind.Orb:
+                    return GetOrbs(remainder);
+                case VaultCurrencyKind.Custom:
+                    return GetCustomCurrency(remainder);
+                default:
+                    return 0;
             }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixCommunity))
+        }
+
+        /// <summary>
+        /// Credits vault currency. Returns false when the id is unrecognized so callers can roll back inventory.
+        /// </summary>
+        public bool AddCurrency(string fullCurrencyId, int amount)
+        {
+            if (string.IsNullOrEmpty(fullCurrencyId) || amount <= 0)
+                return false;
+            if (!VaultCurrencyIds.TryDispatch(fullCurrencyId, out var kind, out var remainder))
             {
-                return GetCommunityTokens(fullCurrencyId.Substring(VaultCurrencyIds.PrefixCommunity.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixKey))
-            {
-                return GetKeys(fullCurrencyId.Substring(VaultCurrencyIds.PrefixKey.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixSpecial))
-            {
-                return GetSpecial(fullCurrencyId.Substring(VaultCurrencyIds.PrefixSpecial.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixOrb))
-            {
-                return GetOrbs(fullCurrencyId.Substring(VaultCurrencyIds.PrefixOrb.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixCustom))
-            {
-                return GetCustomCurrency(fullCurrencyId.Substring(VaultCurrencyIds.PrefixCustom.Length));
+                Plugin.Log?.LogWarning($"AddCurrency: unrecognized currency id '{fullCurrencyId}'");
+                return false;
             }
 
-            return 0;
+            switch (kind)
+            {
+                case VaultCurrencyKind.Seasonal:
+                    if (!Enum.TryParse<SeasonalTokenType>(remainder, out var tokenType))
+                    {
+                        Plugin.Log?.LogWarning($"AddCurrency: invalid seasonal type '{remainder}' in '{fullCurrencyId}'");
+                        return false;
+                    }
+                    return AddSeasonalTokens(tokenType, amount);
+                case VaultCurrencyKind.Community:
+                    return AddCommunityTokens(remainder, amount);
+                case VaultCurrencyKind.Key:
+                    return AddKeys(remainder, amount);
+                case VaultCurrencyKind.Special:
+                    return AddSpecial(remainder, amount);
+                case VaultCurrencyKind.Orb:
+                    return AddOrbs(remainder, amount);
+                case VaultCurrencyKind.Custom:
+                    return AddCustomCurrency(remainder, amount);
+                default:
+                    return false;
+            }
+        }
+
+        public bool RemoveCurrency(string fullCurrencyId, int amount)
+        {
+            if (string.IsNullOrEmpty(fullCurrencyId) || amount <= 0)
+                return false;
+            if (!VaultCurrencyIds.TryDispatch(fullCurrencyId, out var kind, out var remainder))
+                return false;
+
+            switch (kind)
+            {
+                case VaultCurrencyKind.Seasonal:
+                    return Enum.TryParse<SeasonalTokenType>(remainder, out var tokenType)
+                        && RemoveSeasonalTokens(tokenType, amount);
+                case VaultCurrencyKind.Community:
+                    return RemoveCommunityTokens(remainder, amount);
+                case VaultCurrencyKind.Key:
+                    return RemoveKeys(remainder, amount);
+                case VaultCurrencyKind.Special:
+                    return RemoveSpecial(remainder, amount);
+                case VaultCurrencyKind.Orb:
+                    return RemoveOrbs(remainder, amount);
+                case VaultCurrencyKind.Custom:
+                    return RemoveCustomCurrency(remainder, amount);
+                default:
+                    return false;
+            }
         }
 
         /// <summary>

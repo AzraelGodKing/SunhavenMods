@@ -16,7 +16,9 @@
 
   <ItemGroup>
     <Compile Include="..\Vault\VaultData.cs" Link="Vault\VaultData.cs" />
+    <Compile Include="..\Vault\VaultCurrencyIds.cs" Link="Vault\VaultCurrencyIds.cs" />
     <Compile Include="..\Vault\VaultDataMigration.cs" Link="Vault\VaultDataMigration.cs" />
+    <Compile Include="VaultCurrencyIdsTests.cs" />
     <Compile Include="..\Vault\VaultDataSanitizer.cs" Link="Vault\VaultDataSanitizer.cs" />
     <Compile Include="..\Vault\VaultFailedLoadSavePolicy.cs" Link="Vault\VaultFailedLoadSavePolicy.cs" />
     <Compile Include="VaultDataMigrationTests.cs" />
