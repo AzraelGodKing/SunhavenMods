@@ -6,6 +6,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Website**
+- Removed the stale "The Vault 4.2.0" announcement banner from the Mod Hub. The Vault is at 4.3.1.
+
 **Maintenance releases: The Vault 4.3.1, Crop Optimizer 2.3.1, Haven's Birthright 3.1.4, Haven Dev Tools 2.1.3, Haven's Almanac 2.2.3, Museum Utility Tracker 3.1.3, A Squirrel's Birthday Reminder 2.1.4, Sun Haven Todo 2.1.3, Senpai's Chest 3.1.4, Gifting Assistant 1.1.4**
 - **Cleanup:** Unused and unreachable code removed across these mods. Nothing you use changes, and saves are untouched.
 - **Museum Utility Tracker:** The hidden F10/F11 debug keys are gone. F11 clashed with the Haven Dev Tools overlay.

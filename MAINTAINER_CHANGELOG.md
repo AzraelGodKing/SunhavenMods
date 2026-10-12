@@ -6,6 +6,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ## 2026-10-12
 
+- **Repo hygiene — stale tracked leftovers:** Stopped tracking `scripts/__pycache__/publish_site_download.cpython-312.pyc` and ignore `scripts/__pycache__/`. Deleted `SunhavenTodo/Tests/ModDiagnosticsTests.cs` (not compiled by `SunhavenTodo.Tests.csproj`). Deleted unused `HavensAlmanac/Localization/generate_translations.py` and `HavenDevTools/Localization/translate.ps1` (no README/docs/CI references). Removed the stale Vault 4.2.0 hub announce banner and its dedicated CSS/JS (Vault is 4.3.1 in `docs/versions.json`).
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
 
 ## 2026-10-11

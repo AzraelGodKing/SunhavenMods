@@ -1,4 +1,5 @@
 .cache/
+__pycache__/
 *.log
 translate-run.log
 translate-phase1.log
