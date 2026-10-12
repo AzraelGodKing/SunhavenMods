@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
@@ -195,18 +194,11 @@ namespace SunHavenMuseumUtilityTracker
 
         private static ConfigFile CreateNamedConfig()
         {
-            string configPath = Path.Combine(Paths.ConfigPath, "SunHavenMuseumUtilityTracker.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to SunHavenMuseumUtilityTracker.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
+            return ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "SunHavenMuseumUtilityTracker.cfg",
+                message => Log?.LogWarning(message)
+            );
         }
 
         private void CreatePersistentRunner()
@@ -261,10 +253,7 @@ namespace SunHavenMuseumUtilityTracker
                     Log?.LogInfo("[EnsureUI] Recreating TrackerUI...");
                     var uiObject = new GameObject("MuseumTracker_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
-                    // NOTE: Do NOT use HideFlags.HideAndDontSave on TrackerUI!
-                    // That flag prevents Unity's OnGUI from being called, which breaks the UI rendering.
-                    // Only PersistentRunner needs HideFlags (it only uses Update, not OnGUI).
-
+                    // No HideFlags here: HideAndDontSave suppresses OnGUI, which breaks the window.
                     _staticTrackerUI = uiObject.AddComponent<MuseumTrackerUI>();
                     _staticTrackerUI.Initialize(_staticDonationManager);
                     _staticTrackerUI.SetScale(StaticUIScale);
@@ -401,7 +390,6 @@ namespace SunHavenMuseumUtilityTracker
     /// </summary>
     public class PersistentRunner : MonoBehaviour
     {
-        private string _lastScene = "";
         private float _worldSyncTimer = 0f;
         private const float WORLD_SYNC_INTERVAL = 5f;
 
@@ -409,7 +397,6 @@ namespace SunHavenMuseumUtilityTracker
         {
             Plugin.TickAutoSave();
             CheckHotkeys();
-            CheckSceneChange();
             SyncWorldProgress();
         }
 
@@ -431,16 +418,6 @@ namespace SunHavenMuseumUtilityTracker
             else if (altTogglePressed)
             {
                 Plugin.ToggleUI();
-            }
-        }
-
-        private void CheckSceneChange()
-        {
-            string currentScene = SceneManager.GetActiveScene().name;
-            if (currentScene != _lastScene)
-            {
-                Plugin.Log?.LogDebug($"[PersistentRunner] Scene changed: '{_lastScene}' -> '{currentScene}'");
-                _lastScene = currentScene;
             }
         }
 

@@ -168,14 +168,12 @@ namespace SunHavenMuseumUtilityTracker.Patches
     /// </summary>
     public static class GameSavePatches
     {
-        public static int LastLoadedSlot { get; private set; } = -1;
         public static string LastLoadedCharacterName { get; private set; } = null;
 
         public static void ResetLastLoadedSlot()
         {
-            LastLoadedSlot = -1;
             LastLoadedCharacterName = null;
-            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedSlot and LastLoadedCharacterName");
+            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedCharacterName");
         }
 
         public static void OnLoadCharacter(int characterNumber)
@@ -183,7 +181,6 @@ namespace SunHavenMuseumUtilityTracker.Patches
             try
             {
                 Plugin.Log?.LogInfo($"GameSave.LoadCharacter: slot {characterNumber}");
-                LastLoadedSlot = characterNumber;
 
                 if (GameSave.Instance?.Saves != null &&
                     characterNumber >= 0 &&

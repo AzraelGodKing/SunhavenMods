@@ -503,11 +503,6 @@ namespace SunHavenMuseumUtilityTracker.Data
         }
 
         /// <summary>
-        /// No-op: aquarium fish are defined in <see cref="BuildMuseumContent"/> (kept for call sites).
-        /// </summary>
-        public static void ApplyResolvedAquariumFishIfNeeded() { }
-
-        /// <summary>
         /// Adds a bundle with placeholder slots so counts match the game. Item names are not in code (they live in Unity assets);
         /// Sync uses the game's progress key (bundle Id) and will mark all slots when the bundle is complete.
         /// </summary>
@@ -557,22 +552,6 @@ namespace SunHavenMuseumUtilityTracker.Data
                 }
             }
             return ids;
-        }
-
-        /// <summary>
-        /// Gets the game progress key for a bundle. Used to check completion status in game saves.
-        /// </summary>
-        public static string GetProgressKeyForBundle(string bundleId)
-        {
-            foreach (var section in GetAllSections())
-            {
-                foreach (var bundle in section.Bundles)
-                {
-                    if (bundle.Id == bundleId)
-                        return bundle.Id;
-                }
-            }
-            return null;
         }
 
         /// <summary>
