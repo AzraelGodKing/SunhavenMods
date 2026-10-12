@@ -92,7 +92,7 @@ namespace SunhavenMods.Shared
         private static string DecryptCsvault2(byte[] cipherData, string playerName, string alternateKeyName)
         {
             // 1–2) Steam-keyed primary when Steam is up, then the player-portable key regardless of Steam state (AZR-242)
-            string steamId = GetSteamIdForLegacyKey();
+            string steamId = TryGetSteamId();
             string json;
             if (!string.IsNullOrEmpty(steamId))
             {
@@ -211,50 +211,84 @@ namespace SunhavenMods.Shared
         }
 
         /// <summary>
-        /// Caches only a successful lookup. A miss is retried on the next call so a late-loading Steamworks
-        /// is still picked up instead of being latched as "no Steam" for the whole session (AZR-242).
+        /// Steam ID from Steamworks when available. Caches successes only; a miss is retried (AZR-242).
         /// </summary>
-        private static string GetSteamIdForLegacyKey()
+        internal static string TryGetSteamId()
         {
-            if (!string.IsNullOrEmpty(_cachedSteamId)) return _cachedSteamId;
+            if (!string.IsNullOrEmpty(_cachedSteamId))
+                return _cachedSteamId;
+
             try
             {
-                Assembly steamAssembly = null;
-                foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    string n = a.GetName().Name;
-                    if (n != null && (n.Contains("rlabrecque") || n == "Steamworks.NET")) { steamAssembly = a; break; }
-                }
+                Assembly steamAssembly = FindSteamworksAssembly();
                 if (steamAssembly == null)
                 {
-                    foreach (var a in AppDomain.CurrentDomain.GetAssemblies())
-                    {
-                        try
-                        {
-                            if (a.GetType("Steamworks.SteamUser") != null) { steamAssembly = a; break; }
-                        }
-                        catch (Exception ex)
-                        {
-                            LogSource?.LogWarning($"[VaultCryptography] Steam assembly probe failed for '{a.FullName}' ({ex.GetType().Name}).");
-                        }
-                    }
+                    LogSource?.LogDebug("[VaultCryptography] Steam assembly not found.");
+                    return null;
                 }
-                if (steamAssembly == null) return null;
+
                 var steamUserType = steamAssembly.GetType("Steamworks.SteamUser");
                 var getSteamIdMethod = steamUserType?.GetMethod("GetSteamID", BindingFlags.Public | BindingFlags.Static);
-                if (getSteamIdMethod == null) return null;
+                if (getSteamIdMethod == null)
+                {
+                    LogSource?.LogDebug("[VaultCryptography] SteamUser.GetSteamID not found.");
+                    return null;
+                }
+
                 var steamId = getSteamIdMethod.Invoke(null, null);
-                if (steamId == null) return null;
+                if (steamId == null)
+                {
+                    LogSource?.LogDebug("[VaultCryptography] GetSteamID returned null.");
+                    return null;
+                }
+
                 string steamIdStr = steamId.ToString();
-                if (string.IsNullOrEmpty(steamIdStr) || steamIdStr == "0" || steamIdStr.Length < 10) return null;
+                if (string.IsNullOrEmpty(steamIdStr) || steamIdStr == "0" || steamIdStr.Length < 10)
+                {
+                    LogSource?.LogDebug("[VaultCryptography] Invalid Steam ID.");
+                    return null;
+                }
+
                 _cachedSteamId = steamIdStr;
+                LogSource?.LogDebug($"[VaultCryptography] Retrieved Steam ID (length: {steamIdStr.Length}).");
                 return _cachedSteamId;
             }
             catch (Exception ex)
             {
-                LogSource?.LogWarning($"[VaultCryptography] Steam ID lookup failed ({ex.GetType().Name}).");
+                LogSource?.LogDebug($"[VaultCryptography] Steam ID lookup failed: {ex.Message}");
                 return null;
             }
+        }
+
+        private static Assembly FindSteamworksAssembly()
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                string name = assembly.GetName().Name;
+                if (name != null && (name.Contains("rlabrecque") || name == "Steamworks.NET"))
+                {
+                    LogSource?.LogDebug($"[VaultCryptography] Found Steamworks assembly: {name}");
+                    return assembly;
+                }
+            }
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    if (assembly.GetType("Steamworks.SteamUser") != null)
+                    {
+                        LogSource?.LogDebug($"[VaultCryptography] Found SteamUser in assembly: {assembly.GetName().Name}");
+                        return assembly;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogSource?.LogDebug($"[VaultCryptography] Skipping assembly for Steam search: {ex.Message}");
+                }
+            }
+
+            return null;
         }
 
         private static string GetMachineId()

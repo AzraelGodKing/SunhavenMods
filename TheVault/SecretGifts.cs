@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using HarmonyLib;
@@ -50,7 +49,7 @@ namespace TheVault
             try
             {
                 // Get current Steam ID
-                _currentSteamId = TryGetSteamId();
+                _currentSteamId = VaultCryptography.TryGetSteamId();
                 if (string.IsNullOrEmpty(_currentSteamId))
                 {
                     Plugin.Log?.LogInfo("[SecretGifts] Could not retrieve Steam ID");
@@ -366,66 +365,6 @@ namespace TheVault
         }
 
         #endregion
-
-        private static string TryGetSteamId()
-        {
-            try
-            {
-                Assembly steamAssembly = null;
-
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    string name = assembly.GetName().Name;
-                    if (name.Contains("rlabrecque") || name == "Steamworks.NET")
-                    {
-                        steamAssembly = assembly;
-                        break;
-                    }
-                }
-
-                if (steamAssembly == null)
-                {
-                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                    {
-                        try
-                        {
-                            var steamUserType = assembly.GetType("Steamworks.SteamUser");
-                            if (steamUserType != null)
-                            {
-                                steamAssembly = assembly;
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Plugin.Log?.LogDebug($"[SecretGifts] Skipping assembly for Steam search: {ex.Message}");
-                        }
-                    }
-                }
-
-                if (steamAssembly == null) return null;
-
-                var steamUserType2 = steamAssembly.GetType("Steamworks.SteamUser");
-                if (steamUserType2 == null) return null;
-
-                var getSteamIdMethod = steamUserType2.GetMethod("GetSteamID", BindingFlags.Public | BindingFlags.Static);
-                if (getSteamIdMethod == null) return null;
-
-                var steamId = getSteamIdMethod.Invoke(null, null);
-                if (steamId == null) return null;
-
-                string steamIdStr = steamId.ToString();
-                if (string.IsNullOrEmpty(steamIdStr) || steamIdStr == "0" || steamIdStr.Length < 10)
-                    return null;
-
-                return steamIdStr;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogDebug($"[SecretGifts] TryGetSteamId: {ex.Message}");
-                return null;
-            }
-        }
 
         private static string ComputeHash(string input)
         {

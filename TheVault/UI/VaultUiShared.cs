@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TheVault.UI
 {
     /// <summary>
-    /// Shared list/label/formatting for IMGUI and uGUI vault windows.
+    /// Shared list/label/formatting for vault windows.
     /// </summary>
     public static class VaultUiShared
     {
@@ -33,13 +33,6 @@ namespace TheVault.UI
                             result[$"seasonal_{tokenName}"] = amount;
                         break;
 
-                    case CurrencyCategory.CommunityToken:
-                        string communityId = keyId.Replace("token_", "");
-                        amount = vaultManager.GetCommunityTokens(communityId);
-                        if (showAllBalances || amount != 0)
-                            result[$"community_{communityId}"] = amount;
-                        break;
-
                     case CurrencyCategory.Key:
                         string keyName = keyId.Replace("key_", "");
                         amount = vaultManager.GetKeys(keyName);
@@ -54,17 +47,14 @@ namespace TheVault.UI
                             result[$"special_{specialId}"] = amount;
                         break;
 
-                    case CurrencyCategory.Orb:
-                        string orbId = keyId.Replace("orb_", "");
-                        amount = vaultManager.GetOrbs(orbId);
-                        if (showAllBalances || amount != 0)
-                            result[$"orb_{orbId}"] = amount;
-                        break;
-
                     case CurrencyCategory.Custom:
                         amount = vaultManager.GetCustomCurrency(keyId);
                         if (showAllBalances || amount != 0)
                             result[$"custom_{keyId}"] = amount;
+                        break;
+
+                    case CurrencyCategory.CommunityToken:
+                    case CurrencyCategory.Orb:
                         break;
                 }
             }

@@ -8,7 +8,7 @@ using Wish;
 namespace TheVault.UI
 {
     /// <summary>
-    /// Deposit / withdraw shared by IMGUI and uGUI vault windows.
+    /// Deposit / withdraw operations for vault windows.
     /// </summary>
     public static class VaultInventoryOperations
     {
@@ -125,42 +125,12 @@ namespace TheVault.UI
 
         public static void RemoveCurrency(VaultManager vaultManager, string currencyId, int amount)
         {
-            if (currencyId.StartsWith("seasonal_"))
-            {
-                string typeName = currencyId.Substring("seasonal_".Length);
-                if (Enum.TryParse<SeasonalTokenType>(typeName, out var tokenType))
-                    vaultManager.RemoveSeasonalTokens(tokenType, amount);
-            }
-            else if (currencyId.StartsWith("community_"))
-                vaultManager.RemoveCommunityTokens(currencyId.Substring("community_".Length), amount);
-            else if (currencyId.StartsWith("key_"))
-                vaultManager.RemoveKeys(currencyId.Substring("key_".Length), amount);
-            else if (currencyId.StartsWith("special_"))
-                vaultManager.RemoveSpecial(currencyId.Substring("special_".Length), amount);
-            else if (currencyId.StartsWith("orb_"))
-                vaultManager.RemoveOrbs(currencyId.Substring("orb_".Length), amount);
-            else if (currencyId.StartsWith("custom_"))
-                vaultManager.RemoveCustomCurrency(currencyId.Substring("custom_".Length), amount);
+            vaultManager.RemoveCurrency(currencyId, amount);
         }
 
         private static void AddCurrencyBack(VaultManager vaultManager, string currencyId, int amount)
         {
-            if (currencyId.StartsWith("seasonal_"))
-            {
-                string typeName = currencyId.Substring("seasonal_".Length);
-                if (Enum.TryParse<SeasonalTokenType>(typeName, out var tokenType))
-                    vaultManager.AddSeasonalTokens(tokenType, amount);
-            }
-            else if (currencyId.StartsWith("community_"))
-                vaultManager.AddCommunityTokens(currencyId.Substring("community_".Length), amount);
-            else if (currencyId.StartsWith("key_"))
-                vaultManager.AddKeys(currencyId.Substring("key_".Length), amount);
-            else if (currencyId.StartsWith("special_"))
-                vaultManager.AddSpecial(currencyId.Substring("special_".Length), amount);
-            else if (currencyId.StartsWith("orb_"))
-                vaultManager.AddOrbs(currencyId.Substring("orb_".Length), amount);
-            else if (currencyId.StartsWith("custom_"))
-                vaultManager.AddCustomCurrency(currencyId.Substring("custom_".Length), amount);
+            vaultManager.AddCurrency(currencyId, amount);
         }
     }
 }

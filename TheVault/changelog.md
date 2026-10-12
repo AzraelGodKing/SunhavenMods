@@ -1,5 +1,9 @@
 # The Vault - Changelog
 
+## Version 4.3.1
+
+- **Maintenance:** One currency-prefix dispatcher (`VaultCurrencyIds.TryDispatch`) for vault add/remove/get. Inventory merge uses `GetCurrency`. Unused `ticket_` dispatch and `GetTickets`/`AddTickets`/`RemoveTickets` aliases removed; `Tickets`/`Orbs`/`CommunityTokens` dicts and `CurrencyCategory` values are unchanged. Shared Steam ID lookup caches successes only (debug logs). Menu `SaveAndReset` is no longer fired twice on scene load.
+
 ## Version 4.3.0
 
 - **Save format (AZR-243):** New saves use CSVAULT3: a random per-vault salt, a fresh IV per write, PBKDF2-SHA256 with 100,000 iterations, and an HMAC-SHA256 integrity check verified before decrypting. A corrupted or edited file fails cleanly and falls back to the backup. CSVAULT2 and older files still load and are rewritten as CSVAULT3 on load.

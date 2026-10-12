@@ -3,6 +3,19 @@ using System;
 namespace TheVault.Vault
 {
     /// <summary>
+    /// Prefix buckets for a full vault currency id (<c>seasonal_Spring</c>, <c>special_doubloon</c>, …).
+    /// </summary>
+    public enum VaultCurrencyKind
+    {
+        Seasonal,
+        Community,
+        Key,
+        Special,
+        Orb,
+        Custom
+    }
+
+    /// <summary>
     /// Canonical prefixes and built-in currency ids (UI, HUD, saves, patches).
     /// </summary>
     public static class VaultCurrencyIds
@@ -12,7 +25,6 @@ namespace TheVault.Vault
         public const string PrefixKey = "key_";
         public const string PrefixSpecial = "special_";
         public const string PrefixOrb = "orb_";
-        public const string PrefixTicket = "ticket_";
         public const string PrefixCustom = "custom_";
 
         public const string SeasonalSpring = PrefixSeasonal + "Spring";
@@ -62,6 +74,51 @@ namespace TheVault.Vault
             if (!fullId.StartsWith(prefix, StringComparison.Ordinal)) return false;
             remainder = fullId.Substring(prefix.Length);
             return true;
+        }
+
+        /// <summary>
+        /// Maps a full currency id to its storage bucket. Does not match the unused <c>ticket_</c> prefix
+        /// (special currencies are stored under <see cref="PrefixSpecial"/>; the Tickets dict is unchanged).
+        /// </summary>
+        public static bool TryDispatch(string fullId, out VaultCurrencyKind kind, out string remainder)
+        {
+            kind = default;
+            remainder = null;
+            if (string.IsNullOrEmpty(fullId)) return false;
+
+            if (TryStripPrefix(fullId, PrefixSeasonal, out remainder))
+            {
+                kind = VaultCurrencyKind.Seasonal;
+                return true;
+            }
+            if (TryStripPrefix(fullId, PrefixCommunity, out remainder))
+            {
+                kind = VaultCurrencyKind.Community;
+                return true;
+            }
+            if (TryStripPrefix(fullId, PrefixKey, out remainder))
+            {
+                kind = VaultCurrencyKind.Key;
+                return true;
+            }
+            if (TryStripPrefix(fullId, PrefixSpecial, out remainder))
+            {
+                kind = VaultCurrencyKind.Special;
+                return true;
+            }
+            if (TryStripPrefix(fullId, PrefixOrb, out remainder))
+            {
+                kind = VaultCurrencyKind.Orb;
+                return true;
+            }
+            if (TryStripPrefix(fullId, PrefixCustom, out remainder))
+            {
+                kind = VaultCurrencyKind.Custom;
+                return true;
+            }
+
+            remainder = null;
+            return false;
         }
     }
 }

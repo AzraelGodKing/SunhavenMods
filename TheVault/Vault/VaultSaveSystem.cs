@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using SunhavenMods.Shared;
@@ -20,10 +19,6 @@ namespace TheVault.Vault
         private readonly string _saveDirectory;
         private readonly VaultManager _vaultManager;
         private string _currentSaveFile;
-
-        // Steam ID caching (file-name suffix; encryption uses SharedUtilities.VaultCryptography)
-        private static string _cachedSteamId = null;
-        private static bool _steamIdChecked = false;
 
         // Auto-save interval in seconds
         private float _autoSaveIntervalSeconds = 300f;
@@ -121,7 +116,7 @@ namespace TheVault.Vault
         /// </summary>
         private string GetPerPlayerFileSuffix(string playerName)
         {
-            string steamId = TryGetSteamId();
+            string steamId = VaultCryptography.TryGetSteamId();
             if (!string.IsNullOrEmpty(steamId))
                 return "steam_" + CharacterSaveStore.SanitizeFileName(steamId, string.Empty);
 
@@ -458,111 +453,6 @@ namespace TheVault.Vault
             if (string.IsNullOrWhiteSpace(playerName))
                 return false;
             return !string.Equals(playerName.Trim(), "null", StringComparison.OrdinalIgnoreCase);
-        }
-
-        /// <summary>
-        /// Attempt to get the Steam ID from Steamworks.
-        /// Returns null if Steam is not available or not initialized.
-        /// </summary>
-        private static string TryGetSteamId()
-        {
-            // Return cached result if we've already checked
-            if (_steamIdChecked)
-            {
-                return _cachedSteamId;
-            }
-
-            _steamIdChecked = true;
-            _cachedSteamId = null;
-
-            try
-            {
-                // Look for the actual Steamworks.NET assembly (com.rlabrecque.steamworks.net)
-                // NOT FizzySteamworks which is just a transport layer
-                Assembly steamAssembly = null;
-
-                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    string name = assembly.GetName().Name;
-                    // Look for the rlabrecque steamworks assembly specifically
-                    if (name.Contains("rlabrecque") || name == "Steamworks.NET")
-                    {
-                        steamAssembly = assembly;
-                        Plugin.Log?.LogInfo($"[VaultSave] Found Steamworks assembly: {name}");
-                        break;
-                    }
-                }
-
-                // Fallback: search for any assembly containing SteamUser type
-                if (steamAssembly == null)
-                {
-                    foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-                    {
-                        try
-                        {
-                            var steamUserType = assembly.GetType("Steamworks.SteamUser");
-                            if (steamUserType != null)
-                            {
-                                steamAssembly = assembly;
-                                Plugin.Log?.LogInfo($"[VaultSave] Found SteamUser in assembly: {assembly.GetName().Name}");
-                                break;
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Plugin.Log?.LogDebug($"[VaultSave] Skipping assembly for Steam search: {ex.Message}");
-                        }
-                    }
-                }
-
-                if (steamAssembly == null)
-                {
-                    Plugin.Log?.LogInfo("[VaultSave] Steam assembly not found - using player name for encryption");
-                    return null;
-                }
-
-                // Try to get SteamUser.GetSteamID()
-                var steamUserType2 = steamAssembly.GetType("Steamworks.SteamUser");
-                if (steamUserType2 == null)
-                {
-                    Plugin.Log?.LogInfo("[VaultSave] SteamUser type not found in assembly");
-                    return null;
-                }
-
-                var getSteamIdMethod = steamUserType2.GetMethod("GetSteamID", BindingFlags.Public | BindingFlags.Static);
-                if (getSteamIdMethod == null)
-                {
-                    Plugin.Log?.LogInfo("[VaultSave] GetSteamID method not found");
-                    return null;
-                }
-
-                // Call GetSteamID()
-                var steamId = getSteamIdMethod.Invoke(null, null);
-                if (steamId == null)
-                {
-                    Plugin.Log?.LogInfo("[VaultSave] GetSteamID returned null");
-                    return null;
-                }
-
-                // Convert CSteamID to string (it has a ToString or m_SteamID field)
-                string steamIdStr = steamId.ToString();
-
-                // Validate it's a real Steam ID (should be a large number)
-                if (string.IsNullOrEmpty(steamIdStr) || steamIdStr == "0" || steamIdStr.Length < 10)
-                {
-                    Plugin.Log?.LogInfo($"[VaultSave] Invalid Steam ID: {steamIdStr}");
-                    return null;
-                }
-
-                _cachedSteamId = steamIdStr;
-                Plugin.Log?.LogInfo($"[VaultSave] Successfully retrieved Steam ID for encryption (length: {steamIdStr.Length})");
-                return _cachedSteamId;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogWarning($"[VaultSave] Failed to get Steam ID: {ex.Message}");
-                return null;
-            }
         }
 
         #endregion
