@@ -34,18 +34,6 @@ namespace CropOptimizer.UI
         /// <summary>After a successful camera search, wait before scanning all cameras again (avoids per-frame <c>FindObjectsOfType&lt;Camera&gt;</c>).</summary>
         private const float GameplayCameraSearchCooldown = 2f;
 
-        private static readonly string[] WaterMemberNames =
-        {
-            "isWatered", "IsWatered", "watered", "Watered", "needsWater", "NeedsWater",
-            "water", "Water", "hasWater", "HasWater"
-        };
-
-        private static readonly string[] FertilizerMemberNames =
-        {
-            "fertilizer", "Fertilizer", "fertilized", "Fertilized", "hasFertilizer", "HasFertilizer",
-            "fertilizerType", "FertilizerType", "soilFertility", "SoilFertility"
-        };
-
         private static Type CropType => _cropType ??= AccessTools.TypeByName("Wish.Crop");
 
         /// <summary>
@@ -87,11 +75,6 @@ namespace CropOptimizer.UI
         {
             _cachedGameplayCamera = null;
             _nextGameplayCameraSearchTime = 0f;
-        }
-
-        public static void InvalidateCropCache()
-        {
-            CropSceneCache.Invalidate();
         }
 
         /// <summary>Clears hover fast-path state (e.g. after load) so we never reference destroyed crops.</summary>
@@ -216,16 +199,6 @@ namespace CropOptimizer.UI
             return true;
         }
 
-        public static string FormatWaterGuess(object cropInstance)
-        {
-            return FormatMemberGuess(cropInstance, WaterMemberNames);
-        }
-
-        public static string FormatFertilizerGuess(object cropInstance)
-        {
-            return FormatMemberGuess(cropInstance, FertilizerMemberNames);
-        }
-
         private static bool _dumpedCropMembers;
         private static bool _loggedTileProbe;
 
@@ -276,58 +249,6 @@ namespace CropOptimizer.UI
             {
                 return false;
             }
-        }
-
-        private const BindingFlags MemberFlags =
-            BindingFlags.Public | BindingFlags.NonPublic |
-            BindingFlags.Instance | BindingFlags.FlattenHierarchy;
-
-        private static string FormatMemberGuess(object instance, string[] names)
-        {
-            if (instance == null)
-                return "?";
-
-            try
-            {
-                for (Type t = instance.GetType(); t != null; t = t.BaseType)
-                {
-                    foreach (string name in names)
-                    {
-                        FieldInfo fi = null;
-                        PropertyInfo pi = null;
-                        try { fi = t.GetField(name, MemberFlags); } catch (Exception __ex) { ReflectionProbe.LogOnce("CropOptimizer/UI/CropHoverQuery.cs:299", __ex, Plugin.Log); }
-                        try { pi = fi == null ? t.GetProperty(name, MemberFlags) : null; } catch (Exception __ex) { ReflectionProbe.LogOnce("CropOptimizer/UI/CropHoverQuery.cs:300", __ex, Plugin.Log); }
-                        if (fi == null && pi == null)
-                            continue;
-                        object raw = fi != null ? fi.GetValue(instance) : pi.GetValue(instance, null);
-                        if (raw == null)
-                            continue;
-                        return FormatPrimitiveGuess(raw);
-                    }
-                }
-            }
-            catch (Exception __ex) { ReflectionProbe.LogOnce("CropOptimizer/UI/CropHoverQuery.cs:310", __ex, Plugin.Log); }
-
-            return "?";
-        }
-
-        private static string FormatPrimitiveGuess(object raw)
-        {
-            if (raw is bool b)
-                return b ? ModLocalization.T("crop.guess.yes") : ModLocalization.T("crop.guess.no");
-            if (raw is int i)
-                return i != 0 ? ModLocalization.T("crop.guess.yesValue", i) : ModLocalization.T("crop.guess.no");
-            if (raw is float f)
-                return Math.Abs(f) > 0.0001f ? ModLocalization.T("crop.guess.yesValue", f.ToString("0.##")) : ModLocalization.T("crop.guess.no");
-            if (raw is double d)
-                return Math.Abs(d) > 0.0001 ? ModLocalization.T("crop.guess.yesValue", d.ToString("0.##")) : ModLocalization.T("crop.guess.no");
-
-            string s = raw.ToString();
-            if (string.IsNullOrWhiteSpace(s))
-                return "?";
-            if (s.Length > 48)
-                return s.Substring(0, 45) + "...";
-            return s;
         }
 
         /// <summary>Builds a structured <see cref="TooltipContent"/> for the uGUI hover card.</summary>

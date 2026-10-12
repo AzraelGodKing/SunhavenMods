@@ -48,21 +48,6 @@ namespace CropOptimizer.UI
             if (_panel != null) _panel.SetActive(visible);
         }
 
-        public bool IsVisible => _panel != null && _panel.activeSelf;
-
-        public RectTransform Rect => _panelRt;
-
-        public void Destroy()
-        {
-            if (_panel != null)
-            {
-                UnityEngine.Object.Destroy(_panel);
-                _panel = null;
-                _panelRt = null;
-                _rows.Clear();
-            }
-        }
-
         /// <summary>Reposition the tooltip near a screen-space point.</summary>
         /// <remarks>
         /// The tooltip's anchor is top-left of the canvas with pivot (0,1), so `anchoredPosition`

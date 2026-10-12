@@ -385,39 +385,6 @@ namespace HavensBirthright
         }
 
         /// <summary>
-        /// Helper method to manually patch a method with a postfix
-        /// </summary>
-        private void PatchMethodPostfix(Type targetType, string methodName, Type patchType, string patchMethodName, Type[] parameters = null)
-        {
-            try
-            {
-                var original = parameters == null
-                    ? AccessTools.Method(targetType, methodName)
-                    : AccessTools.Method(targetType, methodName, parameters);
-
-                if (original == null)
-                {
-                    Log.LogWarning($"Could not find method {targetType.Name}.{methodName}");
-                    return;
-                }
-
-                var postfix = AccessTools.Method(patchType, patchMethodName);
-                if (postfix == null)
-                {
-                    Log.LogWarning($"Could not find patch method {patchType.Name}.{patchMethodName}");
-                    return;
-                }
-
-                _harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-                Log.LogInfo($"Successfully patched {targetType.Name}.{methodName} (postfix)");
-            }
-            catch (Exception ex)
-            {
-                Log.LogError($"Failed to patch {targetType.Name}.{methodName}: {ex.Message}");
-            }
-        }
-
-        /// <summary>
         /// Helper method to manually patch a method with a finalizer
         /// </summary>
         private void PatchMethodFinalizer(Type targetType, string methodName, Type patchType, string patchMethodName, Type[] parameters = null)
@@ -471,7 +438,7 @@ namespace HavensBirthright
                     if (buyItemMethod != null)
                     {
                         PatchMethodPrefix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBeforeShopBuyItem", new[] { shopItemInfo2Type, typeof(int) });
-                        PatchMethodPostfix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItem", new[] { shopItemInfo2Type, typeof(int) });
+                        PatchMethod(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItem", new[] { shopItemInfo2Type, typeof(int) });
                         PatchMethodFinalizer(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBuyItemFinalizer", new[] { shopItemInfo2Type, typeof(int) });
                     }
                 }
@@ -481,14 +448,14 @@ namespace HavensBirthright
                     if (buyItemMethod != null)
                     {
                         PatchMethodPrefix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBeforeShopBuyItem", new[] { shopLoot2Type, typeof(int) });
-                        PatchMethodPostfix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItem", new[] { shopLoot2Type, typeof(int) });
+                        PatchMethod(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItem", new[] { shopLoot2Type, typeof(int) });
                         PatchMethodFinalizer(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBuyItemFinalizer", new[] { shopLoot2Type, typeof(int) });
                     }
                     var buyItemSingle = AccessTools.Method(shopType, "BuyItem", new[] { shopLoot2Type });
                     if (buyItemSingle != null)
                     {
                         PatchMethodPrefix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBeforeShopBuyItemSingle", new[] { shopLoot2Type });
-                        PatchMethodPostfix(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItemSingle", new[] { shopLoot2Type });
+                        PatchMethod(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnAfterShopBuyItemSingle", new[] { shopLoot2Type });
                         PatchMethodFinalizer(shopType, "BuyItem", typeof(Patches.EconomyPatches), "OnBuyItemFinalizer", new[] { shopLoot2Type });
                     }
                 }

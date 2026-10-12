@@ -56,8 +56,6 @@ namespace CropOptimizer.Data
             return _cropStateByInstanceId;
         }
 
-        public int GetProjectedSellTotal() => _runningProjectedSell.Gold;
-
         public CropShopValue GetProjectedShopValue() => _runningProjectedSell;
 
         public bool TryGetState(int cropInstanceId, out CropState state)

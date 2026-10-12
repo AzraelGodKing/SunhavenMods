@@ -86,13 +86,5 @@ namespace SunhavenMods.Shared
             }
         }
 
-        /// <summary>Test/dev helper — clears the first-failure set.</summary>
-        public static void ResetReportedSitesForTests()
-        {
-            lock (Lock)
-            {
-                Reported.Clear();
-            }
-        }
     }
 }

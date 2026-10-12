@@ -371,12 +371,6 @@ namespace GiftingAssistant
             }
         }
 
-        /// <summary>Mirrors a gift task's completion state into Sun Haven Todo (no-op unless PushToTodo).</summary>
-        public static void CompleteGiftTodo(string npcName, bool completed)
-        {
-            QueueCompleteGiftTodo(npcName, completed);
-        }
-
         /// <summary>Queues gift-task completion sync (deferred flush).</summary>
         public static void QueueCompleteGiftTodo(string npcName, bool completed)
         {
@@ -393,24 +387,12 @@ namespace GiftingAssistant
             _todoIntegration.QueueRemove(npcName);
         }
 
-        /// <summary>Ensures a gift task exists for each rostered NPC (no removal). Safe to call repeatedly.</summary>
-        public static void EnsureGiftTodos()
-        {
-            QueueEnsureGiftTodos();
-        }
-
         /// <summary>Queues ensure-all gift tasks (character load).</summary>
         public static void QueueEnsureGiftTodos()
         {
             if (_todoIntegration == null || !_todoIntegration.CanPushTodos)
                 return;
             _todoIntegration.QueueEnsureAll();
-        }
-
-        /// <summary>Publishes a single NPC's gift task on demand (the row's +Todo button).</summary>
-        public static void PublishGiftTodo(GiftRosterEntry entry)
-        {
-            QueuePublishGiftTodo(entry);
         }
 
         /// <summary>Queues a single NPC gift task (+Todo button).</summary>
@@ -526,14 +508,6 @@ namespace GiftingAssistant
             EnsureUIComponentsExist();
             _staticWindow?.Toggle();
         }
-
-        public static void ShowUI()
-        {
-            EnsureUIComponentsExist();
-            _staticWindow?.Show();
-        }
-
-        public static void HideUI() => _staticWindow?.Hide();
 
         public static GiftRosterManager GetManager() => _staticManager;
 

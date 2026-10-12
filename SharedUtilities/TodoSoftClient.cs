@@ -131,42 +131,6 @@ namespace SunhavenMods.Shared
             }
         }
 
-        /// <summary>
-        /// Adds a todo when Todo is installed and a character's list is loaded.
-        /// Returns false if unavailable or the call failed.
-        /// </summary>
-        public static bool TryAddTodo(
-            string title,
-            string description,
-            string priorityName = "Normal",
-            string categoryName = "General",
-            ManualLogSource log = null)
-        {
-            if (!IsAvailable || string.IsNullOrWhiteSpace(title))
-                return false;
-
-            try
-            {
-                var todo = TryGetManager(log);
-                if (todo == null || !todo.HasData)
-                    return false;
-
-                todo.AddTodo(new TodoDraft
-                {
-                    Title = title,
-                    Description = description ?? "",
-                    Priority = priorityName,
-                    Category = categoryName
-                });
-                return true;
-            }
-            catch (Exception ex)
-            {
-                log?.LogDebug($"[TodoSoftClient] AddTodo failed: {ex.Message}");
-                return false;
-            }
-        }
-
         private static bool IsLoadedFor(TodoManagerReflection todo, string characterName)
         {
             if (!todo.HasData)
