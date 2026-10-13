@@ -1240,12 +1240,9 @@ namespace TheVault
             }
             SceneManager.sceneLoaded -= OnSceneLoaded;
 
-            // IMPORTANT: Do NOT unpatch Harmony here!
-            // Harmony patches are global and will continue working even after this MonoBehaviour is destroyed.
-            // If we unpatch, the LoadCharacter and InitializeAsOwner hooks stop working,
-            // which breaks character switching entirely.
-            // Only unpatch in OnApplicationQuit when the game is actually closing.
-            // _harmony?.UnpatchSelf(); // REMOVED - this was breaking character switching!
+            // Leave patches applied. UnpatchSelf here dropped LoadCharacter and InitializeAsOwner hooks when this
+            // component was destroyed during scene cleanup, so The Vault stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437) and Gifting Assistant.
 
             _saveSystem?.ForceSave();
         }
