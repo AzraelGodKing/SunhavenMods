@@ -262,13 +262,6 @@ namespace SunHavenMuseumUtilityTracker.UI
                 SetVisible(visible);
             }
 
-            internal void Hide()
-            {
-                _lastVisible = false;
-                _lastGameItemId = int.MinValue;
-                SetVisible(false);
-            }
-
             internal void SetVisible(bool visible)
             {
                 if (_root != null && _root.activeSelf != visible)

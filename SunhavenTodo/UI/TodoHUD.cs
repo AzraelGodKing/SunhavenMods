@@ -131,11 +131,6 @@ namespace SunhavenTodo.UI
             _windowRect.y = Mathf.Clamp(y, 0, Screen.height - _windowRect.height);
         }
 
-        public (float x, float y) GetPosition()
-        {
-            return (_windowRect.x, _windowRect.y);
-        }
-
         public void SetEnabled(bool enabled)
         {
             _isEnabled = enabled;
