@@ -7,6 +7,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
+- **Contributor README / docs / csproj hygiene:** Dropped hardcoded version numbers from eight contributor READMEs (they were behind `docs/versions.json`; `pre-push-build.ps1` only restamps thunderstore READMEs and the root table). Point at `docs/versions.json` instead. Fixed `VERSION_AND_RELEASE.md` PowerShell path to `scripts/version/verify-version-consistency.ps1`. Marked Gate 1.5 ReflectionProbe **Done** (AZR-254 / #145). Dropped leftover `AllowUnsafeBlocks` from SenpaisChest, SunhavenTodo, SunHavenMuseumUtilityTracker, and BirthdayReminder csproj files (no `unsafe` in the repo; same as #148).
 
 ## 2026-10-11
 

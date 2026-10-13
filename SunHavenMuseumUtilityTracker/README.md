@@ -1,6 +1,6 @@
 # Sun Haven Museum Utility Tracker (S.M.U.T.)
 
-**Version 3.0.1**
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 Track museum donations across **Hall of Gems**, **Hall of Culture**, and the **Aquarium** in [Sun Haven](https://store.steampowered.com/app/1432860/Sun_Haven/). Lists use the game’s real item IDs (from `Wish.ItemID` and official bundle layouts), so icons, search, and cross-mod features stay aligned with your save.
 
@@ -124,6 +124,8 @@ Backups may appear beside the primary file after failed loads. Keep these if you
 ---
 
 ## Version history
+
+Later store notes live in [`docs/versions.json`](../docs/versions.json) and [`CHANGELOG.md`](../CHANGELOG.md).
 
 - **3.0.1** — Repo release alignment (`docs/versions.json`). Patch release: shared localization language-change refresh fix (Harmony postfix parameter casing on `SetLanguageAndCode`).
 - **2026-05-02 (maintainer notes)** — Lifecycle hardening pass: menu transition reset now runs once per actual gameplay → menu transition, duplicate reset paths were deduplicated, and plugin teardown logging now treats menu/quit shutdown as expected while unsubscribing scene handlers on destroy.
