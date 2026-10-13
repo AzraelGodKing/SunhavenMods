@@ -325,7 +325,7 @@ namespace SunHavenMuseumUtilityTracker
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.LogInfo($"[SceneChange] Scene loaded: '{scene.name}'");
+            Logger.LogDebug($"[SceneChange] Scene loaded: '{scene.name}'");
 
             string sceneName = scene.name.ToLowerInvariant();
             bool isMenuScene = sceneName.Contains("menu") || sceneName.Contains("title") || sceneName.Contains("mainmenu");

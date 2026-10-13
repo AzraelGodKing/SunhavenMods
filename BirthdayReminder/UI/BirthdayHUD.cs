@@ -105,13 +105,13 @@ namespace BirthdayReminder.UI
         {
             _windowRect = new Rect(100, 100, WindowWidth, MinHeight);
             _isVisible = false;  // Don't show by default - only show when player is in-game with birthdays
-            Plugin.Log?.LogInfo("[BirthdayHUD] Awake called - isVisible set to false (waiting for player init)");
+            Plugin.Log?.LogDebug("[BirthdayHUD] Awake called - isVisible set to false (waiting for player init)");
         }
 
         public void Initialize(BirthdayManager manager)
         {
             _manager = manager;
-            Plugin.Log?.LogInfo($"[BirthdayHUD] Initialize called, manager: {manager != null}, screen: ({Screen.width}x{Screen.height})");
+            Plugin.Log?.LogDebug($"[BirthdayHUD] Initialize called, manager: {manager != null}, screen: ({Screen.width}x{Screen.height})");
 
             // Set default position (top-right corner)
             if (Screen.width > 0 && Screen.height > 0)
@@ -122,13 +122,13 @@ namespace BirthdayReminder.UI
                     WindowWidth,
                     MinHeight
                 );
-                Plugin.Log?.LogInfo($"[BirthdayHUD] Default position set to ({_windowRect.x}, {_windowRect.y})");
+                Plugin.Log?.LogDebug($"[BirthdayHUD] Default position set to ({_windowRect.x}, {_windowRect.y})");
             }
             else
             {
                 // Fallback position if screen isn't ready
                 _windowRect = new Rect(100, 100, WindowWidth, MinHeight);
-                Plugin.Log?.LogInfo($"[BirthdayHUD] Using fallback position (100, 100) - screen not ready");
+                Plugin.Log?.LogDebug($"[BirthdayHUD] Using fallback position (100, 100) - screen not ready");
             }
 
             if (_manager != null)
@@ -173,7 +173,7 @@ namespace BirthdayReminder.UI
             // Ensure window is within screen bounds
             EnsureOnScreen();
 
-            Plugin.Log?.LogInfo($"[BirthdayHUD] Show() called - isVisible: {_isVisible}, pos: ({_windowRect.x}, {_windowRect.y}), screen: ({Screen.width}x{Screen.height}), birthdays: {_manager?.TodaysBirthdays?.Count ?? 0}");
+            Plugin.Log?.LogDebug($"[BirthdayHUD] Show() called - isVisible: {_isVisible}, pos: ({_windowRect.x}, {_windowRect.y}), screen: ({Screen.width}x{Screen.height}), birthdays: {_manager?.TodaysBirthdays?.Count ?? 0}");
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace BirthdayReminder.UI
 
             if (needsReset)
             {
-                Plugin.Log?.LogInfo($"[BirthdayHUD] Resetting position - was ({_windowRect.x}, {_windowRect.y})");
+                Plugin.Log?.LogDebug($"[BirthdayHUD] Resetting position - was ({_windowRect.x}, {_windowRect.y})");
                 _windowRect.x = Screen.width - WindowWidth - Scaled(20);
                 _windowRect.y = Scaled(80);
             }
@@ -625,7 +625,7 @@ namespace BirthdayReminder.UI
                 CreateTextures();
                 CreateStyles();
                 _stylesInitialized = true;
-                Plugin.Log?.LogInfo("[BirthdayHUD] Styles initialized successfully");
+                Plugin.Log?.LogDebug("[BirthdayHUD] Styles initialized successfully");
             }
             catch (System.Exception ex)
             {

@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-10-13
+
+- **Repeated Info logs demoted (MOD_LIFECYCLE_AND_LOGGING_CONTRACT; no version bumps):** SMUT `OnSceneLoaded` scene-name line is `LogDebug` (same pattern as Haven Dev Tools / The Vault). SMUT `GetCurrentCharacterName` / `GameSave.LoadCharacter` / name-extract traces are `LogDebug`. Birthday HUD Awake/Initialize/position/Show/style-init traces are `LogDebug`. Did not touch Birthday `Plugin.cs` or Senpai's Chest (#166), SMUT dead-code / `LastLoadedSlot` / HideFlags (#163), or other #162–#165 files.
+
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
