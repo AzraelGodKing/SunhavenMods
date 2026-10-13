@@ -4,7 +4,7 @@ Never miss NPC birthdays in Sun Haven.
 
 ## Version
 
-**2.1.2** — published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 ## Default Behavior
 

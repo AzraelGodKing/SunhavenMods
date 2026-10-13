@@ -11,7 +11,7 @@ recent reset can be undone per-profession during the same session.
 
 ## Version
 
-**2.1.3** — published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 ## Features
 

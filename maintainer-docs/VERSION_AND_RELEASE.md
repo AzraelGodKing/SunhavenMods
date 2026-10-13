@@ -50,7 +50,7 @@ If you only need to validate consistency (for example before pushing), use eithe
 **PowerShell wrapper** (locates `python` / `py` and runs the Python script — **Python 3.6+ must be installed and on PATH**):
 
 ```powershell
-.\scripts\verify-version-consistency.ps1
+.\scripts\version\verify-version-consistency.ps1
 ```
 
 **Direct Python:**

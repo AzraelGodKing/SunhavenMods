@@ -6,7 +6,6 @@
     <AssemblyName>SenpaisChest</AssemblyName>
     <RootNamespace>SenpaisChest</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <!-- Linked SharedUtilities/SceneRootSurvivor.cs plus ProjectReference to SMUT (same linked type) produces CS0436. -->
     <NoWarn>$(NoWarn);CS0436</NoWarn>
     <SunhavenModUiProject>true</SunhavenModUiProject>
