@@ -23,13 +23,6 @@ namespace GiftingAssistant.Data
             OnDataLoaded?.Invoke();
         }
 
-        public void ClearData()
-        {
-            _data = null;
-            _currentCharacter = null;
-            _isDirty = false;
-        }
-
         public GiftRosterData GetData() => _data;
 
         public void MarkClean() => _isDirty = false;

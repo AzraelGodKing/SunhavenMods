@@ -17,7 +17,6 @@ namespace SunHavenMuseumUtilityTracker
     public class Plugin : BaseUnityPlugin
     {
         // Static references for access from patches
-        public static Plugin Instance { get; private set; }
         public static ManualLogSource Log { get; private set; }
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -53,11 +52,8 @@ namespace SunHavenMuseumUtilityTracker
         public static bool StaticWishlistShopBadges { get; private set; } = true;
         public static bool StaticWishlistGiftBadges { get; private set; } = true;
 
-        public DonationManager DonationManager => _donationManager;
-
         private void Awake()
         {
-            Instance = this;
             Log = Logger;
             ConfigFile = CreateNamedConfig();
             SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);

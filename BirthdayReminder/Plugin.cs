@@ -54,7 +54,6 @@ namespace BirthdayReminder
 
         // Instance references
         private BirthdayManager _manager;
-        private BirthdayHUD _hud;
         private Harmony _harmony;
         private bool _applicationQuitting;
 
@@ -422,11 +421,6 @@ namespace BirthdayReminder
 
                     Log?.LogInfo("[EnsureUI] BirthdayHUD created");
                 }
-
-                if (Instance != null)
-                {
-                    Instance._hud = _staticHUD;
-                }
             }
             catch (Exception ex)
             {
@@ -440,7 +434,6 @@ namespace BirthdayReminder
         public static bool ShowGiftHints => _staticShowGiftHints;
         public static KeyCode StaticToggleKey => _staticToggleKey;
         public static bool StaticDebugMode => _staticDebugMode;
-        public static bool StaticUseNativeNotifications => _staticUseNativeNotifications;
         public static bool StaticEnabled => _staticEnabled;
 
         /// <summary>

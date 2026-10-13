@@ -6,6 +6,17 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ## 2026-10-12
 
+- **Unused-API cleanup (does not overlap #162–#166):** Grepped the whole repo including reflection strings (`GetMethod`/`GetProperty`) and tests before each delete. Kept SMUT `GetDonationManager` (Haven Dev Tools, Trinket Fortune, Senpai's Chest). No version bump (`cursor/` branch).
+  - **Haven's Birthright:** Deleted unused `IsElemental` / `IsAmari` / `IsNaga` / `GetCachedSubRace` / `RefreshBonuses`.
+  - **Gifting Assistant:** Deleted unused `GiftRosterManager.ClearData`.
+  - **Crop Optimizer:** Deleted unused 1-arg and 2-arg `DescribeFarmingTileState` wrappers (4-arg path stays).
+  - **The Vault:** Dropped unused `ModHealthAggregator` Compile link (`TheVault.csproj`). File still linked by Haven Dev Tools and Almanac.
+  - **SharedUtilities:** Deleted unused `ModDiagnostics.GetAllReports`.
+  - **Haven Dev Tools:** Deleted unused `CurrencyTracker.GetVaultAmount`, `ModHealthDashboardPanel.GetIssueCount`, `ModHealthResolver.IsPluginLoaded`, `Plugin.GetDebugWindow` / `GetDebugOverlay`, and `DebugOverlay.Show` / `Hide` (kept `Toggle`).
+  - **SMUT:** Deleted instance `DonationManager` property (static `GetDonationManager` stays), `MuseumTrackerUI.IsVisible`, unused `BadgeView.Hide`, and write-only `Plugin.Instance`.
+  - **Birthday Reminder:** Deleted unused `BirthdayHUD.GetPosition` / `IsVisible`, write-only `_hud`, and unused `StaticUseNativeNotifications` getter.
+  - **Sun Haven Todo:** Deleted unused `TodoHUD.GetPosition` (`SetPosition` stays).
+  - **Haven's Respec:** Deleted unused `RespecStyle.Ink`.
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
 
 ## 2026-10-11
