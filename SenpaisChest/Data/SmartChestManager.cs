@@ -132,12 +132,6 @@ namespace SenpaisChest.Data
             return data;
         }
 
-        public SmartChestData GetSmartChest(string chestId)
-        {
-            _smartChests.TryGetValue(chestId, out var data);
-            return data;
-        }
-
         public bool IsSmartChest(string chestId)
         {
             return _smartChests.ContainsKey(chestId)
