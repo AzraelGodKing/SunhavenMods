@@ -104,7 +104,7 @@
   "com.azraelgodking.cropoptimizer": {
     "version": "2.3.1",
     "name": "Crop Optimizer",
-    "description": "Crop forecast HUD with seasonal planning helpers and soft Todo/Birthday/Vault integrations",
+    "description": "Crop forecast HUD with soft Vault and Almanac integrations",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/500",
     "nexus_file_group_id": "7320911",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/CropOptimizer/",

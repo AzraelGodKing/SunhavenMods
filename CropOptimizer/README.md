@@ -3,7 +3,7 @@
 - **Thunderstore:** [CropOptimizer](https://thunderstore.io/c/sun-haven/p/AzraelGodKing/CropOptimizer/)
 - **Nexus Mods:** [Crop Optimizer](https://www.nexusmods.com/sunhaven/mods/500) ([files tab](https://www.nexusmods.com/sunhaven/mods/500?tab=files))
 
-Crop Optimizer adds field-level harvest forecasting, a lightweight crop HUD, and soft integrations with Sunhaven Todo, Birthday Reminder, and The Vault.
+Crop Optimizer adds field-level harvest forecasting, a lightweight crop HUD, and soft integrations with The Vault and Haven's Almanac.
 
 ## Version
 
@@ -14,17 +14,14 @@ Crop Optimizer adds field-level harvest forecasting, a lightweight crop HUD, and
 - Tracks crop growth updates through a single Harmony patch on crop growth.
 - HUD summary for tracked crops and projected sell value.
 - **Field highlights:** bundled `Assets/tile_selection_sheet.png` (vanilla selection frames); yellow corners for dry tiles, purple corners for mana crops that are not infused yet, green corners for unfertilized; see `[Highlights]` in config.
-- Optional Sunhaven Todo morning task injection for harvest-ready tiles.
-- Optional Birthday reminder integration for produce reservation hints.
 - Optional The Vault integration via reflection when The Vault is installed (no hard dependency on `TheVault.Abstractions.dll`).
+- Optional Haven's Almanac data surface for crop count and projected sell value.
 
 ## Integration Badges
 
 | Integration | Status |
 |---|---|
 | Haven's Almanac | Compatible |
-| Sunhaven Todo | Soft dependency |
-| Birthday Reminder | Soft dependency |
 | The Vault | Soft dependency |
 
 ## Config
@@ -44,6 +41,9 @@ Crop Optimizer adds field-level harvest forecasting, a lightweight crop HUD, and
 - Optional shortcut to open the Vault / journal filtered by the hovered crop.
 
 ## Changelog
+
+### 2026-10-15 (docs)
+- Removed Todo and Birthday integration claims. Crop Optimizer integrates with The Vault and Haven's Almanac only; those Todo/Birthday hooks never ran.
 
 ### 2026-10-10 (2.3.0)
 - **Added (AZR-440):** Purple corner highlights on crops that can be mana infused but are not yet (requested by Achenar459). Uses the game's own Infuse check: mana-infusable seed, not infused, not dead, and Mana Infusion unlocked on the character. Shown at any growth stage, since an uninfused mana crop has to be infused before it can be harvested. Toggle with `Highlights.HighlightUninfusedManaCrops` (default on). Infusing needs no tool, so `OnlyWhenHoldingTool` does not hide these. When a tile is also dry, the dry highlight wins.
