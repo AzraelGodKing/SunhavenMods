@@ -2,7 +2,7 @@
   "slug": "crop-optimizer",
   "name": "Crop Optimizer",
   "game": "sun-haven",
-  "description": "Crop forecast HUD with seasonal planning helpers and soft Todo/Birthday/Vault integrations",
+  "description": "Crop forecast HUD with soft Vault and Almanac integrations",
   "version": "2.3.1",
   "screenshots": [],
   "download": {
