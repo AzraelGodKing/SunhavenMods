@@ -1,3 +1,4 @@
+using System.Globalization;
 using BepInEx.Configuration;
 using UnityEngine;
 
@@ -62,12 +63,12 @@ namespace HavensAlmanac.Config
             HUDPositionX = config.Bind(
                 "HUD", "PositionX", -1f,
                 "HUD X position (-1 for default)");
-            StaticHUDPositionX = HUDPositionX.Value;
+            StaticHUDPositionX = ReadInvariantFloat(HUDPositionX);
 
             HUDPositionY = config.Bind(
                 "HUD", "PositionY", -1f,
                 "HUD Y position (-1 for default)");
-            StaticHUDPositionY = HUDPositionY.Value;
+            StaticHUDPositionY = ReadInvariantFloat(HUDPositionY);
 
             BriefingEnabled = config.Bind(
                 "DailyBriefing", "Enabled", true,
@@ -110,6 +111,36 @@ namespace HavensAlmanac.Config
             RelationshipsShowGiftBadge = config.Bind(
                 "Relationships", "ShowUngiftedBadge", true,
                 "Show an ungifted-today marker on NPC rows (uses NPCAI.gaveGiftForDay).");
+        }
+
+        /// <summary>
+        /// Persist a dragged HUD position with invariant decimals so comma-decimal
+        /// locales write "1234.5" instead of "1234,5" (which BepInEx cannot reload).
+        /// </summary>
+        internal static void SaveHudPosition(float x, float y)
+        {
+            StaticHUDPositionX = x;
+            StaticHUDPositionY = y;
+            WriteInvariantFloat(HUDPositionX, x);
+            WriteInvariantFloat(HUDPositionY, y);
+        }
+
+        private static float ReadInvariantFloat(ConfigEntry<float> entry)
+        {
+            if (entry == null)
+                return -1f;
+
+            string raw = entry.GetSerializedValue();
+            if (!string.IsNullOrWhiteSpace(raw) &&
+                float.TryParse(raw, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsed))
+                return parsed;
+
+            return entry.Value;
+        }
+
+        private static void WriteInvariantFloat(ConfigEntry<float> entry, float value)
+        {
+            entry?.SetSerializedValue(value.ToString(CultureInfo.InvariantCulture));
         }
     }
 }

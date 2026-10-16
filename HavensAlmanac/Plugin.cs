@@ -367,13 +367,7 @@ namespace HavensAlmanac
             if (_staticHUD == null)
                 return;
 
-            _staticHUD.OnPositionChanged = (x, y) =>
-            {
-                AlmanacConfig.StaticHUDPositionX = x;
-                AlmanacConfig.StaticHUDPositionY = y;
-                AlmanacConfig.HUDPositionX?.SetSerializedValue(x.ToString());
-                AlmanacConfig.HUDPositionY?.SetSerializedValue(y.ToString());
-            };
+            _staticHUD.OnPositionChanged = AlmanacConfig.SaveHudPosition;
         }
 
         private static object ResolveSingletonInstance(Type targetType)
