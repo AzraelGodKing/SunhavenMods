@@ -180,6 +180,11 @@ namespace CropOptimizer.UI
 
         protected override void OnUpdate()
         {
+            // Toggle lives here (not Plugin.Update) so F3 still works after a
+            // scene change destroys the plugin MonoBehaviour. CropHUD is a
+            // PersistentRunnerBase and keeps the ConfigEntry reference.
+            HandleHudToggle();
+
             if (_forecast == null) return;
             EnsureCanvas();
 
@@ -237,6 +242,19 @@ namespace CropOptimizer.UI
             // Hover tooltip
             UpdateHoverTooltip(sessionLive);
             UpdateFieldHighlights(sessionLive);
+        }
+
+        private void HandleHudToggle()
+        {
+            if (_config?.ToggleHudKey == null)
+                return;
+
+            if (TextInputFocusGuard.ShouldDeferModHotkeys(Plugin.Log))
+                return;
+
+            KeyCode key = _config.ToggleHudKey.Value;
+            if (key != KeyCode.None && Input.GetKeyDown(key))
+                SetVisible(!_isVisible);
         }
 
         private void UpdateFieldHighlights(bool sessionLive)
