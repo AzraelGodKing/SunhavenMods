@@ -1,5 +1,0 @@
-# Docs-scoped ignores
-
-../Decompiled/
- ../**/bin/
-../**/obj/
