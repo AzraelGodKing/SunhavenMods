@@ -503,7 +503,7 @@ namespace HavensMirror.Dialogue
                 }
 
                 Vector3 playerScreen = RectTransformUtility.WorldToScreenPoint(null, _rect.position);
-                Plugin.Log?.LogInfo(
+                Plugin.Log?.LogDebug(
                     $"[Dialogue] Player bust layout: parent='{parentName}' anchoredPosition={_rect.anchoredPosition} " +
                     $"sizeDelta={_rect.sizeDelta} spritePx={spritePx} npcHeight={npcH} " +
                     $"anchors=({_rect.anchorMin},{_rect.anchorMax}) " +
@@ -511,7 +511,7 @@ namespace HavensMirror.Dialogue
                     $"siblingIndex={_rect.GetSiblingIndex()}");
             }
 
-            Plugin.Log?.LogInfo($"[Dialogue] Present player bust '{slot}' from '{loadedFrom}'.");
+            Plugin.Log?.LogDebug($"[Dialogue] Present player bust '{slot}' from '{loadedFrom}'.");
             _relayoutRoutine = null;
         }
     }

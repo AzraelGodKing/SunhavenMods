@@ -16,7 +16,7 @@ namespace HavenDevTools.Services
 
         public ItemInspector()
         {
-            Plugin.Log?.LogInfo("[ItemInspector] Initialized");
+            Plugin.Log?.LogDebug("[ItemInspector] Initialized");
         }
 
         /// <summary>

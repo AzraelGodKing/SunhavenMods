@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-10-16
+
+- **Logging contract (`MOD_LIFECYCLE_AND_LOGGING_CONTRACT` §3):** Demoted leftover non-milestone `LogInfo` to `LogDebug` in Senpai's Chest `Plugin.cs` (Harmony/EnsureUI/integration traces), Birthday Reminder `Plugin.cs` / `BirthdayManager.cs` (HUD recreate, debug hotkeys, per-NPC scan lines), Haven's Mirror dialogue bust layout/present and binder patch traces, Trinket Fortune `FishingTrinketPatches` patch-applied lines, The Vault UI/HUD/pointer/scene-runner traces plus `GetCurrentCharacterName` source, Birthright GameApis/race-detection internals, and Haven Dev Tools service-init / debug-window dumps / Plugin EnsureUI. Left #166 chest-panel scheduling and Birthday Ctrl+Shift+B hint, and #167 BirthdayHUD / SMUT scene-name sites, untouched. Skipped files already rewritten in #164 (Vault Plugin/save/currency) and #165/#170 (Birthright `Plugin.cs` / `BirthrightRunner`). No version bump (`cursor/` branch).
+
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
