@@ -15,13 +15,6 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 **Sunhaven Todo** — unused API cleanup
 - Removed unused `ShowUI` / `HideUI` / `IsCharacterDataLoaded`, `ClearData`, the string `AddTodo` overload, `GetTodosByPriority`, `SearchTodos`, and `TodoSaveSystem.Delete`. Suite mods already go through `TodoSoftClient` (`GetTodoManager` + `AddTodo(TodoItem)`).
-**Haven's Mirror** — AZR-450
-**Haven's Mirror (1.0.1 → 1.0.2)** — AZR-450
-- **Fix:** Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation. It still closes with the NPC's portrait when the conversation ends. Reported by AnnaBanana4411.
-
-**The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
-- **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
-- **Fix:** The save key no longer depends on whether Steam finished loading before the mod started, so a vault saved in one session is not unreadable in the next.
 
 **Senpai's Chest 3.1.3, Haven's Birthright 3.1.3, Museum Utility Tracker 3.1.2, A Squirrel's Birthday Reminder 2.1.3, Sunhaven Todo 2.1.2, Haven Dev Tools 2.1.2, Haven's Almanac 2.2.2, Faster Races 2.1.2, Trinket Fortune 2.1.3, Crop Optimizer 2.2.3, Haven's Respec 2.1.4, Gifting Assistant 1.1.3, Haven's Mirror 1.0.1** — AZR-257
 - **Update checks:** One download of the version list per game launch, shared by every installed mod, instead of one request per mod. The list is read with a real JSON parser, and an installed or published version that can't be compared now reports a failed check instead of "up to date". Checks point at the renamed `SunhavenMods` repository.
@@ -46,7 +39,18 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 **Gifting Assistant (1.1.1 → 1.1.2)** — AZR-437
 - **Fix:** Player-load and gift patches are isolated so an exception in this mod cannot skip Birthday Reminder's hooks on the same game methods.
 
+## 2026-10-11
+
+**Haven's Mirror (1.0.1 → 1.0.2)** — AZR-450
+- **Fix:** Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation. It still closes with the NPC's portrait when the conversation ends. Reported by AnnaBanana4411.
+
+---
+
 ## 2026-10-10
+
+**The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
+- **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
+- **Fix:** The save key no longer depends on whether Steam finished loading before the mod started, so a vault saved in one session is not unreadable in the next.
 
 **Haven's Respec (2.1.2 → 2.1.3)** — AZR-356
 - **Fix:** Respec now rolls back Max Mana from refunded skill nodes (e.g. Mental Focus, Town Spirit). Deactivate passes the live node rank into `SetActive`, and leftover permanent mana / character progress is cleared (Undo restores it).

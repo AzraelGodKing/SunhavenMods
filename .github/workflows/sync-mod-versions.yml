@@ -7,6 +7,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "docs/versions.json"
+      - "**/Plugin.cs"
+      - "**/PluginInfo.cs"
+      - "**/thunderstore/manifest.json"
+      - "**/thunderstore/README.md"
+      - "README.md"
+      - "scripts/matrix/**"
+      - "scripts/version/**"
+      - ".github/workflows/sync-mod-versions.yml"
   workflow_dispatch:
 
 concurrency:
