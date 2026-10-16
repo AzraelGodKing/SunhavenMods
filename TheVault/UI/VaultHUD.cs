@@ -107,7 +107,7 @@ namespace TheVault.UI
         public void Initialize(VaultManager vaultManager)
         {
             _vaultManager = vaultManager;
-            Plugin.Log?.LogInfo("VaultHUD initialized");
+            Plugin.Log?.LogDebug("VaultHUD initialized");
         }
 
         public void SetEnabled(bool enabled) => _isEnabled = enabled;
@@ -135,7 +135,7 @@ namespace TheVault.UI
         }
 
         public bool IsEnabled => _isEnabled;
-        public void Toggle() { _isEnabled = !_isEnabled; Plugin.Log?.LogInfo($"VaultHUD toggled: {(_isEnabled ? "ON" : "OFF")}"); }
+        public void Toggle() { _isEnabled = !_isEnabled; Plugin.Log?.LogDebug($"VaultHUD toggled: {(_isEnabled ? "ON" : "OFF")}"); }
 
         private void Update()
         {

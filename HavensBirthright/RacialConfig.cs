@@ -618,7 +618,7 @@ namespace HavensBirthright
                 "Percentage chance to skip air requirement while swimming/fishing"
             );
 
-            Plugin.Log.LogInfo("Configuration initialized");
+            Plugin.Log.LogDebug("Configuration initialized");
         }
     }
 }

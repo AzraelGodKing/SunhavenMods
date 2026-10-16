@@ -11,7 +11,7 @@ namespace HavenDevTools.Services
     {
         public RaceModifierTracker()
         {
-            Plugin.Log?.LogInfo("[RaceModifierTracker] Initialized");
+            Plugin.Log?.LogDebug("[RaceModifierTracker] Initialized");
         }
 
         /// <summary>

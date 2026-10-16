@@ -227,7 +227,7 @@ namespace BirthdayReminder
             _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
             SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
             _persistentRunnerComponent = _persistentRunner.AddComponent<PersistentRunner>();
-            Log.LogInfo("[PersistentRunner] Created");
+            Log.LogDebug("[PersistentRunner] Created");
         }
 
         private void InitializeManager()
@@ -247,7 +247,7 @@ namespace BirthdayReminder
                 }
                 else
                 {
-                    Log.LogInfo("[Integrations] SunhavenTodo not found - birthday todos disabled");
+                    Log.LogDebug("[Integrations] SunhavenTodo not found - birthday todos disabled");
                 }
             }
             catch (Exception ex)
@@ -271,7 +271,7 @@ namespace BirthdayReminder
                     {
                         var patchMethod = AccessTools.Method(typeof(PlayerPatches), nameof(PlayerPatches.OnPlayerInitialized));
                         _harmony.Patch(initMethod, postfix: new HarmonyMethod(patchMethod));
-                        Log.LogInfo("Applied player initialization patch");
+                        Log.LogDebug("Applied player initialization patch");
                     }
                     else
                         Log.LogWarning("Could not find Player.InitializeAsOwner — birthday player hook inactive");
@@ -295,7 +295,7 @@ namespace BirthdayReminder
                     {
                         var patchMethod = AccessTools.Method(typeof(GiftPatches), nameof(GiftPatches.OnGiftGiven));
                         _harmony.Patch(giftMethod, postfix: new HarmonyMethod(patchMethod));
-                        Log.LogInfo("Applied gift tracking patch (NPCAI.Gift)");
+                        Log.LogDebug("Applied gift tracking patch (NPCAI.Gift)");
                     }
                     else
                         Log.LogWarning("Could not find NPCAI.Gift(Item) — gift tracking disabled");
@@ -334,7 +334,7 @@ namespace BirthdayReminder
                 ref _overnightHooked,
                 ref _overnightCallback,
                 GetSingletonInstance,
-                message => Log?.LogInfo($"[BirthdayReminder] {message}"),
+                message => Log?.LogDebug($"[BirthdayReminder] {message}"),
                 message => Log?.LogWarning($"[BirthdayReminder] {message}"));
         }
 
@@ -348,7 +348,7 @@ namespace BirthdayReminder
                 ref _overnightCallback,
                 OnOvernightComplete,
                 GetSingletonInstance,
-                message => Log?.LogInfo(message),
+                message => Log?.LogDebug(message),
                 message => Log?.LogWarning(message)
             );
         }
@@ -375,7 +375,7 @@ namespace BirthdayReminder
             else
             {
                 _staticHUD?.Hide();
-                Log?.LogInfo("[BirthdayReminder] No birthdays today - HUD hidden");
+                Log?.LogDebug("[BirthdayReminder] No birthdays today - HUD hidden");
             }
         }
 
@@ -386,18 +386,18 @@ namespace BirthdayReminder
                 // Recreate PersistentRunner if destroyed
                 if (_persistentRunner == null || _persistentRunnerComponent == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating PersistentRunner...");
+                    Log?.LogDebug("[EnsureUI] Recreating PersistentRunner...");
                     _persistentRunner = new GameObject("BirthdayReminder_PersistentRunner");
                     UnityEngine.Object.DontDestroyOnLoad(_persistentRunner);
                     _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
                     SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
                     _persistentRunnerComponent = _persistentRunner.AddComponent<PersistentRunner>();
-                    Log?.LogInfo("[EnsureUI] PersistentRunner recreated");
+                    Log?.LogDebug("[EnsureUI] PersistentRunner recreated");
                 }
 
                 if (_staticHUD == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Creating BirthdayHUD...");
+                    Log?.LogDebug("[EnsureUI] Creating BirthdayHUD...");
                     _hudObject = new GameObject("BirthdayReminder_HUD");
                     UnityEngine.Object.DontDestroyOnLoad(_hudObject);
 
@@ -420,7 +420,7 @@ namespace BirthdayReminder
                         Instance?._hudPositionY?.SetSerializedValue(y.ToString());
                     };
 
-                    Log?.LogInfo("[EnsureUI] BirthdayHUD created");
+                    Log?.LogDebug("[EnsureUI] BirthdayHUD created");
                 }
 
                 if (Instance != null)
@@ -475,7 +475,7 @@ namespace BirthdayReminder
 
                 if (_sendNotificationMethod != null)
                 {
-                    Log?.LogInfo("[Notifications] Native notification system initialized");
+                    Log?.LogDebug("[Notifications] Native notification system initialized");
                 }
                 else
                 {
@@ -608,7 +608,7 @@ namespace BirthdayReminder
             string sceneLower = sceneName.ToLowerInvariant();
             bool expectedTeardown = _applicationQuitting || !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
-                Log?.LogInfo($"[Lifecycle] Plugin OnDestroy during expected teardown (scene: {sceneName})");
+                Log?.LogDebug($"[Lifecycle] Plugin OnDestroy during expected teardown (scene: {sceneName})");
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
@@ -635,7 +635,7 @@ namespace BirthdayReminder
         {
             try
             {
-                Plugin.Log?.LogInfo("[PlayerPatches] Player initialized - checking character...");
+                Plugin.Log?.LogDebug("[PlayerPatches] Player initialized - checking character...");
 
                 // Get character name
                 string characterName = GetCharacterName(__instance);
@@ -643,7 +643,7 @@ namespace BirthdayReminder
                 // Detect character change (save switch) or returning from main menu
                 if (_lastCharacterName != characterName)
                 {
-                    Plugin.Log?.LogInfo($"[PlayerPatches] Character: {characterName}");
+                    Plugin.Log?.LogDebug($"[PlayerPatches] Character: {characterName}");
                     Plugin.OnCharacterChanged(characterName);
                     _lastCharacterName = characterName;
                 }
@@ -667,7 +667,7 @@ namespace BirthdayReminder
                 }
                 else
                 {
-                    Plugin.Log?.LogInfo("[PlayerPatches] No birthdays found today - HUD will not show automatically");
+                    Plugin.Log?.LogDebug("[PlayerPatches] No birthdays found today - HUD will not show automatically");
                     Plugin.Log?.LogInfo("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
                 }
             }
@@ -802,7 +802,7 @@ namespace BirthdayReminder
             // Toggle HUD: Ctrl+B
             if (ctrlPressed && !shiftPressed && !altPressed && Input.GetKeyDown(Plugin.StaticToggleKey))
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+B pressed - toggling HUD");
+                Plugin.Log?.LogDebug("[PersistentRunner] Ctrl+B pressed - toggling HUD");
                 Plugin.EnsureUIComponentsExist();
                 Plugin.GetHUD()?.Toggle();
             }
@@ -817,7 +817,7 @@ namespace BirthdayReminder
             // Debug: Ctrl+Shift+R - Refresh/recheck birthdays
             if (Plugin.StaticDebugMode && ctrlPressed && shiftPressed && Input.GetKeyDown(KeyCode.R))
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Shift+R pressed - Manual refresh");
+                Plugin.Log?.LogDebug("[PersistentRunner] Ctrl+Shift+R pressed - Manual refresh");
                 Plugin.EnsureUIComponentsExist();
                 Plugin.GetManager()?.ManualRefresh();
                 Plugin.GetHUD()?.Show();
@@ -826,7 +826,7 @@ namespace BirthdayReminder
             // Debug: Ctrl+Shift+C - Clear all birthdays
             if (Plugin.StaticDebugMode && ctrlPressed && shiftPressed && Input.GetKeyDown(KeyCode.C))
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Shift+C pressed - Clearing birthdays");
+                Plugin.Log?.LogDebug("[PersistentRunner] Ctrl+Shift+C pressed - Clearing birthdays");
                 Plugin.GetManager()?.DebugClearBirthdays();
                 Plugin.GetHUD()?.Hide();
             }
@@ -834,7 +834,7 @@ namespace BirthdayReminder
             // Debug: Ctrl+Shift+A - Load ALL birthdays
             if (Plugin.StaticDebugMode && ctrlPressed && shiftPressed && Input.GetKeyDown(KeyCode.A))
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Shift+A pressed - loading all birthdays");
+                Plugin.Log?.LogDebug("[PersistentRunner] Ctrl+Shift+A pressed - loading all birthdays");
                 Plugin.EnsureUIComponentsExist();
                 Plugin.GetManager()?.DebugLoadAllBirthdays();
             }
@@ -842,7 +842,7 @@ namespace BirthdayReminder
             // Debug: Ctrl+Shift+L - Dump Lynn's NPC info
             if (Plugin.StaticDebugMode && ctrlPressed && shiftPressed && Input.GetKeyDown(KeyCode.L))
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] Ctrl+Shift+L pressed - dumping Lynn's NPC info...");
+                Plugin.Log?.LogDebug("[PersistentRunner] Ctrl+Shift+L pressed - dumping Lynn's NPC info...");
                 Plugin.EnsureUIComponentsExist();
                 Plugin.GetManager()?.DebugDumpNPCInfo("Lynn");
             }
@@ -855,7 +855,7 @@ namespace BirthdayReminder
             bool expectedTeardown = !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
+                Plugin.Log?.LogDebug("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
             }
             else
             {

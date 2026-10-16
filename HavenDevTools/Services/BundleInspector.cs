@@ -12,7 +12,7 @@ namespace HavenDevTools.Services
     {
         public BundleInspector()
         {
-            Plugin.Log?.LogInfo("[BundleInspector] Initialized");
+            Plugin.Log?.LogDebug("[BundleInspector] Initialized");
         }
 
         /// <summary>

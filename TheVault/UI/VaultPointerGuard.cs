@@ -132,7 +132,7 @@ namespace TheVault.UI
             }
 
             harmony.Patch(method, prefix: prefix);
-            Plugin.Log?.LogInfo($"[VaultPointer] Patched {typeName}.{methodName}");
+            Plugin.Log?.LogDebug($"[VaultPointer] Patched {typeName}.{methodName}");
         }
 
         private static void CreateBlocker()

@@ -110,7 +110,7 @@ namespace HavensBirthright.Session
 
                 if (r == Race.Elemental)
                 {
-                    Plugin.Log.LogInfo($"[CharacterSession] Cached generic Elemental but body resolves to {resolved}; resetting.");
+                    Plugin.Log.LogDebug($"[CharacterSession] Cached generic Elemental but body resolves to {resolved}; resetting.");
                     BirthrightRunner.ResetAllStateForNewSave();
                     RaceDetectionService.RetryRaceDetection();
                     SyncTrackedCharacterIdFromSave();
@@ -120,7 +120,7 @@ namespace HavensBirthright.Session
                 if (r == resolved)
                     return;
 
-                Plugin.Log.LogInfo($"[CharacterSession] Cached elemental ({r}) mismatches body ({resolved}); resetting.");
+                Plugin.Log.LogDebug($"[CharacterSession] Cached elemental ({r}) mismatches body ({resolved}); resetting.");
                 BirthrightRunner.ResetAllStateForNewSave();
                 RaceDetectionService.RetryRaceDetection();
                 SyncTrackedCharacterIdFromSave();

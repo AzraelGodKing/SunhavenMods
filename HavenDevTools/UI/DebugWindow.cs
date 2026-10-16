@@ -120,7 +120,7 @@ namespace HavenDevTools.UI
         {
             _isVisible = true;
             BlockInput();
-            Plugin.Log?.LogInfo("[DebugWindow] Shown");
+            Plugin.Log?.LogDebug("[DebugWindow] Shown");
         }
 
         public void Hide()
@@ -128,7 +128,7 @@ namespace HavenDevTools.UI
             _isVisible = false;
             UnblockInput();
             GUIUtility.keyboardControl = 0;
-            Plugin.Log?.LogInfo("[DebugWindow] Hidden");
+            Plugin.Log?.LogDebug("[DebugWindow] Hidden");
         }
 
         private void BlockInput()
@@ -1284,10 +1284,10 @@ namespace HavenDevTools.UI
 
             if (GUILayout.Button(ModLocalization.T("devtools.logCurrencyIds"), _buttonStyle))
             {
-                Plugin.Log?.LogInfo("=== Currency Item IDs ===");
+                Plugin.Log?.LogDebug("=== Currency Item IDs ===");
                 foreach (var kvp in CurrencyTracker.CurrencyItemIds)
                 {
-                    Plugin.Log?.LogInfo($"  {kvp.Key}: {kvp.Value}");
+                    Plugin.Log?.LogDebug($"  {kvp.Key}: {kvp.Value}");
                 }
             }
 
@@ -1305,11 +1305,11 @@ namespace HavenDevTools.UI
             {
                 if (Wish.Player.Instance == null)
                 {
-                    Plugin.Log?.LogInfo("Player not available");
+                    Plugin.Log?.LogDebug("Player not available");
                     return;
                 }
 
-                Plugin.Log?.LogInfo("=== Player Stats ===");
+                Plugin.Log?.LogDebug("=== Player Stats ===");
 
                 var playerType = Wish.Player.Instance.GetType();
                 var props = playerType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
@@ -1323,7 +1323,7 @@ namespace HavenDevTools.UI
                             var value = prop.GetValue(Wish.Player.Instance);
                             if (value != null && (value is int || value is float || value is string || value is bool))
                             {
-                                Plugin.Log?.LogInfo($"  {prop.Name}: {value}");
+                                Plugin.Log?.LogDebug($"  {prop.Name}: {value}");
                             }
                         }
                     }
