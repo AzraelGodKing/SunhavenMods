@@ -11,7 +11,6 @@
     <SunhavenModUiProject>true</SunhavenModUiProject>
   </PropertyGroup>
 
-  <!-- BepInEx References -->
   <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
@@ -23,7 +22,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Unity References -->
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>$(ManagedPath)\UnityEngine.dll</HintPath>
@@ -63,7 +61,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Game References -->
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(ManagedPath)\Assembly-CSharp.dll</HintPath>
@@ -109,7 +106,6 @@
     <None Include="_refs\**\*.cs" />
   </ItemGroup>
 
-  <!-- Shared Utilities (linked files) -->
   <ItemGroup>
     <Compile Include="..\SharedUtilities\OvernightHookUtility.cs" Link="Shared\OvernightHookUtility.cs" />
     <Compile Include="..\SharedUtilities\ModHealthAggregator.cs" Link="Shared\ModHealthAggregator.cs" />
@@ -139,7 +135,6 @@
     </None>
   </ItemGroup>
 
-  <!-- Copy to BepInEx plugins folder and builds folder after build -->
   <Target Name="CopyToPlugins" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BepInExPath)\plugins\HavensAlmanac" Condition="'$(SunhavenCopyToBepInExPlugins)' == 'true'" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)\..\builds\HavensAlmanac" />

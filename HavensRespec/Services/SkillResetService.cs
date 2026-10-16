@@ -11,11 +11,8 @@ using Wish;
 namespace HavensRespec.Services
 {
     /// <summary>
-    /// Owns the "zero out a profession's skill tree" operation and the undo stack for it.
-    /// Clean-room implementation — it walks the live <see cref="SkillNode"/> instances the game
-    /// already placed in <c>Skills._professionNodeDictionary</c> instead of hardcoding
-    /// <c>{"Combat1a"..."Exploration10d"}</c> strings, so it stays correct if Sun Haven ever
-    /// renames nodes, adds a row, or changes which column(s) a profession exposes.
+    /// Profession skill-tree reset and undo. Walks live <see cref="SkillNode"/> instances
+    /// in <c>Skills._professionNodeDictionary</c> rather than hardcoded node-name lists.
     /// </summary>
     internal sealed class SkillResetService
     {
@@ -23,7 +20,6 @@ namespace HavensRespec.Services
         private readonly Func<bool> _isDebug;
         private readonly Dictionary<ProfessionType, Stack<ResetSnapshot>> _undoByProfession = new Dictionary<ProfessionType, Stack<ResetSnapshot>>();
 
-        // Reflection cache — Skills has private fields we reach into for a UI refresh after reset.
         private static MethodInfo _updateProfessionMethod;
         private static FieldInfo _professionNodeDictionaryField;
         private static FieldInfo _skillPointsUsedField;
@@ -88,22 +84,8 @@ namespace HavensRespec.Services
                     return false;
                 }
 
-                // Snapshot BEFORE any mutation so Undo can restore the exact prior state.
                 var snapshot = CaptureSnapshot(profession, profData);
 
-                // --- Ground-truth refund computation --------------------------------------
-                // Iterate the live SkillNode[] the game keeps in _professionNodeDictionary.
-                // Every node whose `active` field is true contributes its `NodeAmount` to
-                // the point refund — this matches the exact formula UpdateProfession uses
-                // to populate Skills.skillPointsUsed, so our refund count is guaranteed to
-                // be in sync with what the game thinks was spent. Deactivating each node
-                // via SetActive(false, false, nodeAmount) also repaints the UI immediately
-                // (no wait for LateUpdate/UpdateProfession) and bypasses the DeactivateNode
-                // sound. Passing the live NodeAmount (not 0) lets the game reverse rank-scaled
-                // bonuses such as Mental Focus Max Mana (AZR-356).
-                //
-                // Fail closed: any exception mid-walk rolls back from snapshot and returns
-                // false so callers never charge gold for a half-applied reset.
                 int nodeSlotsVisited = 0;
                 int nodesDeactivated = 0;
                 int refundedFromNodes = 0;
@@ -138,36 +120,21 @@ namespace HavensRespec.Services
                         }
                     }
 
-                    // --- Zero persisted allocations -------------------------------------------
-                    // Whatever the SkillNode[]-derived count says, make sure the save file no
-                    // longer thinks any node in this profession is allocated. Covers legacy /
-                    // renamed keys that might not map to any live SkillNode in the current
-                    // game version.
                     var existingKeys = new List<int>(profData.Nodes.Keys);
                     foreach (var key in existingKeys)
                         profData.Nodes[key] = 0;
 
-                    // And merge in every live SkillNode hash so next UpdateProfession finds a
-                    // 0 in Nodes (rather than falling into the `else` branch that adds a fresh 0).
                     var nodeHashes = CollectNodeHashes(skills, profession, profData);
                     foreach (var hash in nodeHashes)
                         profData.Nodes[hash] = 0;
 
-                    // --- Reconcile the Skills dicts -------------------------------------------
-                    // UpdateProfession will re-zero these on its next run; we set them now so
-                    // anything that reads them before the next LateUpdate sees the post-reset
-                    // state.
                     SetSkillPointsUsed(profession, 0);
                     SetNumActiveNodes(profession, 0);
 
-                    // Refund reported to the caller: prefer the direct node-walk result. If we
-                    // somehow couldn't read the node dictionary at all (nodeSlotsVisited == 0),
-                    // fall back to the skillPointsUsed snapshot as a best-effort estimate.
                     pointsRefunded = nodeSlotsVisited > 0 ? refundedFromNodes : snapshot.SkillPointsUsed;
 
                     TryRefreshProfessionPanel(skills, profession);
 
-                    // Permanent Max Mana from refunded nodes (Mental Focus / Town Spirit, etc.).
                     ManaRollbackResult manaRollback = null;
                     try
                     {
@@ -374,9 +341,6 @@ namespace HavensRespec.Services
                 _log?.LogDebug($"[Respec] CollectNodeHashes({profession}) reflection fallback: {ex.Message}");
             }
 
-            // Always include every key the Profession knows about — covers cases where the Skills
-            // panel has not been built yet (_professionNodeDictionary empty) but Profession.Nodes
-            // still holds allocations from a previous session.
             foreach (var key in profData.Nodes.Keys)
             {
                 hashSet.Add(key);

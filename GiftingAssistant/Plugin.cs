@@ -53,6 +53,14 @@ namespace GiftingAssistant
 
         private GiftingAssistantConfig _config;
         private Harmony _harmony;
+        private EventHandler _toggleKeyChanged;
+        private EventHandler _requireCtrlChanged;
+        private EventHandler _showPossessionChanged;
+        private EventHandler _uiScaleChanged;
+        private EventHandler _reminderModeChanged;
+        private EventHandler _almanacIntegrationChanged;
+        private EventHandler _autoSaveIntervalChanged;
+        private EventHandler _autoSaveChanged;
 
         public static KeyCode StaticToggleKey => _staticToggleKey;
         public static bool StaticRequireCtrl => _staticRequireCtrl;
@@ -128,40 +136,80 @@ namespace GiftingAssistant
         private void BindConfigEvents()
         {
             _staticToggleKey = _config.ToggleKey.Value;
-            _config.ToggleKey.SettingChanged += (_, _) => _staticToggleKey = _config.ToggleKey.Value;
+            _toggleKeyChanged = (_, _) => _staticToggleKey = _config.ToggleKey.Value;
+            _config.ToggleKey.SettingChanged += _toggleKeyChanged;
 
             _staticRequireCtrl = _config.RequireCtrl.Value;
-            _config.RequireCtrl.SettingChanged += (_, _) => _staticRequireCtrl = _config.RequireCtrl.Value;
+            _requireCtrlChanged = (_, _) => _staticRequireCtrl = _config.RequireCtrl.Value;
+            _config.RequireCtrl.SettingChanged += _requireCtrlChanged;
 
             _staticShowPossession = _config.ShowInventoryPossession.Value;
-            _config.ShowInventoryPossession.SettingChanged += (_, _) =>
+            _showPossessionChanged = (_, _) =>
             {
                 _staticShowPossession = _config.ShowInventoryPossession.Value;
                 _staticWindow?.SetShowPossession(_staticShowPossession);
             };
+            _config.ShowInventoryPossession.SettingChanged += _showPossessionChanged;
 
             _staticUIScale = Mathf.Clamp(_config.UIScale.Value, 0.5f, 2.5f);
-            _config.UIScale.SettingChanged += (_, _) =>
+            _uiScaleChanged = (_, _) =>
             {
                 _staticUIScale = Mathf.Clamp(_config.UIScale.Value, 0.5f, 2.5f);
                 _staticWindow?.SetScale(_staticUIScale);
             };
+            _config.UIScale.SettingChanged += _uiScaleChanged;
 
-            _config.ReminderMode.SettingChanged += (_, _) =>
+            _reminderModeChanged = (_, _) =>
             {
                 if (_todoIntegration != null)
                     _todoIntegration.IsEnabled = _config.ReminderMode.Value == GiftingAssistant.Config.GiftReminderMode.PushToTodo;
             };
+            _config.ReminderMode.SettingChanged += _reminderModeChanged;
 
-            _config.UseAlmanacIntegration.SettingChanged += (_, _) =>
+            _almanacIntegrationChanged = (_, _) =>
                 _staticAlmanacIntegrationEnabled = _config.UseAlmanacIntegration.Value;
+            _config.UseAlmanacIntegration.SettingChanged += _almanacIntegrationChanged;
 
             _staticAutoSaveInterval = Mathf.Max(5f, _config.AutoSaveInterval.Value);
-            _config.AutoSaveInterval.SettingChanged += (_, _) =>
+            _autoSaveIntervalChanged = (_, _) =>
                 _staticAutoSaveInterval = Mathf.Max(5f, _config.AutoSaveInterval.Value);
+            _config.AutoSaveInterval.SettingChanged += _autoSaveIntervalChanged;
 
             _staticAutoSave = _config.AutoSave.Value;
-            _config.AutoSave.SettingChanged += (_, _) => _staticAutoSave = _config.AutoSave.Value;
+            _autoSaveChanged = (_, _) => _staticAutoSave = _config.AutoSave.Value;
+            _config.AutoSave.SettingChanged += _autoSaveChanged;
+        }
+
+        private void UnbindConfigEvents()
+        {
+            if (_config == null)
+                return;
+
+            if (_toggleKeyChanged != null)
+                _config.ToggleKey.SettingChanged -= _toggleKeyChanged;
+            if (_requireCtrlChanged != null)
+                _config.RequireCtrl.SettingChanged -= _requireCtrlChanged;
+            if (_showPossessionChanged != null)
+                _config.ShowInventoryPossession.SettingChanged -= _showPossessionChanged;
+            if (_uiScaleChanged != null)
+                _config.UIScale.SettingChanged -= _uiScaleChanged;
+            if (_reminderModeChanged != null)
+                _config.ReminderMode.SettingChanged -= _reminderModeChanged;
+            if (_almanacIntegrationChanged != null)
+                _config.UseAlmanacIntegration.SettingChanged -= _almanacIntegrationChanged;
+            if (_autoSaveIntervalChanged != null)
+                _config.AutoSaveInterval.SettingChanged -= _autoSaveIntervalChanged;
+            if (_autoSaveChanged != null)
+                _config.AutoSave.SettingChanged -= _autoSaveChanged;
+
+            _toggleKeyChanged = null;
+            _requireCtrlChanged = null;
+            _showPossessionChanged = null;
+            _uiScaleChanged = null;
+            _reminderModeChanged = null;
+            _almanacIntegrationChanged = null;
+            _autoSaveIntervalChanged = null;
+            _autoSaveChanged = null;
         }
 
         private static ConfigFile CreateNamedConfig()
@@ -301,7 +349,6 @@ namespace GiftingAssistant
                 {
                     var uiObject = new GameObject("GiftingAssistant_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
-                    // No HideFlags here: HideAndDontSave suppresses OnGUI, which breaks the window.
                     _staticWindow = uiObject.AddComponent<GiftingWindow>();
                     _staticWindow.Initialize(_staticManager, _birthdayIntegration, _todoIntegration);
                     _staticWindow.SetScale(_staticUIScale);
@@ -557,6 +604,7 @@ namespace GiftingAssistant
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            UnbindConfigEvents();
             ModLocalization.LanguageChanged -= OnLanguageChanged;
             ModLocalization.Shutdown();
             SaveData();
