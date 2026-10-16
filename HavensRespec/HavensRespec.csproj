@@ -74,8 +74,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Shared helpers reused by every mod in the repo. CS0436 suppresses the "type defined in
-       multiple assemblies" warning because each mod compiles its own copy of these files. -->
   <ItemGroup>
     <Compile Include="..\SharedUtilities\VersionChecker.cs" Link="Shared\VersionChecker.cs" />
     <Compile Include="..\SharedUtilities\SceneRootSurvivor.cs" Link="Shared\SceneRootSurvivor.cs" />

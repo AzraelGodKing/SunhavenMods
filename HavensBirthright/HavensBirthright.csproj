@@ -8,7 +8,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
-  <!-- BepInEx References -->
   <ItemGroup>
     <Reference Include="BepInEx">
       <HintPath>$(BepInExPath)\core\BepInEx.dll</HintPath>
@@ -20,7 +19,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Unity References -->
   <ItemGroup>
     <Reference Include="UnityEngine">
       <HintPath>$(ManagedPath)\UnityEngine.dll</HintPath>
@@ -48,7 +46,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Game References -->
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(ManagedPath)\Assembly-CSharp.dll</HintPath>
@@ -72,7 +69,6 @@
     </Reference>
   </ItemGroup>
 
-  <!-- Shared Utilities (linked files) -->
   <ItemGroup>
     <Compile Include="..\SharedUtilities\VersionChecker.cs" Link="Shared\VersionChecker.cs" />
     <Compile Include="..\SharedUtilities\MinimalJsonParser.cs" Link="Shared\MinimalJsonParser.cs" />
@@ -82,7 +78,6 @@
     <Compile Include="..\SharedUtilities\TextInputFocusGuard.cs" Link="Shared\TextInputFocusGuard.cs" />
   </ItemGroup>
 
-  <!-- Copy to BepInEx plugins folder and builds folder after build -->
   <Target Name="CopyToPlugins" AfterTargets="Build">
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(BepInExPath)\plugins\HavensBirthright" Condition="'$(SunhavenCopyToBepInExPlugins)' == 'true'" />
     <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildProjectDirectory)\..\builds\HavensBirthright" />

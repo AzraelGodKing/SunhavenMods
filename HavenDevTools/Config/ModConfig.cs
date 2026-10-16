@@ -33,6 +33,7 @@ namespace HavenDevTools.Config
         public static ConfigEntry<bool> TheVaultFullVaultInspector { get; private set; }
 
         private static bool _theVaultInspectorHooked;
+        private static EventHandler _theVaultInspectorChanged;
         private static Type _cachedTheVaultPluginType;
         private static MethodInfo _cachedSetTheVaultFullInspector;
 
@@ -158,11 +159,20 @@ namespace HavenDevTools.Config
 
             if (!_theVaultInspectorHooked)
             {
-                TheVaultFullVaultInspector.SettingChanged += (_, __) => SyncTheVaultFullVaultInspectorToPlugin();
+                _theVaultInspectorChanged = (_, __) => SyncTheVaultFullVaultInspectorToPlugin();
+                TheVaultFullVaultInspector.SettingChanged += _theVaultInspectorChanged;
                 _theVaultInspectorHooked = true;
             }
 
             global::HavenDevTools.Plugin.Log?.LogInfo("Configuration initialized");
+        }
+
+        public static void UnsubscribeSettingChanged()
+        {
+            if (TheVaultFullVaultInspector != null && _theVaultInspectorChanged != null)
+                TheVaultFullVaultInspector.SettingChanged -= _theVaultInspectorChanged;
+            _theVaultInspectorChanged = null;
+            _theVaultInspectorHooked = false;
         }
 
         /// <summary>
