@@ -24,7 +24,7 @@ This runbook is for manual release operations while CI changes are staged.
 ## 3) Validate References + Drift
 
 - `pwsh ./scripts/build/check-sunhaven-refs.ps1 -SunHavenPath "<path>"`
-- `pwsh ./scripts/version/check-version-drift.ps1`
+- `pwsh ./scripts/version/verify-version-consistency.ps1`
 
 ## 4) Build Verification
 
