@@ -6,7 +6,7 @@ using UnityEngine;
 namespace TheVault.UI
 {
     /// <summary>
-    /// Shared list/label/formatting for IMGUI and uGUI vault windows.
+    /// Shared list/label/formatting for vault windows.
     /// </summary>
     public static class VaultUiShared
     {

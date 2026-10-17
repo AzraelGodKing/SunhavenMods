@@ -73,26 +73,6 @@ namespace TheVault.Vault
                 SeasonalTokens[tokenType] = 0;
             }
         }
-
-        /// <summary>
-        /// Create a deep copy of this vault data
-        /// </summary>
-        public VaultData Clone()
-        {
-            var clone = new VaultData
-            {
-                Version = this.Version,
-                LastSaved = this.LastSaved,
-                PlayerName = this.PlayerName,
-                SeasonalTokens = new Dictionary<SeasonalTokenType, int>(this.SeasonalTokens),
-                CommunityTokens = new Dictionary<string, int>(this.CommunityTokens),
-                Keys = new Dictionary<string, int>(this.Keys),
-                CustomCurrencies = new Dictionary<string, int>(this.CustomCurrencies),
-                Tickets = new Dictionary<string, int>(this.Tickets),
-                Orbs = new Dictionary<string, int>(this.Orbs)
-            };
-            return clone;
-        }
     }
 
     /// <summary>
