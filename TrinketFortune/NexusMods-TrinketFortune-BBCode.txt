@@ -52,6 +52,6 @@ Increases the odds of [b]unowned fishing trinkets[/b] dropping as you donate to 
 [*][url=https://www.azraelsmods.com/sun-haven/trinket-fortune/]Documentation[/url]
 [*][url=https://thunderstore.io/c/sun-haven/p/AzraelGodKing/TrinketFortune/]Thunderstore[/url]
 [*][url=https://www.nexusmods.com/sunhaven/mods/498]Nexus Mods[/url]
-[*][url=https://github.com/AzraelGodKing/SunhavenMods/releases]GitHub Releases[/url]
+[*][url=https://github.com/AzraelGodKing/SunhavenMod/releases]GitHub Releases[/url]
 [*][url=https://discord.gg/Vwh2y7qMXv]Discord — bugs & discussion[/url]
 [/list]
