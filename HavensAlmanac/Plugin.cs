@@ -404,6 +404,7 @@ namespace HavensAlmanac
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            ResetOvernightHook();
 
             string sceneName = SceneManager.GetActiveScene().name ?? string.Empty;
             string sceneLower = sceneName.ToLowerInvariant();
