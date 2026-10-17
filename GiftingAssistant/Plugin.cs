@@ -558,6 +558,28 @@ namespace GiftingAssistant
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             ModLocalization.LanguageChanged -= OnLanguageChanged;
+            OvernightHookUtility.TryUnhookOvernightEvent(
+                ref _overnightHooked,
+                ref _overnightCallback,
+                type =>
+                {
+                    try
+                    {
+                        var singletonBaseType = AccessTools.TypeByName("Wish.SingletonBehaviour`1");
+                        if (singletonBaseType != null)
+                        {
+                            var genericType = singletonBaseType.MakeGenericType(type);
+                            return genericType.GetProperty("Instance")?.GetValue(null);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[GiftingAssistant] TryUnhookOvernight resolver failed: {ex.Message}");
+                    }
+                    return null;
+                },
+                msg => Log?.LogInfo(msg),
+                msg => Log?.LogWarning(msg));
             ModLocalization.Shutdown();
             SaveData();
 
