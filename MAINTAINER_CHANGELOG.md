@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-10-17
+
+- **Unused-helper cleanup (no version bump):** Deleted leftover helpers with no callers (repo-wide grep of C#, tests, strings, Harmony, XML). Skipped anything still used. Did not redo drafts #164 (Vault dispatch), #165/#171 (other unused APIs), or #180 (log levels). Haven's Birthright: `GetCurrentHour` / `GetCurrentSeason` / `IsInMine` / `IsDaytime` (live path is `StatFrameCache`). Crop Optimizer: `TryGetFarmTileCenterWorld` / `TryGetCropHighlightCenter` / `TryWorldToFarmTile` and their exclusive reflection fields, plus unused `TryGetTooltipProjectedGold` (`TryGetTooltipProjectedShopValue` stays). The Vault: `WithdrawCurrencyToInventory`, `VaultData.Clone`, `VaultHUD.SetOpacity`, `Get`/`SetConfigControllerOpenModifier` and `Get`/`SetConfigControllerOpenButton` (kept config entries, `StaticControllerOpen*`, and `Get`/`SetConfigControllerOpenEnabled`). Gifting Assistant: TodoIntegration legacy `PublishGiftTodo` / `EnsureGiftTodos` / `RefreshDailyGiftTodos` / `CompleteGiftTodo` (Plugin `Queue*` wrappers still exist on main and stay). Trimmed stale IMGUI/uGUI class comments. Did not touch `TriggerVaultLoad`, `VaultIntegration`, or `token_*` registration.
+
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.

@@ -115,33 +115,6 @@ namespace GiftingAssistant.Integration
             ScheduleFlush();
         }
 
-        /// <summary>Legacy immediate API — forwards to queue.</summary>
-        public void PublishGiftTodo(GiftTodoRequest request)
-        {
-            if (request == null || string.IsNullOrEmpty(request.NpcName))
-                return;
-            _pendingPublish.Add(request.NpcName);
-            ScheduleFlush();
-        }
-
-        /// <summary>Legacy immediate API — forwards to queue.</summary>
-        public void EnsureGiftTodos(IList<GiftTodoRequest> requests)
-        {
-            QueueEnsureAll();
-        }
-
-        /// <summary>Legacy immediate API — forwards to queue.</summary>
-        public void RefreshDailyGiftTodos(IList<GiftTodoRequest> requests)
-        {
-            QueueRefreshDaily();
-        }
-
-        /// <summary>Legacy immediate API — forwards to queue.</summary>
-        public void CompleteGiftTodo(string npcName, bool completed)
-        {
-            QueueComplete(npcName, completed);
-        }
-
         /// <summary>Drop tracked ids (character change / daily refresh).</summary>
         public void ResetTracking()
         {

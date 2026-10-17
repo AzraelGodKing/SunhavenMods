@@ -406,52 +406,6 @@ namespace TheVault.Patches
         }
 
         /// <summary>
-        /// Withdraw currency from vault and spawn as items.
-        /// </summary>
-        /// <param name="currencyId">The vault currency ID</param>
-        /// <param name="amount">Amount to withdraw</param>
-        /// <returns>True if successful</returns>
-        public static bool WithdrawCurrencyToInventory(string currencyId, int amount)
-        {
-            if (amount <= 0) return false;
-
-            var vaultManager = Plugin.GetVaultManager();
-            if (vaultManager == null) return false;
-
-            // Check if player has enough
-            if (!vaultManager.HasCurrency(currencyId, amount))
-            {
-                Plugin.Log?.LogWarning($"Not enough {currencyId} in vault");
-                return false;
-            }
-
-            int gameItemId = GetItemForCurrency(currencyId);
-            if (gameItemId < 0)
-            {
-                Plugin.Log?.LogWarning($"No item mapping for currency {currencyId}");
-                return false;
-            }
-
-            // Remove from vault
-            if (!RemoveCurrencyFromVault(vaultManager, currencyId, amount))
-            {
-                return false;
-            }
-
-            // Add to inventory
-            if (!AddItemToInventory(gameItemId, amount))
-            {
-                // Rollback vault change
-                AddCurrencyToVault(vaultManager, currencyId, amount);
-                Plugin.Log?.LogWarning($"Failed to add item {gameItemId} to inventory, rolled back vault");
-                return false;
-            }
-
-            Plugin.Log?.LogInfo($"Withdrew {amount} {currencyId} as item {gameItemId}");
-            return true;
-        }
-
-        /// <summary>
         /// Postfix patch for Inventory.AddItem(int item, int amount, bool sendNotification).
         /// Parameter names must match the game method exactly for Harmony binding.
         /// </summary>

@@ -389,15 +389,6 @@ namespace CropOptimizer.Patches
             return false;
         }
 
-        internal static bool TryGetTooltipProjectedGold(object cropInstance, out int projectedGold, out float qualityMultiplier)
-        {
-            projectedGold = 0;
-            if (!TryGetTooltipProjectedShopValue(cropInstance, out CropShopValue value, out qualityMultiplier))
-                return false;
-            projectedGold = value.Gold;
-            return value.Gold > 0;
-        }
-
         internal static bool TryGetTooltipProjectedShopValue(object cropInstance, out CropShopValue value, out float qualityMultiplier)
         {
             value = default;
