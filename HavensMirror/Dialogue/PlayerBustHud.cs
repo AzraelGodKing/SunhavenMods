@@ -265,11 +265,14 @@ namespace HavensMirror.Dialogue
             if (canvas != null && canvas.renderMode != RenderMode.ScreenSpaceOverlay)
                 eventCam = canvas.worldCamera;
 
-            float screenX = Mathf.Max(Screen.width * LeftFraction, size.x * 0.5f + LeftMargin);
+            // size is in canvas units; screen math below is in pixels. Convert so a large UI scale
+            // (canvas scale factor > 1) does not push the bust off the left edge or onto the NPC.
+            float halfWidthPx = size.x * 0.5f * CanvasUnitsToPixels(layoutParent, eventCam);
+            float screenX = Mathf.Max(Screen.width * LeftFraction, halfWidthPx + LeftMargin);
             // Hard cap: stay in the left 45% of the screen.
-            float screenMaxX = Screen.width * 0.45f - size.x * 0.5f;
+            float screenMaxX = Screen.width * 0.45f - halfWidthPx;
             if (screenX > screenMaxX)
-                screenX = Mathf.Max(size.x * 0.5f + LeftMargin, screenMaxX);
+                screenX = Mathf.Max(halfWidthPx + LeftMargin, screenMaxX);
 
             float screenY;
             if (npcRect != null)
@@ -316,6 +319,18 @@ namespace HavensMirror.Dialogue
             _rect.SetAsLastSibling();
         }
 
+        /// <summary>Screen pixels per local unit of <paramref name="space"/> along X (1 when unknown).</summary>
+        private static float CanvasUnitsToPixels(RectTransform space, Camera eventCam)
+        {
+            if (space == null)
+                return 1f;
+
+            Vector2 a = RectTransformUtility.WorldToScreenPoint(eventCam, space.TransformPoint(Vector3.zero));
+            Vector2 b = RectTransformUtility.WorldToScreenPoint(eventCam, space.TransformPoint(new Vector3(100f, 0f, 0f)));
+            float perUnit = Mathf.Abs(b.x - a.x) / 100f;
+            return perUnit > 0.0001f ? perUnit : 1f;
+        }
+
         /// <summary>
         /// Match NPC bust height on screen; width from gallery sprite aspect.
         /// Full-body PNGs must not use SetNativeSize (huge pixels → screen crop).
@@ -326,22 +341,23 @@ namespace HavensMirror.Dialogue
 
             if (npcRect != null)
             {
-                float h = Mathf.Abs(npcRect.rect.height);
-                if (h <= 1f)
-                    h = Mathf.Abs(npcRect.sizeDelta.y);
-                if (h <= 1f)
+                // Measure the NPC bust in the player's parent space (root canvas). rect.height is in
+                // the NPC's own local units, which differ from canvas units whenever BustOffset or
+                // another ancestor is scaled (e.g. the in-game UI scale slider).
+                float h = 0f;
+                if (_rect != null && _rect.parent is RectTransform parent)
                 {
-                    // World-space height as last resort (canvas scale).
                     Vector3[] corners = new Vector3[4];
                     npcRect.GetWorldCorners(corners);
-                    h = Mathf.Abs(corners[1].y - corners[0].y);
-                    if (_rect != null && _rect.parent is RectTransform parent)
-                    {
-                        Vector3 local0 = parent.InverseTransformPoint(corners[0]);
-                        Vector3 local1 = parent.InverseTransformPoint(corners[1]);
-                        h = Mathf.Abs(local1.y - local0.y);
-                    }
+                    Vector3 local0 = parent.InverseTransformPoint(corners[0]);
+                    Vector3 local1 = parent.InverseTransformPoint(corners[1]);
+                    h = Mathf.Abs(local1.y - local0.y);
                 }
+
+                if (h <= 1f)
+                    h = Mathf.Abs(npcRect.rect.height);
+                if (h <= 1f)
+                    h = Mathf.Abs(npcRect.sizeDelta.y);
 
                 if (h > 1f)
                     targetHeight = h;

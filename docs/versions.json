@@ -132,13 +132,13 @@
     "changelog": "Maintenance release: removed unused code. No change to gifting."
   },
   "com.azraelgodking.havensmirror": {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "Haven's Mirror",
     "description": "Custom player dialogue bust portraits from a PNG gallery folder, with optional NPC look override and hotkey reload",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/538",
     "nexus_file_group_id": "8035296",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensMirror/",
     "thunderstoreName": "HavensMirror",
-    "changelog": "Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation."
+    "changelog": "Portraits load even when the file is named Spring.PNG, spring.png.png, spring.jpg or anything else, and Ctrl+F8 works with either Ctrl key."
   }
 }

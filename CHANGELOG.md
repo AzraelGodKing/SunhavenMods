@@ -6,6 +6,12 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Haven's Mirror (1.0.2 → 1.0.3)**
+- **Fix:** Portrait images load when the name is not exactly `spring.png`. Capitals (`Spring.PNG`), doubled extensions from Windows hiding file extensions (`spring.png.png`) and `.jpg` files all work. If no file uses a look name, the first image in the folder is used for every look, as the readme already said.
+- **Fix:** The reload hotkey (Ctrl+F8) now works with either Ctrl key, not just left Ctrl.
+- **Fix:** Your portrait's size and position follow the NPC portrait correctly when the in-game UI scale is turned up.
+- **Help:** When no portrait loads, `BepInEx/LogOutput.log` lists the folders the mod checked and the files it found, and a picture that isn't a real PNG or JPG (a renamed .webp, for example) says so. Reported by L0stLikeD0ry.
+
 **Maintenance releases: The Vault 4.3.1, Crop Optimizer 2.3.1, Haven's Birthright 3.1.4, Haven Dev Tools 2.1.3, Haven's Almanac 2.2.3, Museum Utility Tracker 3.1.3, A Squirrel's Birthday Reminder 2.1.4, Sun Haven Todo 2.1.3, Senpai's Chest 3.1.4, Gifting Assistant 1.1.4**
 - **Cleanup:** Unused and unreachable code removed across these mods. Nothing you use changes, and saves are untouched.
 - **Museum Utility Tracker:** The hidden F10/F11 debug keys are gone. F11 clashed with the Haven Dev Tools overlay.
