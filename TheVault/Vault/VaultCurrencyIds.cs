@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace TheVault.Vault
 {
@@ -55,6 +56,54 @@ namespace TheVault.Vault
 
         public static string FullSeasonalFromTokenName(string tokenName) => PrefixSeasonal + tokenName;
 
+        private static readonly Dictionary<string, ResolvedCurrencyId> ResolvedCache =
+            new Dictionary<string, ResolvedCurrencyId>(StringComparer.Ordinal);
+        private static readonly object ResolvedCacheLock = new object();
+
+        /// <summary>
+        /// Splits a full currency id into its kind and short id, cached per id.
+        /// Hot paths (Inventory.GetAmount / HasEnough postfixes, HUD refresh) call this instead of
+        /// re-running prefix checks, Substring and Enum.TryParse on every call (AZR-732).
+        /// </summary>
+        public static ResolvedCurrencyId Resolve(string fullId)
+        {
+            if (string.IsNullOrEmpty(fullId))
+                return ResolvedCurrencyId.None;
+
+            lock (ResolvedCacheLock)
+            {
+                if (ResolvedCache.TryGetValue(fullId, out var cached))
+                    return cached;
+
+                var resolved = ResolveUncached(fullId);
+                ResolvedCache[fullId] = resolved;
+                return resolved;
+            }
+        }
+
+        private static ResolvedCurrencyId ResolveUncached(string fullId)
+        {
+            if (TryStripPrefix(fullId, PrefixSeasonal, out var rest))
+            {
+                return Enum.TryParse<SeasonalTokenType>(rest, out var token)
+                    ? new ResolvedCurrencyId(CurrencyIdKind.Seasonal, rest, token)
+                    : ResolvedCurrencyId.None;
+            }
+            if (TryStripPrefix(fullId, PrefixCommunity, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Community, rest, default);
+            if (TryStripPrefix(fullId, PrefixSpecial, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Special, rest, default);
+            if (TryStripPrefix(fullId, PrefixKey, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Key, rest, default);
+            if (TryStripPrefix(fullId, PrefixTicket, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Ticket, rest, default);
+            if (TryStripPrefix(fullId, PrefixOrb, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Orb, rest, default);
+            if (TryStripPrefix(fullId, PrefixCustom, out rest))
+                return new ResolvedCurrencyId(CurrencyIdKind.Custom, rest, default);
+            return ResolvedCurrencyId.None;
+        }
+
         public static bool TryStripPrefix(string fullId, string prefix, out string remainder)
         {
             remainder = null;
@@ -63,5 +112,34 @@ namespace TheVault.Vault
             remainder = fullId.Substring(prefix.Length);
             return true;
         }
+    }
+
+    public enum CurrencyIdKind
+    {
+        None,
+        Seasonal,
+        Community,
+        Special,
+        Key,
+        Ticket,
+        Orb,
+        Custom
+    }
+
+    /// <summary>A full currency id split into kind + short id (and the parsed token for seasonal ids).</summary>
+    public readonly struct ResolvedCurrencyId
+    {
+        public static readonly ResolvedCurrencyId None = new ResolvedCurrencyId(CurrencyIdKind.None, null, default);
+
+        public ResolvedCurrencyId(CurrencyIdKind kind, string shortId, SeasonalTokenType seasonalToken)
+        {
+            Kind = kind;
+            ShortId = shortId;
+            SeasonalToken = seasonalToken;
+        }
+
+        public CurrencyIdKind Kind { get; }
+        public string ShortId { get; }
+        public SeasonalTokenType SeasonalToken { get; }
     }
 }
