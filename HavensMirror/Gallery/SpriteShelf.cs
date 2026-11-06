@@ -54,23 +54,46 @@ namespace HavensMirror.Gallery
                 GalleryPaths.SharedFolder
             };
 
+            var checkedSummary = new List<string>();
             foreach (string folder in candidates)
             {
+                List<string> files = GalleryPaths.ListImageFiles(folder);
+                checkedSummary.Add(DescribeFolder(folder, files));
+
                 // Empty save-created folders are ignored — no error, no load attempt.
-                if (!GalleryPaths.FolderHasPortraitFiles(folder))
+                if (files.Count == 0)
                     continue;
 
                 Sprite first = null;
                 foreach (LookSlot slot in Enum.GetValues(typeof(LookSlot)))
                 {
-                    string path = Path.Combine(folder, GalleryPaths.FileNameFor(slot));
-                    Sprite sprite = TryLoadPng(path);
+                    string path = GalleryPaths.FindSlotFile(files, slot);
+                    if (path == null)
+                        continue;
+
+                    Sprite sprite = TryLoadImage(path);
                     if (sprite == null)
                         continue;
 
                     _sprites[slot] = sprite;
                     if (first == null)
                         first = sprite;
+                }
+
+                // No file uses a known look name (e.g. "MyFarmer.png") — use the first image for every look.
+                if (first == null)
+                {
+                    foreach (string path in files)
+                    {
+                        first = TryLoadImage(path);
+                        if (first == null)
+                            continue;
+
+                        Plugin.Log?.LogInfo(
+                            $"[Gallery] No file named spring/summer/autumn/winter/vows/shore/costume in '{folder}'; " +
+                            $"using '{Path.GetFileName(path)}' for every look.");
+                        break;
+                    }
                 }
 
                 if (first == null)
@@ -86,7 +109,23 @@ namespace HavensMirror.Gallery
                 return $"Loaded portraits from '{folder}'.";
             }
 
-            return "No portrait PNGs yet (empty character folders are ignored; drop files in gallery/<name>/ or gallery/_shared/).";
+            Plugin.Log?.LogInfo(
+                $"[Gallery] No portrait images loaded for character '{characterName ?? "(none yet)"}'. Checked: " +
+                string.Join("; ", checkedSummary));
+            return "No portrait images yet (drop a PNG in gallery/<name>/ or gallery/_shared/, then press Ctrl+F8).";
+        }
+
+        private static string DescribeFolder(string folder, List<string> files)
+        {
+            if (!Directory.Exists(folder))
+                return $"'{folder}' (missing)";
+            if (files.Count == 0)
+                return $"'{folder}' (no .png/.jpg files)";
+
+            var names = new List<string>();
+            foreach (string f in files)
+                names.Add(Path.GetFileName(f));
+            return $"'{folder}' ({string.Join(", ", names.ToArray())})";
         }
 
         public Sprite Get(LookSlot slot)
@@ -94,7 +133,7 @@ namespace HavensMirror.Gallery
             return _sprites.TryGetValue(slot, out var sprite) ? sprite : null;
         }
 
-        private Sprite TryLoadPng(string path)
+        private Sprite TryLoadImage(string path)
         {
             try
             {
@@ -109,7 +148,9 @@ namespace HavensMirror.Gallery
                 if (!texture.LoadImage(bytes))
                 {
                     UnityEngine.Object.Destroy(texture);
-                    Plugin.Log?.LogWarning($"[Gallery] Failed to decode PNG: {path}");
+                    Plugin.Log?.LogWarning(
+                        $"[Gallery] Could not decode '{path}'. It must be a real PNG or JPG " +
+                        "(a .webp/.avif renamed to .png will not load). Re-export or re-save it as PNG.");
                     return null;
                 }
 
