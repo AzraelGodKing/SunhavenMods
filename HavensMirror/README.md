@@ -7,7 +7,7 @@ Drop-in PNG bust portraits for your farmer during dialogue, with an optional for
 
 ## Version
 
-**1.0.0** — published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 ## Default Behavior
 

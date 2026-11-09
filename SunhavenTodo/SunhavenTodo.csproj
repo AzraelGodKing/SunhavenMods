@@ -6,7 +6,6 @@
     <AssemblyName>SunhavenTodo</AssemblyName>
     <RootNamespace>SunhavenTodo</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SunhavenModUiProject>true</SunhavenModUiProject>
   </PropertyGroup>
 
