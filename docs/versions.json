@@ -104,7 +104,7 @@
   "com.azraelgodking.cropoptimizer": {
     "version": "2.3.1",
     "name": "Crop Optimizer",
-    "description": "Crop forecast HUD with seasonal planning helpers and soft Todo/Birthday/Vault integrations",
+    "description": "Crop forecast HUD with soft Vault and Almanac integrations",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/500",
     "nexus_file_group_id": "7320911",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/CropOptimizer/",
@@ -132,13 +132,13 @@
     "changelog": "Maintenance release: removed unused code. No change to gifting."
   },
   "com.azraelgodking.havensmirror": {
-    "version": "1.0.2",
+    "version": "1.0.3",
     "name": "Haven's Mirror",
     "description": "Custom player dialogue bust portraits from a PNG gallery folder, with optional NPC look override and hotkey reload",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/538",
     "nexus_file_group_id": "8035296",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensMirror/",
     "thunderstoreName": "HavensMirror",
-    "changelog": "Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation."
+    "changelog": "Portraits load from character, _shared or nested subfolders even with names like Spring.PNG or spring.png.png, Ctrl+F8 works with either Ctrl key, and the portrait no longer gets stuck oversized on the Museum donation screen."
   }
 }

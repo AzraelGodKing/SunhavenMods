@@ -273,46 +273,6 @@ namespace HavensBirthright
         }
 
         /// <summary>
-        /// Helper to determine if player is any type of Elemental
-        /// </summary>
-        public bool IsElemental()
-        {
-            return _currentPlayerRace == Race.Elemental ||
-                   _currentPlayerRace == Race.FireElemental ||
-                   _currentPlayerRace == Race.WaterElemental;
-        }
-
-        /// <summary>
-        /// Helper to determine if player is any type of Amari
-        /// </summary>
-        public bool IsAmari()
-        {
-            return _currentPlayerRace == Race.Amari ||
-                   _currentPlayerRace == Race.AmariCat ||
-                   _currentPlayerRace == Race.AmariDog ||
-                   _currentPlayerRace == Race.AmariBird ||
-                   _currentPlayerRace == Race.AmariAquatic ||
-                   _currentPlayerRace == Race.AmariReptile;
-        }
-
-        /// <summary>
-        /// Helper to determine if player is Naga
-        /// </summary>
-        public bool IsNaga()
-        {
-            return _currentPlayerRace == Race.Naga;
-        }
-
-        /// <summary>
-        /// Gets the cached game SubRace value (Wish.SubRace as int).
-        /// Returns -1 if unknown or not yet detected.
-        /// </summary>
-        public int GetCachedSubRace()
-        {
-            return _cachedGameSubRace;
-        }
-
-        /// <summary>
         /// Clears the cached player race and SubRace.
         /// Called on menu transition so race detection re-runs when a new save is loaded.
         /// </summary>
@@ -396,15 +356,6 @@ namespace HavensBirthright
         public bool HasBonus(BonusType type)
         {
             return GetBonusValue(type) != 0f;
-        }
-
-        /// <summary>
-        /// Refresh bonuses from config (call after config changes)
-        /// </summary>
-        public void RefreshBonuses()
-        {
-            InitializeDefaultBonuses();
-            Plugin.Log.LogInfo("Racial bonuses refreshed from config");
         }
     }
 }
