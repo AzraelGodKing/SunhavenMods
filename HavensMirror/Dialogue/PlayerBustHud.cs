@@ -27,6 +27,10 @@ namespace HavensMirror.Dialogue
         private const float FallbackAspect = 0.83f;
         /// <summary>Longer than vanilla's 0.02s CancelDialogue hide delay.</summary>
         private const float HideCheckDelay = 0.1f;
+        /// <summary>Never taller than this share of the canvas, whatever the NPC rect reports.</summary>
+        private const float MaxHeightFraction = 0.6f;
+        /// <summary>How long Present waits for the NPC bust to appear before giving up.</summary>
+        private const float NpcWaitSeconds = 3f;
 
         private static PlayerBustHud _instance;
         private static bool _loggedLayout;
@@ -158,6 +162,7 @@ namespace HavensMirror.Dialogue
                 var mask = go.GetComponent<RectMask2D>();
                 if (mask != null)
                     UnityEngine.Object.Destroy(mask);
+                go.AddComponent<BustVisibilityWatch>().Hud = this;
                 go.SetActive(false);
 
                 PlaceOnLeftHalf();
@@ -286,6 +291,13 @@ namespace HavensMirror.Dialogue
                 screenY = Screen.height * 0.5f;
             }
 
+            // Keep the whole bust on screen (a stale or oversized NPC rect once pinned it to the bottom).
+            float halfHeightPx = size.y * 0.5f * CanvasUnitsToPixels(layoutParent, eventCam);
+            if (Screen.height > halfHeightPx * 2f)
+                screenY = Mathf.Clamp(screenY, halfHeightPx, Screen.height - halfHeightPx);
+            else
+                screenY = Screen.height * 0.5f;
+
             Vector2 screenPoint = new Vector2(screenX, screenY);
             Vector2 localPoint;
             if (layoutParent != null
@@ -363,6 +375,13 @@ namespace HavensMirror.Dialogue
                     targetHeight = h;
             }
 
+            if (_rect != null && _rect.parent is RectTransform space)
+            {
+                float maxHeight = Mathf.Abs(space.rect.height) * MaxHeightFraction;
+                if (maxHeight > 1f && targetHeight > maxHeight)
+                    targetHeight = maxHeight;
+            }
+
             float aspect = FallbackAspect;
             if (_image != null && _image.sprite != null)
             {
@@ -372,6 +391,68 @@ namespace HavensMirror.Dialogue
             }
 
             return new Vector2(targetHeight * aspect, targetHeight);
+        }
+
+        /// <summary>True when the vanilla NPC bust is on screen with a sprite and a real size.</summary>
+        private bool IsNpcBustShowing()
+        {
+            if (_npcBust == null || !_npcBust.isActiveAndEnabled || _npcBust.sprite == null)
+                return false;
+
+            Rect r = _npcBust.rectTransform.rect;
+            return Mathf.Abs(r.width) > 1f && Mathf.Abs(r.height) > 1f;
+        }
+
+        /// <summary>
+        /// Called every frame while the player bust is visible. Hides it once the NPC bust has been
+        /// gone for <see cref="HideCheckDelay"/>, even when the UI closed without CancelDialogue.
+        /// </summary>
+        private void TickVisibleWatch(ref float npcGoneSince)
+        {
+            if (_relayoutRoutine != null || _npcBust == null || IsNpcBustShowing())
+            {
+                npcGoneSince = -1f;
+                return;
+            }
+
+            if (npcGoneSince < 0f)
+            {
+                npcGoneSince = Time.unscaledTime;
+                return;
+            }
+
+            if (Time.unscaledTime - npcGoneSince >= HideCheckDelay)
+            {
+                npcGoneSince = -1f;
+                Plugin.Log?.LogDebug("[Dialogue] NPC portrait closed — hiding player bust.");
+                Hide();
+            }
+        }
+
+        /// <summary>
+        /// Lives on the player bust GameObject so it ticks exactly while the bust is visible,
+        /// even if the DialogueController host is inactive.
+        /// </summary>
+        private sealed class BustVisibilityWatch : MonoBehaviour
+        {
+            public PlayerBustHud Hud;
+            private float _npcGoneSince = -1f;
+
+            private void OnEnable()
+            {
+                _npcGoneSince = -1f;
+            }
+
+            private void Update()
+            {
+                if (Hud == null)
+                {
+                    gameObject.SetActive(false);
+                    return;
+                }
+
+                Hud.TickVisibleWatch(ref _npcGoneSince);
+            }
         }
 
         public void Hide()
@@ -440,6 +521,7 @@ namespace HavensMirror.Dialogue
                 return;
             }
 
+            Plugin.EnsureGalleryCurrent();
             var shelf = Plugin.Shelf;
             if (shelf == null || !shelf.HasAny)
             {
@@ -473,21 +555,38 @@ namespace HavensMirror.Dialogue
 
         private IEnumerator PresentAfterNpcSettles(LookSlot slot, string loadedFrom)
         {
-            // Wait for vanilla LoadBust + ActivateBustsNextFrame (size/active), with a short cap.
-            for (int i = 0; i < 45; i++)
+            // Wait for vanilla LoadBust + ActivateBustsNextFrame (size/active). Usually a few frames;
+            // a cold addressable load can take longer, so keep waiting (up to NpcWaitSeconds) while
+            // the NPC bust is still hidden instead of giving up and showing the player alone.
+            float deadline = Time.unscaledTime + NpcWaitSeconds;
+            for (int i = 0; ; i++)
             {
                 yield return null;
-                if (_npcBust != null
-                    && _npcBust.gameObject.activeInHierarchy
-                    && _npcBust.sprite != null
-                    && _npcBust.rectTransform.sizeDelta.x > 1f)
+                if (_npcBust == null)
                 {
-                    break;
+                    if (i >= 45)
+                        break;
+                    continue;
                 }
+
+                if (IsNpcBustShowing() && (_npcBust.rectTransform.sizeDelta.x > 1f || i >= 45))
+                    break;
+                if (Time.unscaledTime >= deadline)
+                    break;
             }
 
             // One more frame so NPC size/offset stick before we sample size + Y.
             yield return null;
+
+            // Museum donations and similar popups run the bust setter without showing an NPC
+            // portrait. With nothing to line up with (and nothing whose close would hide us),
+            // the player bust used to appear oversized at the bottom and stay up. Stay hidden.
+            if (_npcBust != null && !IsNpcBustShowing())
+            {
+                Plugin.Log?.LogDebug("[Dialogue] No NPC portrait on screen — player bust stays hidden.");
+                _relayoutRoutine = null;
+                yield break;
+            }
 
             PlaceOnLeftHalf();
             if (_image != null)

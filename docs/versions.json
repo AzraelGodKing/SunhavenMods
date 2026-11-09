@@ -139,6 +139,6 @@
     "nexus_file_group_id": "8035296",
     "thunderstore": "https://thunderstore.io/c/sun-haven/p/AzraelGodKing/HavensMirror/",
     "thunderstoreName": "HavensMirror",
-    "changelog": "Portraits load even when the file is named Spring.PNG, spring.png.png, spring.jpg or anything else, and Ctrl+F8 works with either Ctrl key."
+    "changelog": "Portraits load from character, _shared or nested subfolders even with names like Spring.PNG or spring.png.png, Ctrl+F8 works with either Ctrl key, and the portrait no longer gets stuck oversized on the Museum donation screen."
   }
 }

@@ -96,6 +96,27 @@ namespace HavensMirror
                 TryNotify($"[Haven's Mirror] {status}");
         }
 
+        /// <summary>
+        /// Reload when the shelf was filled for another character (title screen before a save was
+        /// picked, or a save switch), so gallery/&lt;CharacterName&gt;/ is used as soon as it is known.
+        /// </summary>
+        public static void EnsureGalleryCurrent()
+        {
+            if (Shelf == null)
+            {
+                ReloadGallery(notify: false);
+                return;
+            }
+
+            string character = TryReadCharacterName();
+            // A failed name read mid-game must not throw away an already loaded character folder.
+            if (string.IsNullOrWhiteSpace(character) || !Shelf.IsStaleFor(character))
+                return;
+
+            Log?.LogInfo($"[Gallery] Active character is now '{character ?? "(none)"}' — reloading portraits.");
+            ReloadGallery(notify: false);
+        }
+
         private static string TryReadCharacterName()
         {
             return GameSaveCharacterName.TryGetCurrent(

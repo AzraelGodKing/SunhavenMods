@@ -13,9 +13,21 @@ namespace HavensMirror.Gallery
         private readonly Dictionary<LookSlot, Sprite> _sprites = new Dictionary<LookSlot, Sprite>();
         private readonly List<Texture2D> _textures = new List<Texture2D>();
         private string _loadedFrom;
+        private string _loadedForCharacter;
+        private bool _hasLoaded;
 
         public bool HasAny => _sprites.Count > 0;
         public string LoadedFrom => _loadedFrom;
+
+        /// <summary>
+        /// True when the shelf was last loaded for a different character than <paramref name="characterName"/>
+        /// (e.g. it loaded on the title screen before a save was picked, or the player switched saves).
+        /// </summary>
+        public bool IsStaleFor(string characterName)
+        {
+            return !_hasLoaded
+                   || !string.Equals(_loadedForCharacter ?? string.Empty, characterName ?? string.Empty, StringComparison.Ordinal);
+        }
 
         public void Clear()
         {
@@ -35,29 +47,41 @@ namespace HavensMirror.Gallery
 
             _textures.Clear();
             _loadedFrom = null;
+            _hasLoaded = false;
+            _loadedForCharacter = null;
         }
 
         public void Dispose() => Clear();
 
         /// <summary>
-        /// Load portraits for the active character, falling back to the shared folder.
-        /// Empty folders (created from saves with no PNGs yet) are skipped quietly.
+        /// Load portraits for the active character, falling back to the shared folder, then to images
+        /// placed directly in the gallery folder. Character / shared folders are matched loosely
+        /// (case, spaces, '_' and '-') and images in nested subfolders are found when the folder
+        /// itself has none. Empty folders (created from saves with no PNGs yet) are skipped quietly.
         /// Returns a short status message for logs / notifications.
         /// </summary>
         public string LoadForCharacter(string characterName)
         {
             Clear();
+            _hasLoaded = true;
+            _loadedForCharacter = characterName;
 
-            string[] candidates =
-            {
-                GalleryPaths.CharacterFolder(characterName),
-                GalleryPaths.SharedFolder
-            };
+            var candidates = new List<string>();
+            if (!string.IsNullOrWhiteSpace(characterName))
+                candidates.Add(GalleryPaths.ResolveCharacterFolder(characterName));
+            string shared = GalleryPaths.ResolveSharedFolder();
+            if (!candidates.Contains(shared))
+                candidates.Add(shared);
+            // Last resort: images dropped straight into gallery/ (top level only, never other characters' folders).
+            candidates.Add(GalleryPaths.GalleryRoot);
 
             var checkedSummary = new List<string>();
             foreach (string folder in candidates)
             {
-                List<string> files = GalleryPaths.ListImageFiles(folder);
+                bool isRoot = string.Equals(folder, GalleryPaths.GalleryRoot, StringComparison.OrdinalIgnoreCase);
+                List<string> files = isRoot
+                    ? GalleryPaths.ListImageFiles(folder)
+                    : GalleryPaths.ListImageFilesDeep(folder);
                 checkedSummary.Add(DescribeFolder(folder, files));
 
                 // Empty save-created folders are ignored — no error, no load attempt.
@@ -106,7 +130,10 @@ namespace HavensMirror.Gallery
                 }
 
                 _loadedFrom = folder;
-                return $"Loaded portraits from '{folder}'.";
+                string source = files.Count > 0 ? Path.GetDirectoryName(files[0]) : folder;
+                return string.Equals(source, folder, StringComparison.OrdinalIgnoreCase)
+                    ? $"Loaded portraits from '{folder}'."
+                    : $"Loaded portraits from '{source}' (subfolder of '{folder}').";
             }
 
             Plugin.Log?.LogInfo(
