@@ -103,7 +103,9 @@ namespace CropOptimizer
             if (_hud != null)
                 _hud.PlacementChanged -= OnCropHudPlacementChanged;
 
-            _harmony?.UnpatchSelf();
+            // Leave patches applied. UnpatchSelf here dropped crop-growth and LoadCharacter hooks when this
+            // component was destroyed during scene cleanup, so Crop Optimizer stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
 
             if (_isVaultLoadedEventSubscribed && _vaultLoadedEventInfo != null && _vaultLoadedHandler != null)
             {
