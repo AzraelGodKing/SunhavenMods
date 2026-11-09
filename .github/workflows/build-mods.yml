@@ -28,6 +28,9 @@ on:
       - "TrinketFortune/**"
       - "scripts/localization/**"
       - "scripts/matrix/**"
+      - "scripts/build/**"
+      - "Directory.Build.props"
+      - "Directory.Build.targets"
       - ".github/workflows/build-mods.yml"
   pull_request:
     paths:
@@ -49,6 +52,9 @@ on:
       - "TrinketFortune/**"
       - "scripts/localization/**"
       - "scripts/matrix/**"
+      - "scripts/build/**"
+      - "Directory.Build.props"
+      - "Directory.Build.targets"
       - ".github/workflows/build-mods.yml"
   workflow_dispatch:
 

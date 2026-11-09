@@ -159,8 +159,6 @@ namespace SunHavenMuseumUtilityTracker.UI
             { "aquarium", (new Color(0.40f, 0.60f, 0.75f), new Color(0.55f, 0.75f, 0.90f)) }
         };
 
-        public bool IsVisible => _isVisible;
-
         private float WindowWidth => BASE_WINDOW_WIDTH * _scale;
         private float WindowHeight => BASE_WINDOW_HEIGHT * _scale;
         private float HeaderHeight => BASE_HEADER_HEIGHT * _scale;
@@ -192,7 +190,6 @@ namespace SunHavenMuseumUtilityTracker.UI
             _windowRect = new Rect(x, y, w, h);
 
             SunhavenMods.Shared.IconCache.Initialize(Plugin.Log);
-            MuseumContent.ApplyResolvedAquariumFishIfNeeded();
             Plugin.Log?.LogInfo("MuseumTrackerUI initialized");
         }
 
@@ -218,8 +215,6 @@ namespace SunHavenMuseumUtilityTracker.UI
         {
             _isVisible = true;
             _openAnimation = 0f;
-
-            MuseumContent.ApplyResolvedAquariumFishIfNeeded();
 
             // Refresh game progress cache in background (spread over multiple frames)
             StartCacheRefresh();
@@ -256,12 +251,8 @@ namespace SunHavenMuseumUtilityTracker.UI
 
             foreach (var bundleId in bundleIds)
             {
-                string progressKey = MuseumContent.GetProgressKeyForBundle(bundleId);
-                if (!string.IsNullOrEmpty(progressKey))
-                {
-                    _cachedGameDonationCounts[bundleId] = MuseumPatches.GetBundleDonationCount(progressKey);
-                    _cachedGameCompleteStatus[bundleId] = MuseumPatches.IsBundleCompleteInGame(progressKey);
-                }
+                _cachedGameDonationCounts[bundleId] = MuseumPatches.GetBundleDonationCount(bundleId);
+                _cachedGameCompleteStatus[bundleId] = MuseumPatches.IsBundleCompleteInGame(bundleId);
 
                 processedCount++;
                 if (processedCount % batchSize == 0)
@@ -290,12 +281,8 @@ namespace SunHavenMuseumUtilityTracker.UI
             var bundleIds = MuseumContent.GetAllBundleIds();
             foreach (var bundleId in bundleIds)
             {
-                string progressKey = MuseumContent.GetProgressKeyForBundle(bundleId);
-                if (!string.IsNullOrEmpty(progressKey))
-                {
-                    _cachedGameDonationCounts[bundleId] = MuseumPatches.GetBundleDonationCount(progressKey);
-                    _cachedGameCompleteStatus[bundleId] = MuseumPatches.IsBundleCompleteInGame(progressKey);
-                }
+                _cachedGameDonationCounts[bundleId] = MuseumPatches.GetBundleDonationCount(bundleId);
+                _cachedGameCompleteStatus[bundleId] = MuseumPatches.IsBundleCompleteInGame(bundleId);
             }
         }
 

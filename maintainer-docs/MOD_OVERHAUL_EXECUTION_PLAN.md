@@ -36,7 +36,7 @@ From the active foundation queue — features below reference these:
 | 1.1 | CharacterSaveStore (SharedUtilities) | **Done** | Any new per-character save (all new mods) |
 | 1.2 | Shared Todo integration client | **Done** | Todo-pushing features, Season/festival templates |
 | 1.3 | IconCache + UiStyle consolidation | Pending | Large new UIs (ledgers, trackers, config hub) |
-| 1.5 | ReflectionProbe helper | Pending | Reflection-heavy mods (Atlas/NPC positions, health panels) |
+| 1.5 | ReflectionProbe helper | **Done** (AZR-254 / #145) | Reflection-heavy mods (Atlas/NPC positions, health panels) |
 
 ## Feature Roadmap — Existing Mods
 

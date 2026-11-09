@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using BepInEx.Logging;
 
 namespace SunhavenMods.Shared
@@ -59,14 +58,6 @@ namespace SunhavenMods.Shared
                 return ReportsByPluginGuid.TryGetValue(pluginGuid, out var report)
                     ? report.Clone()
                     : null;
-            }
-        }
-
-        public static IReadOnlyList<ModHealthReport> GetAllReports()
-        {
-            lock (Lock)
-            {
-                return ReportsByPluginGuid.Values.Select(r => r.Clone()).ToList();
             }
         }
 

@@ -87,17 +87,6 @@ namespace SunHavenMuseumUtilityTracker.Data
             Plugin.Log?.LogInfo($"DonationManager: Marked {item?.Name ?? itemId} as donated");
         }
 
-        /// <summary>
-        /// Marks an item as donated by game item ID.
-        /// </summary>
-        public void MarkDonatedByGameId(int gameItemId)
-        {
-            foreach (var museumItemId in GetMuseumItemIdsForGameItem(gameItemId))
-            {
-                MarkDonated(museumItemId);
-            }
-        }
-
         private static List<string> GetMuseumItemIdsForGameItem(int gameItemId)
         {
             if (_museumIdsByGameItemId == null)

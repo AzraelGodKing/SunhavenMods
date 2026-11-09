@@ -107,20 +107,10 @@ namespace SunHavenMuseumUtilityTracker.Data
             return DonatedItemIds.Contains(itemId);
         }
 
-        public bool HasDonated(MuseumItem item)
-        {
-            return HasDonated(item.Id);
-        }
-
         public void MarkDonated(string itemId)
         {
             DonatedItemIds.Add(itemId);
             LastUpdated = DateTime.Now;
-        }
-
-        public void MarkDonated(MuseumItem item)
-        {
-            MarkDonated(item.Id);
         }
 
         public void UnmarkDonated(string itemId)

@@ -6,7 +6,7 @@
     <AssemblyName>HavensMirror</AssemblyName>
     <RootNamespace>HavensMirror</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,10 +27,6 @@
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(ManagedPath)\UnityEngine.CoreModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>$(ManagedPath)\UnityEngine.IMGUIModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">

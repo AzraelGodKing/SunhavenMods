@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -18,6 +19,46 @@ namespace SunhavenMods.Shared
             BindingFlags.Public | BindingFlags.NonPublic |
             BindingFlags.Instance | BindingFlags.Static |
             BindingFlags.FlattenHierarchy;
+
+        // Member lookups by name are cached per (type, name), including misses, so callers that read
+        // game state by name every few frames (Haven's Birthright stat cache, combat patches) stop
+        // paying for Type.GetProperty / GetField and the base-type walk on every call (AZR-729).
+        // Types never change at runtime, so entries never need invalidating.
+        private sealed class MemberAccessor
+        {
+            public static readonly MemberAccessor Missing = new MemberAccessor(null, null);
+
+            public readonly PropertyInfo Property;
+            public readonly FieldInfo Field;
+
+            public MemberAccessor(PropertyInfo property, FieldInfo field)
+            {
+                Property = property;
+                Field = field;
+            }
+        }
+
+        private static readonly object MemberCacheLock = new object();
+        private static readonly Dictionary<(Type, string), MemberAccessor> StaticGetCache =
+            new Dictionary<(Type, string), MemberAccessor>();
+        private static readonly Dictionary<(Type, string), MemberAccessor> InstanceGetCache =
+            new Dictionary<(Type, string), MemberAccessor>();
+        private static readonly Dictionary<(Type, string), MemberAccessor> InstanceSetCache =
+            new Dictionary<(Type, string), MemberAccessor>();
+
+        private static readonly string[] SingletonMemberNames = { "Instance", "instance", "_instance", "Singleton", "singleton" };
+
+        private static bool TryGetCached(Dictionary<(Type, string), MemberAccessor> cache, Type type, string name, out MemberAccessor accessor)
+        {
+            lock (MemberCacheLock)
+                return cache.TryGetValue((type, name), out accessor);
+        }
+
+        private static void StoreCached(Dictionary<(Type, string), MemberAccessor> cache, Type type, string name, MemberAccessor accessor)
+        {
+            lock (MemberCacheLock)
+                cache[(type, name)] = accessor;
+        }
 
         /// <summary>
         /// Finds a type by name, searching across all loaded assemblies if needed.
@@ -171,26 +212,38 @@ namespace SunhavenMods.Shared
         /// </summary>
         public static object GetStaticValue(Type type, string memberName)
         {
-            if (type == null)
+            if (type == null || memberName == null)
                 return null;
 
+            if (!TryGetCached(StaticGetCache, type, memberName, out var accessor))
+            {
+                accessor = ResolveStaticGetter(type, memberName);
+                StoreCached(StaticGetCache, type, memberName, accessor);
+            }
+
+            if (accessor.Property != null)
+                return accessor.Property.GetValue(null);
+            if (accessor.Field != null)
+                return accessor.Field.GetValue(null);
+            return null;
+        }
+
+        private static MemberAccessor ResolveStaticGetter(Type type, string memberName)
+        {
             try
             {
                 var prop = type.GetProperty(memberName, AllBindingFlags);
                 if (prop != null && prop.GetMethod != null && prop.GetIndexParameters().Length == 0)
-                    return prop.GetValue(null);
+                    return new MemberAccessor(prop, null);
             }
             catch (AmbiguousMatchException)
             {
-                return null;
+                // Same as before caching: an ambiguous property name resolves to "no value".
+                return MemberAccessor.Missing;
             }
 
-            // Try field
             var field = type.GetField(memberName, AllBindingFlags);
-            if (field != null)
-                return field.GetValue(null);
-
-            return null;
+            return field != null ? new MemberAccessor(null, field) : MemberAccessor.Missing;
         }
 
         /// <summary>
@@ -201,9 +254,7 @@ namespace SunhavenMods.Shared
             if (type == null)
                 return null;
 
-            var instanceNames = new[] { "Instance", "instance", "_instance", "Singleton", "singleton" };
-
-            foreach (var name in instanceNames)
+            foreach (var name in SingletonMemberNames)
             {
                 var value = GetStaticValue(type, name);
                 if (value != null)
@@ -218,28 +269,44 @@ namespace SunhavenMods.Shared
         /// </summary>
         public static object GetInstanceValue(object instance, string memberName)
         {
-            if (instance == null)
+            if (instance == null || memberName == null)
                 return null;
 
-            var type = instance.GetType();
+            var instanceType = instance.GetType();
+            if (!TryGetCached(InstanceGetCache, instanceType, memberName, out var accessor))
+            {
+                // Resolution can throw AmbiguousMatchException; let it propagate uncached, as before.
+                accessor = ResolveInstanceMember(instanceType, memberName, forSet: false);
+                StoreCached(InstanceGetCache, instanceType, memberName, accessor);
+            }
 
-            // Walk up the inheritance chain
+            if (accessor.Property != null)
+                return accessor.Property.GetValue(instance);
+            if (accessor.Field != null)
+                return accessor.Field.GetValue(instance);
+            return null;
+        }
+
+        /// <summary>
+        /// Walks up the inheritance chain and returns the first property (with a getter or setter,
+        /// depending on <paramref name="forSet"/>) or field named <paramref name="memberName"/>.
+        /// </summary>
+        private static MemberAccessor ResolveInstanceMember(Type type, string memberName, bool forSet)
+        {
             while (type != null)
             {
-                // Try property
                 var prop = type.GetProperty(memberName, AllBindingFlags);
-                if (prop != null && prop.GetMethod != null)
-                    return prop.GetValue(instance);
+                if (prop != null && (forSet ? prop.SetMethod : prop.GetMethod) != null)
+                    return new MemberAccessor(prop, null);
 
-                // Try field
                 var field = type.GetField(memberName, AllBindingFlags);
                 if (field != null)
-                    return field.GetValue(instance);
+                    return new MemberAccessor(null, field);
 
                 type = type.BaseType;
             }
 
-            return null;
+            return MemberAccessor.Missing;
         }
 
         /// <summary>
@@ -247,33 +314,26 @@ namespace SunhavenMods.Shared
         /// </summary>
         public static bool SetInstanceValue(object instance, string memberName, object value)
         {
-            if (instance == null)
+            if (instance == null || memberName == null)
                 return false;
 
-            var type = instance.GetType();
-
-            // Walk up the inheritance chain
-            while (type != null)
+            var instanceType = instance.GetType();
+            if (!TryGetCached(InstanceSetCache, instanceType, memberName, out var accessor))
             {
-                // Try property
-                var prop = type.GetProperty(memberName, AllBindingFlags);
-                if (prop != null && prop.SetMethod != null)
-                {
-                    prop.SetValue(instance, value);
-                    return true;
-                }
-
-                // Try field
-                var field = type.GetField(memberName, AllBindingFlags);
-                if (field != null)
-                {
-                    field.SetValue(instance, value);
-                    return true;
-                }
-
-                type = type.BaseType;
+                accessor = ResolveInstanceMember(instanceType, memberName, forSet: true);
+                StoreCached(InstanceSetCache, instanceType, memberName, accessor);
             }
 
+            if (accessor.Property != null)
+            {
+                accessor.Property.SetValue(instance, value);
+                return true;
+            }
+            if (accessor.Field != null)
+            {
+                accessor.Field.SetValue(instance, value);
+                return true;
+            }
             return false;
         }
 
@@ -319,39 +379,6 @@ namespace SunhavenMods.Shared
                 return null;
 
             return method.Invoke(null, args);
-        }
-
-        /// <summary>
-        /// Gets all fields of a type (including inherited private fields).
-        /// </summary>
-        public static FieldInfo[] GetAllFields(Type type)
-        {
-            if (type == null)
-                return Array.Empty<FieldInfo>();
-
-            return type.GetFields(AllBindingFlags)
-                .Concat(type.BaseType != null && type.BaseType != typeof(object)
-                    ? GetAllFields(type.BaseType)
-                    : Enumerable.Empty<FieldInfo>())
-                .Distinct()
-                .ToArray();
-        }
-
-        /// <summary>
-        /// Gets all properties of a type (including inherited).
-        /// </summary>
-        public static PropertyInfo[] GetAllProperties(Type type)
-        {
-            if (type == null)
-                return Array.Empty<PropertyInfo>();
-
-            return type.GetProperties(AllBindingFlags)
-                .Concat(type.BaseType != null && type.BaseType != typeof(object)
-                    ? GetAllProperties(type.BaseType)
-                    : Enumerable.Empty<PropertyInfo>())
-                .GroupBy(p => p.Name)
-                .Select(g => g.First())
-                .ToArray();
         }
 
         /// <summary>

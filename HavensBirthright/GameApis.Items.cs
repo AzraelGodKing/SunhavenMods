@@ -51,7 +51,7 @@ namespace HavensBirthright
 
                 TryGetNotificationInstance(notifStackType);
 
-                Plugin.Log?.LogInfo("[GameApis] Notification system initialized" +
+                Plugin.Log?.LogDebug("[GameApis] Notification system initialized" +
                     (_notificationStackInstance != null ? " (instance ready)" : " (instance deferred)"));
             }
             catch (Exception ex)
@@ -178,7 +178,7 @@ namespace HavensBirthright
                 }
 
                 _reflectionInitialized = true;
-                Plugin.Log?.LogInfo($"[GameApis] Item ID reflection ready - " +
+                Plugin.Log?.LogDebug($"[GameApis] Item ID reflection ready - " +
                     $"field:{_cachedItemIdField?.Name ?? "null"}, " +
                     $"prop:{_cachedItemIdProperty?.Name ?? "null"}, " +
                     $"method:{_cachedItemIdMethod?.Name ?? "null"}");
@@ -239,7 +239,7 @@ namespace HavensBirthright
                         if (val > 0)
                         {
                             _cachedItemIdField = field;
-                            Plugin.Log?.LogInfo($"[GameApis] Slow path item ID via field '{field.Name}' = {val}");
+                            Plugin.Log?.LogDebug($"[GameApis] Slow path item ID via field '{field.Name}' = {val}");
                             return val;
                         }
                     }
@@ -254,7 +254,7 @@ namespace HavensBirthright
                         if (val > 0)
                         {
                             _cachedItemIdProperty = prop;
-                            Plugin.Log?.LogInfo($"[GameApis] Slow path item ID via property '{prop.Name}' = {val}");
+                            Plugin.Log?.LogDebug($"[GameApis] Slow path item ID via property '{prop.Name}' = {val}");
                             return val;
                         }
                     }
@@ -282,7 +282,7 @@ namespace HavensBirthright
                 if (_cachedAddItemIntMethod != null)
                 {
                     _cachedAddItemArgCount = 3;
-                    Plugin.Log?.LogInfo("[GameApis] Cached Inventory.AddItem(int, int, bool)");
+                    Plugin.Log?.LogDebug("[GameApis] Cached Inventory.AddItem(int, int, bool)");
                     return _cachedAddItemIntMethod;
                 }
 
@@ -291,7 +291,7 @@ namespace HavensBirthright
                 if (_cachedAddItemIntMethod != null)
                 {
                     _cachedAddItemArgCount = 2;
-                    Plugin.Log?.LogInfo("[GameApis] Cached Inventory.AddItem(int, int)");
+                    Plugin.Log?.LogDebug("[GameApis] Cached Inventory.AddItem(int, int)");
                     return _cachedAddItemIntMethod;
                 }
 

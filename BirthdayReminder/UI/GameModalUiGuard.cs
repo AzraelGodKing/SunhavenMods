@@ -16,11 +16,27 @@ namespace BirthdayReminder.UI
         private static PropertyInfo _inventoryUiBlockingProp;
         private static bool _resolveAttempted;
 
+        // AZR-734: OnGUI calls this several times per frame (Layout, Repaint, input events).
+        // The answer cannot change within a frame, so reflect + unbox once per frame.
+        private static int _cachedFrame = -1;
+        private static bool _cachedResult;
+
         /// <summary>
         /// True when <see cref="Wish.UIHandler.InventoryUiActiveInHierarchy"/> would return true:
         /// inventory, external UI (journal/calendar path), dialogue, quest rewards, etc.
         /// </summary>
         public static bool ShouldSuppressBirthdayImGui()
+        {
+            int frame = UnityEngine.Time.frameCount;
+            if (frame == _cachedFrame)
+                return _cachedResult;
+
+            _cachedResult = ShouldSuppressBirthdayImGuiUncached();
+            _cachedFrame = frame;
+            return _cachedResult;
+        }
+
+        private static bool ShouldSuppressBirthdayImGuiUncached()
         {
             try
             {

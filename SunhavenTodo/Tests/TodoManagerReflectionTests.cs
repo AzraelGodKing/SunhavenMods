@@ -158,5 +158,15 @@ namespace SunhavenTodo.Tests
 
             Assert.That(_todo.GetTodos(activeOnly: false), Is.Empty);
         }
+
+        [Test]
+        public void GetTodo_DelegatesToGetTodoById()
+        {
+            string id = _todo.AddTodo(new TodoDraft { Title = "Delegate" });
+            Assert.That(_manager.GetTodo(id), Is.SameAs(_manager.GetTodoById(id)));
+            Assert.That(_manager.GetTodo(null), Is.Null);
+            Assert.That(_manager.GetTodo(""), Is.Null);
+            Assert.That(_manager.GetTodo("missing"), Is.Null);
+        }
     }
 }

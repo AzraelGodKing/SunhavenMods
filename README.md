@@ -1,4 +1,4 @@
-﻿# Sun Haven Mods
+# Sun Haven Mods
 
 BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_Haven/) — vault, QoL, integrations, and docs. **Published versions and download links** live in [`docs/versions.json`](docs/versions.json) (also drives the [mod hub](https://www.azraelsmods.com/sun-haven/)). Each mod folder also has a `mod.json` for the public mod website.
 
@@ -19,14 +19,14 @@ BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_H
 | Crop Optimizer | [`CropOptimizer/`](CropOptimizer/) | 2.3.1 |
 | Haven's Respec | [`HavensRespec/`](HavensRespec/) | 2.1.4 |
 | Gifting Assistant | [`GiftingAssistant/`](GiftingAssistant/) | 1.1.4 |
-| Haven's Mirror | [`HavensMirror/`](HavensMirror/) | 1.0.2 |
+| Haven's Mirror | [`HavensMirror/`](HavensMirror/) | 1.0.3 |
 
 Per-mod READMEs and Thunderstore packages describe features, hotkeys, and config in detail.
 
 ## Installation
 
 1. Install [BepInEx 5.x](https://docs.bepinex.dev/articles/user_guide/installation/index.html) for Sun Haven.
-2. Download from [Thunderstore](https://thunderstore.io/c/sun-haven/) / [Nexus](https://www.nexusmods.com/sunhaven) / [GitHub Releases](https://github.com/AzraelGodKing/SunhavenMod/releases), or build from this repo.
+2. Download from [Thunderstore](https://thunderstore.io/c/sun-haven/) / [Nexus](https://www.nexusmods.com/sunhaven) / [GitHub Releases](https://github.com/AzraelGodKing/SunhavenMods/releases), or build from this repo.
 3. Copy the mod DLL (and any packaged files) into `Sun Haven/BepInEx/plugins/` (subfolders allowed).
 
 ## Build from source

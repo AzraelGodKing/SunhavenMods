@@ -1,19 +1,30 @@
 using System;
 using System.Collections.Generic;
 using HavensAlmanac.Data;
-using BirthdayReminder;
-using BirthdayReminder.Data;
 using SunhavenMods.Shared;
 using UnityEngine;
 
 namespace HavensAlmanac.Integration
 {
+    /// <summary>
+    /// Soft integration with Birthday Reminder.
+    /// BirthdayReminder types may only appear inside method bodies (never in fields,
+    /// signatures, or lambdas) so this assembly still loads and reflects cleanly
+    /// when Birthday Reminder is not installed (AZR-739).
+    /// </summary>
     public class BirthdayDataProvider : IModDataProvider
     {
+        private sealed class BirthdayEntry
+        {
+            public string NPCName;
+            public string GiftHint;
+            public bool HasBeenGifted;
+        }
+
         public string ModName => "Birthday";
         public string ModIcon => "\u2605";
 
-        private List<BirthdayDisplayInfo> _birthdays = new List<BirthdayDisplayInfo>();
+        private List<BirthdayEntry> _birthdays = new List<BirthdayEntry>();
         private int _ungiftedCount;
         private string _hudSummary = "Loading...";
         private bool _isReady;
@@ -29,15 +40,25 @@ namespace HavensAlmanac.Integration
                 var manager = BirthdayReminder.Plugin.GetManager();
                 if (manager == null) { _isReady = false; return; }
 
+                var birthdays = new List<BirthdayEntry>();
+                int ungifted = 0;
                 var today = manager.TodaysBirthdays;
-                _birthdays = today != null
-                    ? new List<BirthdayDisplayInfo>(today)
-                    : new List<BirthdayDisplayInfo>();
-                _ungiftedCount = 0;
-                foreach (var b in _birthdays)
+                if (today != null)
                 {
-                    if (!b.HasBeenGifted) _ungiftedCount++;
+                    foreach (var b in today)
+                    {
+                        if (b == null) continue;
+                        birthdays.Add(new BirthdayEntry
+                        {
+                            NPCName = b.NPCName,
+                            GiftHint = b.GiftHint,
+                            HasBeenGifted = b.HasBeenGifted
+                        });
+                        if (!b.HasBeenGifted) ungifted++;
+                    }
                 }
+                _birthdays = birthdays;
+                _ungiftedCount = ungifted;
 
                 if (_birthdays.Count == 0)
                     _hudSummary = "No birthdays";

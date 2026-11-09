@@ -124,7 +124,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
 
             _lastCharacterSourceLog = source;
             _lastCharacterNameLog = characterName;
-            Plugin.Log?.LogInfo($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
+            Plugin.Log?.LogDebug($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
         }
 
         public static void ResetState()
@@ -168,22 +168,19 @@ namespace SunHavenMuseumUtilityTracker.Patches
     /// </summary>
     public static class GameSavePatches
     {
-        public static int LastLoadedSlot { get; private set; } = -1;
         public static string LastLoadedCharacterName { get; private set; } = null;
 
         public static void ResetLastLoadedSlot()
         {
-            LastLoadedSlot = -1;
             LastLoadedCharacterName = null;
-            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedSlot and LastLoadedCharacterName");
+            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedCharacterName");
         }
 
         public static void OnLoadCharacter(int characterNumber)
         {
             try
             {
-                Plugin.Log?.LogInfo($"GameSave.LoadCharacter: slot {characterNumber}");
-                LastLoadedSlot = characterNumber;
+                Plugin.Log?.LogDebug($"GameSave.LoadCharacter: slot {characterNumber}");
 
                 if (GameSave.Instance?.Saves != null &&
                     characterNumber >= 0 &&
@@ -196,7 +193,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
                         if (!string.IsNullOrEmpty(charName))
                         {
                             LastLoadedCharacterName = charName;
-                            Plugin.Log?.LogInfo($"GameSavePatches: Extracted character name '{charName}' from slot {characterNumber}");
+                            Plugin.Log?.LogDebug($"GameSavePatches: Extracted character name '{charName}' from slot {characterNumber}");
                         }
                     }
                 }

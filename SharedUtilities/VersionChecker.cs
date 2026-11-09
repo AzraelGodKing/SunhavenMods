@@ -68,34 +68,6 @@ namespace SunhavenMods.Shared
             runner.StartCheck(pluginGuid, currentVersion, logger, onComplete);
         }
 
-        public static ModHealthSnapshot GetHealthSnapshot(string pluginGuid)
-        {
-            if (string.IsNullOrWhiteSpace(pluginGuid))
-                return null;
-            lock (HealthLock)
-            {
-                if (!HealthByPluginGuid.TryGetValue(pluginGuid, out var snapshot))
-                    return null;
-                return new ModHealthSnapshot
-                {
-                    PluginGuid = snapshot.PluginGuid,
-                    LastCheckUtc = snapshot.LastCheckUtc,
-                    ExceptionCount = snapshot.ExceptionCount,
-                    LastError = snapshot.LastError
-                };
-            }
-        }
-
-        /// <summary>
-        /// Compares two semantic version strings.
-        /// Returns: -1 if v1 &lt; v2, 0 if equal, 1 if v1 &gt; v2. Also returns 0 when either side is unparseable;
-        /// use <see cref="TryCompareVersions"/> to tell that apart from "equal".
-        /// </summary>
-        public static int CompareVersions(string v1, string v2)
-        {
-            return TryCompareVersions(v1, v2) ?? 0;
-        }
-
         /// <summary>
         /// Compares the numeric core of two versions (a leading v and any -prerelease / +build suffix are ignored).
         /// Returns null when either version is missing or has a non-numeric segment.

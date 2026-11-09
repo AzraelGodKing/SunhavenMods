@@ -15,7 +15,7 @@ namespace HavensBirthright
                 return Race.Elemental;
             }
 
-            Plugin.Log.LogInfo($"[RaceDetection] Elemental body style (key 14): {bodyStyleName}");
+            Plugin.Log.LogDebug($"[RaceDetection] Elemental body style (key 14): {bodyStyleName}");
             string bodyLower = bodyStyleName.ToLowerInvariant();
 
             if (bodyLower.Contains("fire"))
