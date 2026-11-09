@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using HavensAlmanac.Config;
 using HavensAlmanac.Data;
 using SunhavenMods.Shared;
@@ -130,13 +131,45 @@ namespace HavensAlmanac.UI
                 {
                     GUILayout.BeginHorizontal();
                     GUILayout.Label(provider.ModIcon, _iconStyle, GUILayout.Width(Scaled(22)));
-                    GUILayout.Label($"{provider.ModName}: {provider.HudSummary}", _summaryStyle);
+                    GUILayout.Label(GetSummaryLine(provider), _summaryStyle);
                     GUILayout.EndHorizontal();
                 }
             }
 
             // Drag the entire window
             GUI.DragWindow();
+        }
+
+        // AZR-734: "{name}: {summary}" was rebuilt for every provider on every OnGUI event.
+        // Providers keep HudSummary cached between refreshes, so rebuild only when either string changes.
+        private readonly Dictionary<IModDataProvider, CachedSummaryLine> _summaryLines =
+            new Dictionary<IModDataProvider, CachedSummaryLine>();
+
+        private sealed class CachedSummaryLine
+        {
+            public string Name;
+            public string Summary;
+            public string Line;
+        }
+
+        private string GetSummaryLine(IModDataProvider provider)
+        {
+            string name = provider.ModName;
+            string summary = provider.HudSummary;
+            if (!_summaryLines.TryGetValue(provider, out var cached))
+            {
+                cached = new CachedSummaryLine();
+                _summaryLines[provider] = cached;
+            }
+            else if (ReferenceEquals(cached.Name, name) && ReferenceEquals(cached.Summary, summary))
+            {
+                return cached.Line;
+            }
+
+            cached.Name = name;
+            cached.Summary = summary;
+            cached.Line = $"{name}: {summary}";
+            return cached.Line;
         }
 
         private void ClampToScreen()

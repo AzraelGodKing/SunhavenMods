@@ -159,8 +159,6 @@ namespace SunHavenMuseumUtilityTracker.UI
             { "aquarium", (new Color(0.40f, 0.60f, 0.75f), new Color(0.55f, 0.75f, 0.90f)) }
         };
 
-        public bool IsVisible => _isVisible;
-
         private float WindowWidth => BASE_WINDOW_WIDTH * _scale;
         private float WindowHeight => BASE_WINDOW_HEIGHT * _scale;
         private float HeaderHeight => BASE_HEADER_HEIGHT * _scale;

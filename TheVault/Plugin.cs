@@ -610,10 +610,6 @@ namespace TheVault
         public static void SetConfigAltToggleKey(KeyCode k) { if (Instance?._altToggleKey != null) Instance._altToggleKey.Value = k; }
         public static bool GetConfigControllerOpenEnabled() => Instance?._controllerOpenEnabled?.Value ?? true;
         public static void SetConfigControllerOpenEnabled(bool v) { if (Instance?._controllerOpenEnabled != null) Instance._controllerOpenEnabled.Value = v; }
-        public static KeyCode GetConfigControllerOpenModifier() => Instance?._controllerOpenModifier?.Value ?? KeyCode.JoystickButton4;
-        public static void SetConfigControllerOpenModifier(KeyCode k) { if (Instance?._controllerOpenModifier != null) Instance._controllerOpenModifier.Value = k; }
-        public static KeyCode GetConfigControllerOpenButton() => Instance?._controllerOpenButton?.Value ?? KeyCode.JoystickButton3;
-        public static void SetConfigControllerOpenButton(KeyCode k) { if (Instance?._controllerOpenButton != null) Instance._controllerOpenButton.Value = k; }
         public static bool GetConfigHUDEnabled() => Instance?._enableHUD?.Value ?? true;
         public static void SetConfigHUDEnabled(bool v) { if (Instance?._enableHUD != null) Instance._enableHUD.Value = v; }
         public static float GetConfigHUDScale() => Instance?._hudScale?.Value ?? 1f;
@@ -1240,12 +1236,9 @@ namespace TheVault
             }
             SceneManager.sceneLoaded -= OnSceneLoaded;
 
-            // IMPORTANT: Do NOT unpatch Harmony here!
-            // Harmony patches are global and will continue working even after this MonoBehaviour is destroyed.
-            // If we unpatch, the LoadCharacter and InitializeAsOwner hooks stop working,
-            // which breaks character switching entirely.
-            // Only unpatch in OnApplicationQuit when the game is actually closing.
-            // _harmony?.UnpatchSelf(); // REMOVED - this was breaking character switching!
+            // Leave patches applied. UnpatchSelf here dropped LoadCharacter and InitializeAsOwner hooks when this
+            // component was destroyed during scene cleanup, so The Vault stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437) and Gifting Assistant.
 
             _saveSystem?.ForceSave();
         }

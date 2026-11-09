@@ -2,30 +2,26 @@
 
 Use this checklist before enabling self-hosted build workflows.
 
+Compile jobs in [`build-mods.yml`](../.github/workflows/build-mods.yml) and [`release-publish.yml`](../.github/workflows/release-publish.yml) run on a **Linux** runner with labels `self-hosted`, `Linux`, `X64`, `sunhaven`. There is no Windows runner compose file in this repository (`.github/self-hosted-runner/docker-compose.windows-runner.yml` does not exist). Local .NET SDK in Docker is a separate path: [`docker-compose.dotnet-sdk.yml`](../docker-compose.dotnet-sdk.yml) — see [`DOCKER_DOTNET_CONTAINER.md`](DOCKER_DOTNET_CONTAINER.md).
+
 ## Host Setup
 
-- Docker Desktop installed on Windows host.
-- Docker set to Windows containers mode.
-- Docker service starts on boot.
+- Linux host registered as a GitHub Actions self-hosted runner.
+- Runner labels: `self-hosted`, `Linux`, `X64`, `sunhaven`.
 - GitHub repository admin access available for runner registration.
 
 ## Required Host Folders
 
-- `C:\ci\sunhaven-runner\config`
-- `C:\ci\sunhaven-runner\work`
-- `C:\ci\sunhaven-refs\Sun Haven_Data\Managed`
+Workflows pass these as MSBuild properties (game mount is treated as read-only; `SunhavenCopyToBepInExPlugins=false`):
+
+- `/sunhaven/BepInEx` (`BEPINEX_PATH`)
+- `/sunhaven/Sun Haven_Data/Managed` (`MANAGED_PATH`)
 
 ## Copy Sun Haven References
 
-Copy required managed references from:
+Copy required managed references from a Sun Haven install into the runner mounts above.
 
-- `C:\Program Files (x86)\Steam\steamapps\common\Sun Haven\Sun Haven_Data\Managed`
-
-Into:
-
-- `C:\ci\sunhaven-refs\Sun Haven_Data\Managed`
-
-Minimum required DLLs:
+Minimum required DLLs in the Managed folder (same set as [`scripts/build/check-sunhaven-refs.ps1`](../scripts/build/check-sunhaven-refs.ps1)):
 
 - `Assembly-CSharp.dll`
 - `BepInEx.dll`
@@ -36,32 +32,22 @@ Minimum required DLLs:
 - `System.dll`
 - `System.Core.dll`
 
-## Runner Compose Config
-
-- Open `.github/self-hosted-runner/docker-compose.windows-runner.yml`
-- Set:
-  - `GITHUB_REPOSITORY_URL`
-  - `RUNNER_TOKEN` (fresh ephemeral token)
-  - `RUNNER_NAME` (unique)
-- Confirm volume mounts and `:ro` on refs mount.
-
 ## Start and Validate
 
-- Start: `docker compose -f .github/self-hosted-runner/docker-compose.windows-runner.yml up -d --build`
-- Confirm runner is Online in GitHub Actions Runners page.
-- Run preflight check:
-  - `pwsh ./scripts/build/check-sunhaven-refs.ps1 -SunHavenPath "C:\ci\sunhaven-refs"`
+- Confirm the runner is Online on the GitHub Actions Runners page with the `sunhaven` label.
+- Run preflight against a local Sun Haven (or refs) root:
+  - `pwsh ./scripts/build/check-sunhaven-refs.ps1 -SunHavenPath "<path>"`
 
 ## Pre-Release Validation
 
-- Run version drift check:
-  - `pwsh ./scripts/version/check-version-drift.ps1`
+- Run version consistency check:
+  - `python3 scripts/version/verify-version-consistency.py`
+  - or `pwsh ./scripts/version/verify-version-consistency.ps1`
 - Run build script for one mod:
   - `pwsh ./scripts/version/pre-push-build.ps1 -Mod senpaischest -BuildOnly`
 - Confirm output DLL exists in expected build output location.
 
 ## Ongoing Maintenance
 
-- Refresh `sunhaven-refs` after game updates.
-- Rotate runner tokens as needed.
-- Keep runner image + .NET SDK updated periodically.
+- Refresh `/sunhaven` refs after game updates.
+- Keep the runner and .NET SDK 8 updated periodically.

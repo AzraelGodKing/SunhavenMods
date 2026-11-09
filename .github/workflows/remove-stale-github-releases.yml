@@ -1,11 +1,9 @@
 # =============================================================================
-# Remove stale GitHub Releases + GitHub Pages deployments
+# Remove stale GitHub Releases
 # =============================================================================
 # Scans all repository releases and groups by release tag prefix before "-v"
 # (e.g. TheVault-v3.0.5 -> TheVault). Keeps newest 3 per mod group and deletes
 # older releases plus their corresponding git tags.
-# Also targets GitHub Pages deployments (environment: github-pages), keeping only
-# the newest 2 deployments and deleting older ones.
 #
 # SAFETY: Default run is dry-run only. To actually delete, turn OFF dry_run and
 # turn ON confirm_delete in the workflow dispatch form.
@@ -27,7 +25,6 @@ on:
 
 permissions:
   contents: write
-  deployments: write
 
 concurrency:
   group: remove-stale-github-releases
@@ -95,27 +92,6 @@ jobs:
             echo "- id=$ID tag=$TAG name=$NAME published=$PUB"
           done < to_delete.jsonl
 
-          PAGES_KEEP_COUNT=2
-          echo ""
-          echo "GitHub Pages deployment cleanup preview (environment=github-pages; keep newest $PAGES_KEEP_COUNT):"
-          gh api --paginate "repos/$REPO/deployments?environment=github-pages&per_page=100" > all_pages_deployments.json
-          PAGES_TOTAL="$(jq 'length' all_pages_deployments.json)"
-          echo "Found $PAGES_TOTAL GitHub Pages deployment(s)."
-          jq -c 'sort_by(.created_at // .updated_at) | reverse | .[2:][]' all_pages_deployments.json > pages_to_delete.jsonl || true
-          PAGES_DELETE_COUNT="$(wc -l < pages_to_delete.jsonl | tr -d ' ')"
-          if [ "$PAGES_DELETE_COUNT" = "0" ]; then
-            echo "No stale GitHub Pages deployments to delete."
-            exit 0
-          fi
-
-          echo "Would delete $PAGES_DELETE_COUNT GitHub Pages deployment(s):"
-          while IFS= read -r dep; do
-            DEPLOY_ID="$(echo "$dep" | jq -r '.id')"
-            REF="$(echo "$dep" | jq -r '.ref // "<unknown>"')"
-            CREATED="$(echo "$dep" | jq -r '.created_at // "<unknown>"')"
-            echo "- deployment_id=$DEPLOY_ID ref=$REF created=$CREATED"
-          done < pages_to_delete.jsonl
-
       - name: Delete old releases (keep latest 3 per mod)
         if: ${{ !inputs.dry_run && inputs.confirm_delete }}
         env:
@@ -160,30 +136,6 @@ jobs:
               gh api -X DELETE "repos/$REPO/git/refs/tags/$TAG" || echo "Tag refs/tags/$TAG already missing"
             fi
           done < to_delete.jsonl
-
-          PAGES_KEEP_COUNT=2
-          echo ""
-          echo "GitHub Pages deployment cleanup (environment=github-pages; keep newest $PAGES_KEEP_COUNT)."
-          gh api --paginate "repos/$REPO/deployments?environment=github-pages&per_page=100" > all_pages_deployments.json
-          PAGES_TOTAL="$(jq 'length' all_pages_deployments.json)"
-          echo "Found $PAGES_TOTAL GitHub Pages deployment(s)."
-          jq -c 'sort_by(.created_at // .updated_at) | reverse | .[2:][]' all_pages_deployments.json > pages_to_delete.jsonl || true
-          PAGES_DELETE_COUNT="$(wc -l < pages_to_delete.jsonl | tr -d ' ')"
-
-          if [ "$PAGES_DELETE_COUNT" = "0" ]; then
-            echo "No stale GitHub Pages deployments to delete."
-            exit 0
-          fi
-
-          echo "Deleting $PAGES_DELETE_COUNT stale GitHub Pages deployment(s)..."
-          while IFS= read -r dep; do
-            DEPLOY_ID="$(echo "$dep" | jq -r '.id')"
-            REF="$(echo "$dep" | jq -r '.ref // "<unknown>"')"
-            echo "Marking deployment $DEPLOY_ID (ref=$REF) as inactive..."
-            gh api -X POST "repos/$REPO/deployments/$DEPLOY_ID/statuses" -f state=inactive -f auto_inactive=true || true
-            echo "Deleting deployment $DEPLOY_ID..."
-            gh api -X DELETE "repos/$REPO/deployments/$DEPLOY_ID"
-          done < pages_to_delete.jsonl
 
       - name: Block unsafe run
         if: ${{ !inputs.dry_run && !inputs.confirm_delete }}

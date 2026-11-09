@@ -54,7 +54,6 @@ namespace BirthdayReminder
 
         // Instance references
         private BirthdayManager _manager;
-        private BirthdayHUD _hud;
         private Harmony _harmony;
         private bool _applicationQuitting;
 
@@ -422,11 +421,6 @@ namespace BirthdayReminder
 
                     Log?.LogDebug("[EnsureUI] BirthdayHUD created");
                 }
-
-                if (Instance != null)
-                {
-                    Instance._hud = _staticHUD;
-                }
             }
             catch (Exception ex)
             {
@@ -440,7 +434,6 @@ namespace BirthdayReminder
         public static bool ShowGiftHints => _staticShowGiftHints;
         public static KeyCode StaticToggleKey => _staticToggleKey;
         public static bool StaticDebugMode => _staticDebugMode;
-        public static bool StaticUseNativeNotifications => _staticUseNativeNotifications;
         public static bool StaticEnabled => _staticEnabled;
 
         /// <summary>
@@ -668,7 +661,8 @@ namespace BirthdayReminder
                 else
                 {
                     Plugin.Log?.LogDebug("[PlayerPatches] No birthdays found today - HUD will not show automatically");
-                    Plugin.Log?.LogInfo("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
+                    if (Plugin.StaticDebugMode)
+                        Plugin.Log?.LogDebug("[PlayerPatches] Use Ctrl+Shift+B to add a test birthday for testing");
                 }
             }
             catch (Exception ex)

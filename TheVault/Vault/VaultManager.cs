@@ -399,32 +399,16 @@ namespace TheVault.Vault
         {
             if (string.IsNullOrEmpty(fullCurrencyId)) return 0;
 
-            // Parse the currency ID to determine type
-            if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixSeasonal))
+            // Cached parse of the id (AZR-732). Tickets are intentionally not read here (unchanged behaviour).
+            var resolved = VaultCurrencyIds.Resolve(fullCurrencyId);
+            switch (resolved.Kind)
             {
-                string typeName = fullCurrencyId.Substring(VaultCurrencyIds.PrefixSeasonal.Length);
-                if (Enum.TryParse<SeasonalTokenType>(typeName, out var tokenType))
-                    return GetSeasonalTokens(tokenType);
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixCommunity))
-            {
-                return GetCommunityTokens(fullCurrencyId.Substring(VaultCurrencyIds.PrefixCommunity.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixKey))
-            {
-                return GetKeys(fullCurrencyId.Substring(VaultCurrencyIds.PrefixKey.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixSpecial))
-            {
-                return GetSpecial(fullCurrencyId.Substring(VaultCurrencyIds.PrefixSpecial.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixOrb))
-            {
-                return GetOrbs(fullCurrencyId.Substring(VaultCurrencyIds.PrefixOrb.Length));
-            }
-            else if (fullCurrencyId.StartsWith(VaultCurrencyIds.PrefixCustom))
-            {
-                return GetCustomCurrency(fullCurrencyId.Substring(VaultCurrencyIds.PrefixCustom.Length));
+                case CurrencyIdKind.Seasonal: return GetSeasonalTokens(resolved.SeasonalToken);
+                case CurrencyIdKind.Community: return GetCommunityTokens(resolved.ShortId);
+                case CurrencyIdKind.Key: return GetKeys(resolved.ShortId);
+                case CurrencyIdKind.Special: return GetSpecial(resolved.ShortId);
+                case CurrencyIdKind.Orb: return GetOrbs(resolved.ShortId);
+                case CurrencyIdKind.Custom: return GetCustomCurrency(resolved.ShortId);
             }
 
             return 0;

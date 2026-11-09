@@ -4,7 +4,7 @@ Configurable movement speed bonus for Sun Haven.
 
 ## Version
 
-**2.0.1** — published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 ## Default Behavior
 

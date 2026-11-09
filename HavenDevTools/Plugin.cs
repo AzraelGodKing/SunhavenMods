@@ -150,8 +150,6 @@ namespace HavenDevTools
         {
             var uiObject = new GameObject("HavenDevTools_UI");
             DontDestroyOnLoad(uiObject);
-            // NOTE: Do NOT use HideFlags.HideAndDontSave on UI objects!
-            // That flag prevents Unity's OnGUI from being called.
 
             _staticDebugWindow = uiObject.AddComponent<DebugWindow>();
             _staticDebugOverlay = uiObject.AddComponent<DebugOverlay>();
@@ -317,6 +315,7 @@ namespace HavenDevTools
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            ModConfig.UnsubscribeSettingChanged();
 
             string sceneName = SceneManager.GetActiveScene().name ?? string.Empty;
             string sceneLower = sceneName.ToLowerInvariant();
@@ -370,8 +369,6 @@ namespace HavenDevTools
         public static BundleInspector GetBundleInspector() => _staticBundleInspector;
         public static RaceModifierTracker GetRaceModifierTracker() => _staticRaceModifierTracker;
 
-        public static DebugWindow GetDebugWindow() => _staticDebugWindow;
-        public static DebugOverlay GetDebugOverlay() => _staticDebugOverlay;
         public static CommandConsole GetCommandConsole() => _staticCommandConsole;
         public static LogViewerPanel GetLogViewer() => _staticLogViewer;
 
