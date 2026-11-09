@@ -522,7 +522,7 @@ namespace SenpaisChest.Data
                         if (!destPair.Key.CanAcceptItem(slotData.item, slotData.amount, out amountToAccept) || amountToAccept <= 0)
                             continue;
 
-                        Plugin.Log?.LogInfo($"[Scan] Ejecting {itemName} x{amountToAccept} from '{smartData.ChestName}' to smart chest '{otherEntry.Value.ChestName}'");
+                        Plugin.Log?.LogDebug($"[Scan] Ejecting {itemName} x{amountToAccept} from '{smartData.ChestName}' to smart chest '{otherEntry.Value.ChestName}'");
                         TransferItemData(smartInventory, i, destPair.Key, slotData.item, amountToAccept, slotData.id);
                         modifiedChests.Add(smartChest);
                         modifiedChests.Add(destPair.Value);
@@ -546,7 +546,7 @@ namespace SenpaisChest.Data
                         if (!normalEntry.Value.Key.CanAcceptItem(slotData.item, slotData.amount, out amountToAccept) || amountToAccept <= 0)
                             continue;
 
-                        Plugin.Log?.LogInfo($"[Scan] Ejecting {itemName} x{amountToAccept} from '{smartData.ChestName}' to normal chest");
+                        Plugin.Log?.LogDebug($"[Scan] Ejecting {itemName} x{amountToAccept} from '{smartData.ChestName}' to normal chest");
                         TransferItemData(smartInventory, i, normalEntry.Value.Key, slotData.item, amountToAccept, slotData.id);
                         modifiedChests.Add(smartChest);
                         modifiedChests.Add(normalEntry.Value.Value);
@@ -613,7 +613,7 @@ namespace SenpaisChest.Data
 
                 var sellInfo = GetItemSellInfo(slotData.id);
                 var itemName = sellInfo?.name ?? $"Item {slotData.id}";
-                Plugin.Log?.LogInfo($"[Scan] Moving {itemName} x{amountToAccept}");
+                Plugin.Log?.LogDebug($"[Scan] Moving {itemName} x{amountToAccept}");
 
                 TransferItemData(sourceInv, i, targetInv, slotData.item, amountToAccept, slotData.id);
                 moved++;

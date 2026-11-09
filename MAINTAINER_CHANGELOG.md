@@ -19,6 +19,9 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-16
 
 - **Docs/site leftover cleanup:** Hub Crop Optimizer card copy is Vault + Almanac only. Removed GitHub Pages deployment cleanup from `remove-stale-github-releases.yml` (and the unused `deployments: write` permission). `docs/404.html` favicon is relative `favicon.svg`. Dropped the Pages-root comment in `docs/scripts/stats-display.js` and pointed live stats at `SunhavenMods`. Retargeted remaining hub/docs GitHub links from `SunhavenMod` to `SunhavenMods`. Deleted `docs/.gitignore` and the unused root `docs-app/dist/` ignore.
+## 2026-10-17
+
+- **Senpai's Chest scan logs:** Per-stack `[Scan]` eject/move lines in `SmartChestManager` demoted from `LogInfo` to `LogDebug` (`MOD_LIFECYCLE_AND_LOGGING_CONTRACT` §3). Scan-complete milestone and warnings unchanged. No version bump (`cursor/` branch).
 
 ## 2026-10-12
 
