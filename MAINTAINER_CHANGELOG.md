@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-09
+
+- **Senpai's Chest unused locale keys:** Removed `chest.summary`, `chest.summary.accepts`, `chest.summary.rules`, `chest.tips.header`, `chest.tips.filter`, `chest.tips.transfer`, `chest.tips.wildcard`, and `chest.tips.wildcardGroups` (all language rows) from `SenpaisChest/Localization/strings.json`. Live UI never calls `ModLocalization.T` on them (including interpolated keys). No C# change; no version bump.
+
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
