@@ -1,20 +1,31 @@
 using System;
 using System.Collections.Generic;
 using HavensAlmanac.Data;
-using HavensBirthright;
 using SunhavenMods.Shared;
 using UnityEngine;
 
 namespace HavensAlmanac.Integration
 {
+    /// <summary>
+    /// Soft integration with Haven's Birthright.
+    /// HavensBirthright types may only appear inside method bodies (never in fields,
+    /// signatures, or lambdas) so this assembly still loads and reflects cleanly
+    /// when Haven's Birthright is not installed (AZR-739).
+    /// </summary>
     public class BirthrightDataProvider : IModDataProvider
     {
+        private sealed class BonusEntry
+        {
+            public string Description;
+            public string FormattedValue;
+        }
+
         public string ModName => "Birthright";
         public string ModIcon => "\u2694";
 
         private string _raceName = "None";
         private int _bonusCount;
-        private List<RacialBonus> _bonuses = new List<RacialBonus>();
+        private List<BonusEntry> _bonuses = new List<BonusEntry>();
         private string _hudSummary = "Loading...";
         private bool _isReady;
 
@@ -35,7 +46,21 @@ namespace HavensAlmanac.Integration
                 if (race.HasValue)
                 {
                     _raceName = race.Value.ToString();
-                    _bonuses = manager.GetCurrentPlayerBonuses() ?? new List<RacialBonus>();
+                    var bonuses = new List<BonusEntry>();
+                    var current = manager.GetCurrentPlayerBonuses();
+                    if (current != null)
+                    {
+                        foreach (var bonus in current)
+                        {
+                            if (bonus == null) continue;
+                            bonuses.Add(new BonusEntry
+                            {
+                                Description = bonus.Description,
+                                FormattedValue = bonus.GetFormattedValue()
+                            });
+                        }
+                    }
+                    _bonuses = bonuses;
                     _bonusCount = _bonuses.Count;
                     _hudSummary = $"{_raceName} ({_bonusCount} bonus{(_bonusCount != 1 ? "es" : "")})";
                 }
@@ -72,8 +97,7 @@ namespace HavensAlmanac.Integration
 
             foreach (var bonus in _bonuses)
             {
-                string value = bonus.GetFormattedValue();
-                GUILayout.Label($"  {bonus.Description}: {value}");
+                GUILayout.Label($"  {bonus.Description}: {bonus.FormattedValue}");
             }
         }
 

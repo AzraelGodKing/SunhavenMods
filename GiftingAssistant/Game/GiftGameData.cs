@@ -42,8 +42,6 @@ namespace GiftingAssistant.Game
         private static PropertyInfo _romanceableProp;
         private static bool _useGameData;
 
-        private static MethodInfo _tryGetValueMethod;
-        private static Type _tryGetValueDictType;
         private static PropertyInfo[] _npcNameProps;
 
         private static List<GiftNpcInfo> _cachedNpcs;
@@ -539,67 +537,6 @@ namespace GiftingAssistant.Game
                            ?? AccessTools.Property(npcType, "npcName")
                            ?? AccessTools.Property(npcType, "Name");
             return nameProp?.GetValue(npc)?.ToString();
-        }
-
-        private static MethodInfo GetTryGetValueMethod(object npcsDict)
-        {
-            if (npcsDict == null)
-                return null;
-
-            var dictType = npcsDict.GetType();
-            if (_tryGetValueMethod != null && _tryGetValueDictType == dictType)
-                return _tryGetValueMethod;
-
-            _tryGetValueDictType = dictType;
-            _tryGetValueMethod = dictType.GetMethod("TryGetValue");
-            return _tryGetValueMethod;
-        }
-
-        /// <summary>
-        /// Resolves an NPC instance from NPCManager._npcs by raw or normalized name.
-        /// Dictionary keys may use composite names while roster entries use single names.
-        /// </summary>
-        private static object FindNpc(object npcsDict, string name)
-        {
-            if (npcsDict == null || string.IsNullOrEmpty(name))
-                return null;
-
-            string normalized = NormalizeNpcName(name);
-            var tryGetValue = GetTryGetValueMethod(npcsDict);
-            if (tryGetValue != null)
-            {
-                foreach (var candidate in new[] { name, normalized })
-                {
-                    if (string.IsNullOrEmpty(candidate))
-                        continue;
-
-                    var args = new object[] { candidate, null };
-                    if ((bool)tryGetValue.Invoke(npcsDict, args) && args[1] != null)
-                        return args[1];
-                }
-            }
-
-            if (npcsDict is IDictionary dict)
-            {
-                foreach (DictionaryEntry entry in dict)
-                {
-                    string key = entry.Key?.ToString();
-                    if (!string.IsNullOrEmpty(key) &&
-                        string.Equals(NormalizeNpcName(key), normalized, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return entry.Value;
-                    }
-
-                    string valueName = ReadNpcName(entry.Value);
-                    if (!string.IsNullOrEmpty(valueName) &&
-                        string.Equals(NormalizeNpcName(valueName), normalized, StringComparison.OrdinalIgnoreCase))
-                    {
-                        return entry.Value;
-                    }
-                }
-            }
-
-            return null;
         }
 
         private static void AddItemIds(IList source, List<int> destination)
