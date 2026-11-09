@@ -1,4 +1,4 @@
-﻿{
+{
   "com.azraelgodking.squirrelsbirthdayreminder": {
     "version": "2.1.4",
     "name": "A Squirrel's Birthday Reminder",
@@ -72,7 +72,7 @@
     "changelog": "Maintenance release: removed unreachable code and an unused debug patch. No change to chests."
   },
   "com.azraelgodking.havensalmanac": {
-    "version": "2.2.3",
+    "version": "2.2.4",
     "name": "Haven's Almanac",
     "description": "Unified mod dashboard - HUD, full dashboard, and daily morning briefing aggregating data from all installed mods",
     "nexus": "https://www.nexusmods.com/sunhaven/mods/501",

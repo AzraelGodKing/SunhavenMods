@@ -11,7 +11,7 @@ BepInEx plugins for [Sun Haven](https://store.steampowered.com/app/1432860/Sun_H
 | Sun Haven Museum Utility Tracker (S.M.U.T.) | [`SunHavenMuseumUtilityTracker/`](SunHavenMuseumUtilityTracker/) | 3.1.3 |
 | The Vault | [`TheVault/`](TheVault/) | 4.3.1 |
 | Haven's Birthright | [`HavensBirthright/`](HavensBirthright/) | 3.1.4 |
-| Haven's Almanac | [`HavensAlmanac/`](HavensAlmanac/) | 2.2.3 |
+| Haven's Almanac | [`HavensAlmanac/`](HavensAlmanac/) | 2.2.4 |
 | A Squirrel's Birthday Reminder | [`BirthdayReminder/`](BirthdayReminder/) | 2.1.4 |
 | Haven Dev Tools | [`HavenDevTools/`](HavenDevTools/) | 2.1.3 |
 | Trinket Fortune | [`TrinketFortune/`](TrinketFortune/) | 2.1.3 |
