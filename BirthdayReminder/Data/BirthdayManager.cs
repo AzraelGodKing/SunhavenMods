@@ -199,7 +199,7 @@ namespace BirthdayReminder.Data
         /// </summary>
         public void ManualRefresh()
         {
-            Plugin.Log?.LogInfo("[BirthdayManager] Manual refresh triggered");
+            Plugin.Log?.LogDebug("[BirthdayManager] Manual refresh triggered");
             CheckTodaysBirthdays();
             SetStatusMessage($"Refreshed! Found {_todaysBirthdays.Count} birthday(s)");
         }
@@ -457,12 +457,12 @@ namespace BirthdayReminder.Data
         /// </summary>
         public void DebugAddTestBirthday(string npcName, string giftHint = "")
         {
-            Plugin.Log?.LogInfo($"[DEBUG] Adding test birthday for: {npcName}");
+            Plugin.Log?.LogDebug($"[DEBUG] Adding test birthday for: {npcName}");
 
             // Don't add duplicates
             if (_todaysBirthdays.Any(b => b.NPCName == npcName))
             {
-                Plugin.Log?.LogInfo($"[DEBUG] {npcName} already has a birthday entry");
+                Plugin.Log?.LogDebug($"[DEBUG] {npcName} already has a birthday entry");
                 return;
             }
 
@@ -483,7 +483,7 @@ namespace BirthdayReminder.Data
         /// </summary>
         public void DebugClearBirthdays()
         {
-            Plugin.Log?.LogInfo("[DEBUG] Clearing all birthdays");
+            Plugin.Log?.LogDebug("[DEBUG] Clearing all birthdays");
             _todaysBirthdays.Clear();
             _giftTracking = null;
             OnBirthdaysUpdated?.Invoke();
@@ -494,7 +494,7 @@ namespace BirthdayReminder.Data
         /// </summary>
         public void DebugLoadAllBirthdays()
         {
-            Plugin.Log?.LogInfo("[DEBUG] Loading ALL NPC birthdays from cache...");
+            Plugin.Log?.LogDebug("[DEBUG] Loading ALL NPC birthdays from cache...");
             _todaysBirthdays.Clear();
 
             foreach (var birthday in BirthdayCache.AllBirthdays)
@@ -503,7 +503,7 @@ namespace BirthdayReminder.Data
                 _todaysBirthdays.Add(new BirthdayDisplayInfo(displayName, false, ""));
             }
 
-            Plugin.Log?.LogInfo($"[DEBUG] Loaded {_todaysBirthdays.Count} NPC birthdays from cache");
+            Plugin.Log?.LogDebug($"[DEBUG] Loaded {_todaysBirthdays.Count} NPC birthdays from cache");
             OnBirthdaysUpdated?.Invoke();
         }
 
@@ -512,7 +512,7 @@ namespace BirthdayReminder.Data
         /// </summary>
         public void DebugDumpNPCInfo(string targetNpcName = "Lynn")
         {
-            Plugin.Log?.LogInfo($"[DEBUG] ========== DUMPING NPC INFO: {targetNpcName} ==========");
+            Plugin.Log?.LogDebug($"[DEBUG] ========== DUMPING NPC INFO: {targetNpcName} ==========");
 
             try
             {
@@ -556,8 +556,8 @@ namespace BirthdayReminder.Data
                     if (string.IsNullOrEmpty(npcName) || !npcName.Equals(targetNpcName, StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    Plugin.Log?.LogInfo($"[DEBUG] Found {npcName}! Type: {npcType.FullName}");
-                    Plugin.Log?.LogInfo($"[DEBUG] --- PROPERTIES ---");
+                    Plugin.Log?.LogDebug($"[DEBUG] Found {npcName}! Type: {npcType.FullName}");
+                    Plugin.Log?.LogDebug($"[DEBUG] --- PROPERTIES ---");
 
                     // Dump all properties
                     foreach (var prop in npcType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
@@ -567,15 +567,15 @@ namespace BirthdayReminder.Data
                             var value = prop.GetValue(npc);
                             string valueStr = value?.ToString() ?? "null";
                             if (valueStr.Length > 100) valueStr = valueStr.Substring(0, 100) + "...";
-                            Plugin.Log?.LogInfo($"[DEBUG]   {prop.Name} ({prop.PropertyType.Name}) = {valueStr}");
+                            Plugin.Log?.LogDebug($"[DEBUG]   {prop.Name} ({prop.PropertyType.Name}) = {valueStr}");
                         }
                         catch (Exception ex)
                         {
-                            Plugin.Log?.LogInfo($"[DEBUG]   {prop.Name} ({prop.PropertyType.Name}) = ERROR: {ex.Message}");
+                            Plugin.Log?.LogDebug($"[DEBUG]   {prop.Name} ({prop.PropertyType.Name}) = ERROR: {ex.Message}");
                         }
                     }
 
-                    Plugin.Log?.LogInfo($"[DEBUG] --- FIELDS ---");
+                    Plugin.Log?.LogDebug($"[DEBUG] --- FIELDS ---");
 
                     // Dump all fields
                     foreach (var field in npcType.GetFields(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic))
@@ -585,11 +585,11 @@ namespace BirthdayReminder.Data
                             var value = field.GetValue(npc);
                             string valueStr = value?.ToString() ?? "null";
                             if (valueStr.Length > 100) valueStr = valueStr.Substring(0, 100) + "...";
-                            Plugin.Log?.LogInfo($"[DEBUG]   {field.Name} ({field.FieldType.Name}) = {valueStr}");
+                            Plugin.Log?.LogDebug($"[DEBUG]   {field.Name} ({field.FieldType.Name}) = {valueStr}");
                         }
                         catch (Exception ex)
                         {
-                            Plugin.Log?.LogInfo($"[DEBUG]   {field.Name} ({field.FieldType.Name}) = ERROR: {ex.Message}");
+                            Plugin.Log?.LogDebug($"[DEBUG]   {field.Name} ({field.FieldType.Name}) = ERROR: {ex.Message}");
                         }
                     }
 
@@ -599,10 +599,10 @@ namespace BirthdayReminder.Data
                     if (giftTableField != null)
                     {
                         var gt = giftTableField.GetValue(npc);
-                        Plugin.Log?.LogInfo($"[DEBUG] giftTable (field) = {gt?.GetType().Name ?? "null"}");
+                        Plugin.Log?.LogDebug($"[DEBUG] giftTable (field) = {gt?.GetType().Name ?? "null"}");
                     }
 
-                    Plugin.Log?.LogInfo($"[DEBUG] ========== END {npcName} ==========");
+                    Plugin.Log?.LogDebug($"[DEBUG] ========== END {npcName} ==========");
                     return;
                 }
 
@@ -661,7 +661,7 @@ namespace BirthdayReminder.Data
                     }
 
                     if (logDate)
-                        Plugin.Log?.LogInfo($"[BirthdayManager] Got date from DayCycle: Year {year}, {season} {day}");
+                        Plugin.Log?.LogDebug($"[BirthdayManager] Got date from DayCycle: Year {year}, {season} {day}");
                     return (year, season, day);
                 }
             }
@@ -750,7 +750,7 @@ namespace BirthdayReminder.Data
                 {
                     foreach (var birthday in gameBirthdays)
                     {
-                        Plugin.Log?.LogInfo($"[BirthdayManager] Found birthday (game data): {birthday.NPCName} ({birthday.Season} {birthday.Day})");
+                        Plugin.Log?.LogDebug($"[BirthdayManager] Found birthday (game data): {birthday.NPCName} ({birthday.Season} {birthday.Day})");
                     }
                     return gameBirthdays;
                 }
@@ -760,7 +760,7 @@ namespace BirthdayReminder.Data
             var cacheBirthdays = BirthdayCache.GetBirthdaysForDate(season, day);
             foreach (var birthday in cacheBirthdays)
             {
-                Plugin.Log?.LogInfo($"[BirthdayManager] Found birthday (cache): {birthday.NPCName} ({birthday.Season} {birthday.Day})");
+                Plugin.Log?.LogDebug($"[BirthdayManager] Found birthday (cache): {birthday.NPCName} ({birthday.Season} {birthday.Day})");
             }
             return cacheBirthdays;
         }

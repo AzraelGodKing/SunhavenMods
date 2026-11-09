@@ -48,7 +48,7 @@ namespace HavensBirthright
                 _raceDetected = false;
             else if (_raceDetected && mgr != null && CachedElementalContradictsBody(mgr))
             {
-                Plugin.Log.LogInfo("[RaceDetection] Cached elemental race disagrees with body style; re-detecting.");
+                Plugin.Log.LogDebug("[RaceDetection] Cached elemental race disagrees with body style; re-detecting.");
                 _raceDetected = false;
             }
             if (!_raceDetected)
@@ -100,7 +100,7 @@ namespace HavensBirthright
 
                 byte gameRace = currentChar.race;
                 var wishRace = (Wish.Race)gameRace;
-                Plugin.Log.LogInfo($"[RaceDetection] Tier 1 - Game race byte: {gameRace}, Wish.Race: {wishRace}");
+                Plugin.Log.LogDebug($"[RaceDetection] Tier 1 - Game race byte: {gameRace}, Wish.Race: {wishRace}");
 
                 string bodyStyleName = null;
                 currentChar.StyleData.TryGetValue(14, out bodyStyleName);
@@ -114,12 +114,12 @@ namespace HavensBirthright
                         detectedSubRace = TryGetSubRaceFromClothingData(bodyStyleName);
                         if (detectedSubRace >= 0)
                         {
-                            Plugin.Log.LogInfo($"[RaceDetection] Tier 2 - Amari SubRace from ClothingData: {detectedSubRace}");
+                            Plugin.Log.LogDebug($"[RaceDetection] Tier 2 - Amari SubRace from ClothingData: {detectedSubRace}");
                             modRace = ResolveAmariRace(detectedSubRace);
                         }
                         else
                         {
-                            Plugin.Log.LogInfo("[RaceDetection] Tier 2 - ClothingData lookup failed, falling back to string parsing");
+                            Plugin.Log.LogDebug("[RaceDetection] Tier 2 - ClothingData lookup failed, falling back to string parsing");
                             modRace = ResolveAmariFromString(bodyStyleName);
                         }
                         break;
@@ -131,7 +131,7 @@ namespace HavensBirthright
                     case Wish.Race.Naga:
                         modRace = Race.Naga;
                         detectedSubRace = TryGetSubRaceFromClothingData(bodyStyleName);
-                        Plugin.Log.LogInfo($"[RaceDetection] Tier 2 - Naga SubRace: {detectedSubRace} (no variant needed)");
+                        Plugin.Log.LogDebug($"[RaceDetection] Tier 2 - Naga SubRace: {detectedSubRace} (no variant needed)");
                         break;
 
                     default:
@@ -205,7 +205,7 @@ namespace HavensBirthright
                 }
 
                 int subRaceInt = (int)subRaceValue;
-                Plugin.Log.LogInfo($"[RaceDetection] ClothingLayerData.subRace = {subRaceValue} ({subRaceInt})");
+                Plugin.Log.LogDebug($"[RaceDetection] ClothingLayerData.subRace = {subRaceValue} ({subRaceInt})");
                 return subRaceInt;
             }
             catch (Exception ex)
@@ -244,7 +244,7 @@ namespace HavensBirthright
                 return Race.Amari;
             }
 
-            Plugin.Log.LogInfo($"[RaceDetection] Amari string fallback, body style: {bodyStyleName}");
+            Plugin.Log.LogDebug($"[RaceDetection] Amari string fallback, body style: {bodyStyleName}");
             string bodyLower = bodyStyleName.ToLowerInvariant();
 
             if (bodyLower.Contains("cat"))

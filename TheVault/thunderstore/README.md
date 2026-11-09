@@ -23,7 +23,7 @@ Routine updates aim **not** to wipe your vault. If a build **cannot** keep compa
 
 ## For mod authors
 
-Reference **`TheVault.Abstractions.dll`** and use `TheVault.Modding.VaultModApiBridge.Instance` after the vault is ready. Full details: [repository README](https://github.com/AzraelGodKing/SunhavenMod/blob/main/TheVault/README.md).
+Reference **`TheVault.Abstractions.dll`** and use `TheVault.Modding.VaultModApiBridge.Instance` after the vault is ready. Full details: [repository README](https://github.com/AzraelGodKing/SunhavenMods/blob/main/TheVault/README.md).
 
 ## Links
 

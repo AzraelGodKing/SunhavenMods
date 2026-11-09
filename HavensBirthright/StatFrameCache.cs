@@ -22,6 +22,7 @@ namespace HavensBirthright
         private static bool _cacheValid;
         private static string _lastSceneName;
         private static bool _lastIsInMine;
+        private static object _lastSeasonValue;
 
         public static float CachedHPRatio => _cachedHPRatio;
         public static string CachedSeason => _cachedSeason;
@@ -46,6 +47,7 @@ namespace HavensBirthright
             _cachedQuickLearnerBonus = 0f;
             _lastSceneName = null;
             _lastIsInMine = false;
+            _lastSeasonValue = null;
         }
 
         public static void Update(Race race, Type dayCycleType)
@@ -78,10 +80,15 @@ namespace HavensBirthright
                         if (season == null)
                             season = ReflectionHelper.GetInstanceValue(dayCycleInstance, "CurrentSeason");
 
-                        _cachedSeason = season?.ToString();
-                        _cachedIsSpring = _cachedSeason != null && _cachedSeason.IndexOf("Spring", StringComparison.OrdinalIgnoreCase) >= 0;
-                        _cachedIsSummer = _cachedSeason != null && _cachedSeason.IndexOf("Summer", StringComparison.OrdinalIgnoreCase) >= 0;
-                        _cachedIsWinter = _cachedSeason != null && _cachedSeason.IndexOf("Winter", StringComparison.OrdinalIgnoreCase) >= 0;
+                        // Season only changes a few times per in-game year; skip ToString + IndexOf when unchanged (AZR-729).
+                        if (season == null || !season.Equals(_lastSeasonValue))
+                        {
+                            _lastSeasonValue = season;
+                            _cachedSeason = season?.ToString();
+                            _cachedIsSpring = _cachedSeason != null && _cachedSeason.IndexOf("Spring", StringComparison.OrdinalIgnoreCase) >= 0;
+                            _cachedIsSummer = _cachedSeason != null && _cachedSeason.IndexOf("Summer", StringComparison.OrdinalIgnoreCase) >= 0;
+                            _cachedIsWinter = _cachedSeason != null && _cachedSeason.IndexOf("Winter", StringComparison.OrdinalIgnoreCase) >= 0;
+                        }
                     }
                 }
 

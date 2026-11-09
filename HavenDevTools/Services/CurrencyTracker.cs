@@ -96,34 +96,6 @@ namespace HavenDevTools.Services
         }
 
         /// <summary>
-        /// Get vault amount for a currency (requires The Vault mod)
-        /// </summary>
-        public int GetVaultAmount(string currencyId)
-        {
-            if (!Plugin.HasTheVault) return 0;
-
-            try
-            {
-                if (!EnsureVaultReflection()) return 0;
-
-                var vaultManager = _vaultGetVaultManagerMethod.Invoke(null, null);
-                if (vaultManager == null) return 0;
-
-                var getCurrencyMethod = vaultManager.GetType().GetMethod("GetCurrency", new[] { typeof(string) });
-                if (getCurrencyMethod != null)
-                {
-                    return (int)getCurrencyMethod.Invoke(vaultManager, new object[] { currencyId });
-                }
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogWarning($"[CurrencyTracker] Error getting vault amount: {ex.Message}");
-            }
-
-            return 0;
-        }
-
-        /// <summary>
         /// Get all vault currencies (requires The Vault mod)
         /// </summary>
         public Dictionary<string, int> GetAllVaultCurrencies()

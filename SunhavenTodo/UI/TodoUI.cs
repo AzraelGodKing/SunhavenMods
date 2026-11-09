@@ -756,7 +756,7 @@ namespace SunhavenTodo.UI
             if (_editingItemId != null)
             {
                 item.Id = _editingItemId;
-                var existing = _manager.GetTodo(_editingItemId);
+                var existing = _manager.GetTodoById(_editingItemId);
                 if (existing != null)
                 {
                     item.CreatedAt = existing.CreatedAt;

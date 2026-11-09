@@ -303,7 +303,9 @@ namespace HavensBirthright
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
-            _harmony?.UnpatchSelf();
+            // Leave patches applied. UnpatchSelf here dropped player, LoadCharacter, and stat hooks when this
+            // component was destroyed during scene cleanup, so Haven's Birthright stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
         }
 
         /// <summary>
