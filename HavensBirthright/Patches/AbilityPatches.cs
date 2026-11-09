@@ -8,14 +8,12 @@ using Wish;
 namespace HavensBirthright.Patches
 {
     /// <summary>
-    /// Patches for active racial abilities that intercept inventory operations.
-    /// Currently implements:
-    /// - Fire Elemental's Infernal Forge (auto-smelt ore into bars on pickup)
+    /// Harmony patches for active racial abilities.
+    /// Infernal Forge (Fire Elemental) blocks passive mana regen while toggled on;
+    /// ore-to-bar smelting runs in BirthrightRunner's periodic inventory scan.
     /// </summary>
     public static class AbilityPatches
     {
-        // ===================== ORE → BAR MAPPING =====================
-
         /// <summary>
         /// Hardcoded ore ID → bar ID mapping from game's item database.
         /// Ore IDs: 1100-1108, Bar IDs: 1200-1207
@@ -31,8 +29,6 @@ namespace HavensBirthright.Patches
             { 1107, 1206 }, // Glorite Ore → Glorite Bar
             { 1108, 1207 }, // Elven Steel Ore → Elven Steel Bar
         };
-
-        // ===================== TIERED MANA COSTS =====================
 
         /// <summary>
         /// Per-ore mana cost as percentage of max mana per bar smelted.
@@ -52,13 +48,6 @@ namespace HavensBirthright.Patches
 
         internal static void SendGameNotification(string text, int id = 0, int amount = 0, bool unique = false, bool error = false)
             => GameApis.SendGameNotification(text, id, amount, unique, error);
-
-        /// <summary>Legacy split-reset: both map to <see cref="GameApis"/> item/notification caches.</summary>
-        internal static void ResetNotificationCache() => GameApis.ResetItemAndNotificationCaches();
-
-        internal static void ResetReflectionCache()
-        {
-        }
 
         // ===================== MANA REGEN BLOCK PATCH =====================
 

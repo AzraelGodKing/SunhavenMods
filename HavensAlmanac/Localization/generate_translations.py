@@ -200,24 +200,6 @@ data = {
         "zh-TW": "\u6c92\u6709\u6d3b\u8e8d\u7684\u52a0\u6210\u3002",
         "uk": "\u041d\u0435\u043c\u0430\u0454 \u0430\u043a\u0442\u0438\u0432\u043d\u0438\u0445 \u0431\u043e\u043d\u0443\u0441\u0456\u0432."
     },
-    "almanac.provider.devtools.authorized": {
-        "en": "Authorized",
-        "da": "Autoriseret",
-        "de": "Autorisiert",
-        "es": "Autorizado",
-        "fr": "Autoris\u00e9",
-        "it": "Autorizzato",
-        "ja": "\u8a8d\u8a3c\u6e08\u307f",
-        "ko": "\uc778\uc99d\ub428",
-        "nl": "Geautoriseerd",
-        "pt": "Autorizado",
-        "pt-BR": "Autorizado",
-        "ru": "\u0410\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043e",
-        "sv": "Auktoriserad",
-        "zh-CN": "\u5df2\u6388\u6743",
-        "zh-TW": "\u5df2\u6388\u6b0a",
-        "uk": "\u0410\u0432\u0442\u043e\u0440\u0438\u0437\u043e\u0432\u0430\u043d\u043e"
-    },
     "almanac.provider.vault.more": {
         "en": "  ... and {0} more",
         "da": "  ... og {0} mere",

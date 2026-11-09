@@ -6,6 +6,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Cleanup follow-up** — Haven's Birthright, Haven's Almanac, Gifting Assistant, Crop Optimizer, SharedUtilities
+- **Haven's Almanac:** The Dev Tools dashboard no longer shows an "Authorized" status line. Authorization was already removed.
+- **Cleanup:** Leftover unused APIs removed from those mods and SharedUtilities. Nothing you use changes, and saves are untouched.
 **Haven's Mirror (1.0.2 → 1.0.3)**
 - **Fix:** Portrait images load when the name is not exactly `spring.png`. Capitals (`Spring.PNG`), doubled extensions from Windows hiding file extensions (`spring.png.png`) and `.jpg` files all work. If no file uses a look name, the first image in the folder is used for every look, as the readme already said.
 - **Fix:** The reload hotkey (Ctrl+F8) now works with either Ctrl key, not just left Ctrl.

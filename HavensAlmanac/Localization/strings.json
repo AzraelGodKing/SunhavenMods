@@ -467,24 +467,6 @@
         "zh-TW": "{0}. {1} — {2}g （ {3} {4} ）",
         "uk": "  {0}. {1} — {2} зол. ({3} {4})"
     },
-    "almanac.provider.devtools.authorized": {
-        "en": "Authorized",
-        "da": "Autoriseret",
-        "de": "Bevollmaechtigter",
-        "es": "Autorizado",
-        "fr": "Autorisé",
-        "it": "Autorizzato ",
-        "ja": "許可",
-        "ko": "인증되었습니다 ",
-        "nl": "Goedgekeurd",
-        "pt": "Representantes Autorizados:",
-        "pt-BR":  "Autorizado",
-        "ru": "Начинающий",
-        "sv": "Auktoriserad",
-        "zh-CN": "未授权",
-        "zh-TW": "未授权",
-        "uk": "Авторизовано "
-    },
     "almanac.provider.devtools.player": {
         "en": "Player: {0}",
         "da": "Spiller: {0}",
