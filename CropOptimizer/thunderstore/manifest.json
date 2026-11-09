@@ -2,7 +2,7 @@
   "name": "CropOptimizer",
   "version_number": "2.3.1",
   "website_url": "https://www.azraelsmods.com/sun-haven/crop-optimizer/",
-  "description": "Field-level crop forecast HUD with soft Todo/Birthday/Vault integrations.",
+  "description": "Field-level crop forecast HUD with soft Vault and Almanac integrations.",
   "dependencies": [
     "BepInEx-BepInExPack-5.4.2100"
   ]

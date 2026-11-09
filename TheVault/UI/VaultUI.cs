@@ -151,7 +151,7 @@ namespace TheVault.UI
             float y = (Screen.height - initialHeight) / 2f;
             _windowRect = new Rect(x, y, w, initialHeight);
 
-            Plugin.Log?.LogInfo("VaultUI initialized");
+            Plugin.Log?.LogDebug("VaultUI initialized");
         }
 
         public void SetToggleKey(KeyCode key, bool requireModifier = true)
@@ -201,7 +201,7 @@ namespace TheVault.UI
 
             VaultPointerGuard.Sync(_windowRect, true);
             VaultPointerGuard.EnsureBlocker();
-            Plugin.Log?.LogInfo("Vault UI opened");
+            Plugin.Log?.LogDebug("Vault UI opened");
 
             // Log icon cache status when opening
             IconCache.LogStatus();
@@ -240,7 +240,7 @@ namespace TheVault.UI
             }
 
             VaultPointerGuard.Sync(default, false);
-            Plugin.Log?.LogInfo("Vault UI closed");
+            Plugin.Log?.LogDebug("Vault UI closed");
         }
 
         public void Toggle()
@@ -248,7 +248,7 @@ namespace TheVault.UI
             // Don't allow toggle until vault is loaded
             if (!PlayerPatches.IsVaultLoaded)
             {
-                Plugin.Log?.LogInfo("Cannot toggle vault UI - save not yet loaded");
+                Plugin.Log?.LogDebug("Cannot toggle vault UI - save not yet loaded");
                 return;
             }
 
@@ -1011,7 +1011,7 @@ namespace TheVault.UI
             if (GUI.Button(toggleRect, toggleText, toggleStyle))
             {
                 ItemPatches.ToggleAutoDeposit(currencyId);
-                Plugin.Log?.LogInfo($"[UI] Toggle clicked for {currencyId}");
+                Plugin.Log?.LogDebug($"[UI] Toggle clicked for {currencyId}");
             }
             xPos += toggleSize + Scaled(4);
 
@@ -1304,7 +1304,7 @@ namespace TheVault.UI
             GUILayout.FlexibleSpace();
             if (GUILayout.Button(ModLocalization.T("vault.sweep"), _buttonStyle, GUILayout.Width(Scaled(260)), GUILayout.Height(Mathf.Max(44f, Scaled(32)))))
             {
-                Plugin.Log?.LogInfo("[Vault UI] Sweep button clicked");
+                Plugin.Log?.LogDebug("[Vault UI] Sweep button clicked");
                 ItemPatches.ForceAutoDepositAll();
             }
             GUILayout.FlexibleSpace();

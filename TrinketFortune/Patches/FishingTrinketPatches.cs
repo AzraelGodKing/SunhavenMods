@@ -42,7 +42,7 @@ namespace TrinketFortune.Patches
                 {
                     var prefix = new HarmonyMethod(typeof(FishingTrinketPatches), nameof(RandomItemInt_Prefix));
                     harmony.Patch(randomItemMethod, prefix: prefix);
-                    Plugin.Log.LogInfo($"Patched {DescribeMethod(randomItemMethod)} for fishing museum items");
+                    Plugin.Log.LogDebug($"Patched {DescribeMethod(randomItemMethod)} for fishing museum items");
                     return true;
                 }
                 catch (Exception ex)
@@ -56,7 +56,7 @@ namespace TrinketFortune.Patches
                 {
                     var postfix = new HarmonyMethod(typeof(FishingTrinketPatches), nameof(RandomItemInt_Postfix));
                     harmony.Patch(randomItemMethod, postfix: postfix);
-                    Plugin.Log.LogInfo($"Patched {DescribeMethod(randomItemMethod)} (postfix) for fishing museum items");
+                    Plugin.Log.LogDebug($"Patched {DescribeMethod(randomItemMethod)} (postfix) for fishing museum items");
                     return true;
                 }
                 catch (Exception ex)
@@ -188,7 +188,7 @@ namespace TrinketFortune.Patches
                 harmony.Patch(
                     randomFishMethod,
                     postfix: new HarmonyMethod(typeof(FishingTrinketPatches), nameof(RandomFishArray_RandomItem_Postfix)));
-                Plugin.Log.LogInfo($"Patched {DescribeMethod(randomFishMethod)} for fish bias");
+                Plugin.Log.LogDebug($"Patched {DescribeMethod(randomFishMethod)} for fish bias");
             }
             catch (Exception ex)
             {
@@ -231,7 +231,7 @@ namespace TrinketFortune.Patches
                 try
                 {
                     harmony.Patch(mi, postfix: new HarmonyMethod(typeof(FishingTrinketPatches), nameof(FishingRodInt_Postfix)));
-                    Plugin.Log.LogInfo($"Patched FishingRod.{mi.Name} as museum-bias fallback");
+                    Plugin.Log.LogDebug($"Patched FishingRod.{mi.Name} as museum-bias fallback");
                     patched++;
                 }
                 catch (Exception ex)

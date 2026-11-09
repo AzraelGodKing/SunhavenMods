@@ -8,7 +8,7 @@ using Wish;
 namespace TheVault.UI
 {
     /// <summary>
-    /// Deposit / withdraw shared by IMGUI and uGUI vault windows.
+    /// Deposit / withdraw operations for vault windows.
     /// </summary>
     public static class VaultInventoryOperations
     {

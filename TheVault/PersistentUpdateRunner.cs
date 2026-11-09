@@ -30,7 +30,7 @@ namespace TheVault
         {
             // Hide this object from the game's cleanup routines
             gameObject.hideFlags = HideFlags.HideAndDontSave;
-            Plugin.Log?.LogInfo("[PersistentRunner] Created hidden persistent runner");
+            Plugin.Log?.LogDebug("[PersistentRunner] Created hidden persistent runner");
         }
 
         private void Update()
@@ -136,7 +136,7 @@ namespace TheVault
 
                 if (sceneName != _lastKnownScene)
                 {
-                    Plugin.Log?.LogInfo($"[PersistentRunner] Scene changed: '{_lastKnownScene}' -> '{sceneName}'");
+                    Plugin.Log?.LogDebug($"[PersistentRunner] Scene changed: '{_lastKnownScene}' -> '{sceneName}'");
                     _lastKnownScene = sceneName;
 
                     string sceneLower = sceneName.ToLowerInvariant();
@@ -144,7 +144,7 @@ namespace TheVault
 
                     if (isMenuScene && !_wasInMenuScene)
                     {
-                        Plugin.Log?.LogInfo($"[PersistentRunner] Menu scene detected: {sceneName}");
+                        Plugin.Log?.LogDebug($"[PersistentRunner] Menu scene detected: {sceneName}");
                         PlayerPatches.SaveAndReset();
                     }
 
@@ -164,7 +164,7 @@ namespace TheVault
             bool expectedTeardown = !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
+                Plugin.Log?.LogDebug("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
             }
             else
             {

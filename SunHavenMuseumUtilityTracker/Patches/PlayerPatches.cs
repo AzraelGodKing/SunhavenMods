@@ -124,7 +124,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
 
             _lastCharacterSourceLog = source;
             _lastCharacterNameLog = characterName;
-            Plugin.Log?.LogInfo($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
+            Plugin.Log?.LogDebug($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
         }
 
         public static void ResetState()
@@ -180,7 +180,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
         {
             try
             {
-                Plugin.Log?.LogInfo($"GameSave.LoadCharacter: slot {characterNumber}");
+                Plugin.Log?.LogDebug($"GameSave.LoadCharacter: slot {characterNumber}");
 
                 if (GameSave.Instance?.Saves != null &&
                     characterNumber >= 0 &&
@@ -193,7 +193,7 @@ namespace SunHavenMuseumUtilityTracker.Patches
                         if (!string.IsNullOrEmpty(charName))
                         {
                             LastLoadedCharacterName = charName;
-                            Plugin.Log?.LogInfo($"GameSavePatches: Extracted character name '{charName}' from slot {characterNumber}");
+                            Plugin.Log?.LogDebug($"GameSavePatches: Extracted character name '{charName}' from slot {characterNumber}");
                         }
                     }
                 }

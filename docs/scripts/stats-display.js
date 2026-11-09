@@ -1,8 +1,7 @@
 // Load this script with `defer` so rendering is never blocked.
-// Live counts: stats branch live.json (Actions, hourly). Fallback: docs/data/stats-cache.json
-// served as /data/stats-cache.json when GitHub Pages publishes docs/ at the site root.
+// Live counts: stats branch live.json (Actions, hourly). Fallback: docs/data/stats-cache.json.
 const LIVE_JSON =
-  "https://raw.githubusercontent.com/AzraelGodKing/SunhavenMod/stats/live.json";
+  "https://raw.githubusercontent.com/AzraelGodKing/SunhavenMods/stats/live.json";
 
 function resolveStatsCacheUrl() {
   const scripts = document.getElementsByTagName("script");

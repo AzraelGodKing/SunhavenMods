@@ -16,7 +16,6 @@ namespace SunHavenMuseumUtilityTracker
     public class Plugin : BaseUnityPlugin
     {
         // Static references for access from patches
-        public static Plugin Instance { get; private set; }
         public static ManualLogSource Log { get; private set; }
         public static ConfigFile ConfigFile { get; private set; }
 
@@ -52,11 +51,8 @@ namespace SunHavenMuseumUtilityTracker
         public static bool StaticWishlistShopBadges { get; private set; } = true;
         public static bool StaticWishlistGiftBadges { get; private set; } = true;
 
-        public DonationManager DonationManager => _donationManager;
-
         private void Awake()
         {
-            Instance = this;
             Log = Logger;
             ConfigFile = CreateNamedConfig();
             SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
@@ -314,7 +310,7 @@ namespace SunHavenMuseumUtilityTracker
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.LogInfo($"[SceneChange] Scene loaded: '{scene.name}'");
+            Logger.LogDebug($"[SceneChange] Scene loaded: '{scene.name}'");
 
             string sceneName = scene.name.ToLowerInvariant();
             bool isMenuScene = sceneName.Contains("menu") || sceneName.Contains("title") || sceneName.Contains("mainmenu");

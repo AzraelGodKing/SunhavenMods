@@ -23,7 +23,7 @@ Use this checklist before any release prep, documentation refresh, or compatibil
 
 ### FasterRaces
 
-- `FasterRaces/Plugin.cs`
+- `FasterRaces/PluginInfo.cs`
 - `FasterRaces/thunderstore/manifest.json`
 - `FasterRaces/thunderstore/README.md`
 
@@ -39,6 +39,20 @@ Use this checklist before any release prep, documentation refresh, or compatibil
 - `HavensBirthright/thunderstore/manifest.json`
 - `HavensBirthright/README.md`
 - `HavensBirthright/thunderstore/README.md`
+
+### HavensRespec
+
+- `HavensRespec/PluginInfo.cs`
+- `HavensRespec/thunderstore/manifest.json`
+- `HavensRespec/README.md`
+- `HavensRespec/thunderstore/README.md`
+
+### HavensMirror
+
+- `HavensMirror/PluginInfo.cs`
+- `HavensMirror/thunderstore/manifest.json`
+- `HavensMirror/README.md`
+- `HavensMirror/thunderstore/README.md`
 
 ### SunhavenTodo
 

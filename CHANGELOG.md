@@ -6,6 +6,43 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Cleanup follow-up** — Haven's Birthright, Haven's Almanac, Gifting Assistant, Crop Optimizer, SharedUtilities
+- **Haven's Almanac:** The Dev Tools dashboard no longer shows an "Authorized" status line. Authorization was already removed.
+- **Cleanup:** Leftover unused APIs removed from those mods and SharedUtilities. Nothing you use changes, and saves are untouched.
+**Haven's Mirror (1.0.2 → 1.0.3)**
+- **Fix:** Portrait images load when the name is not exactly `spring.png`. Capitals (`Spring.PNG`), doubled extensions from Windows hiding file extensions (`spring.png.png`) and `.jpg` files all work. If no file uses a look name, the first image in the folder is used for every look, as the readme already said.
+- **Fix:** The reload hotkey (Ctrl+F8) now works with either Ctrl key, not just left Ctrl.
+- **Fix:** Your portrait's size and position follow the NPC portrait correctly when the in-game UI scale is turned up.
+- **Help:** When no portrait loads, `BepInEx/LogOutput.log` lists the folders the mod checked and the files it found, and a picture that isn't a real PNG or JPG (a renamed .webp, for example) says so. Reported by L0stLikeD0ry.
+- **Fix:** Portraits in `gallery/<CharacterName>/` and `gallery/_shared/` are found more reliably (AZR-740). Folder names match loosely (`_shared`, `Shared`, `shared`; `Sun Farmer` vs `sun_farmer`), images inside a subfolder of those folders are found, and images dropped straight into `gallery/` work as a last resort. If the portraits loaded before you picked a save, they reload for that character on the next conversation.
+- **Fix:** Your portrait no longer pops up oversized at the bottom of the screen on the Museum donation screen and stays there until Ctrl+F8 (AZR-740). It now only shows when an NPC portrait is on screen, is kept fully on screen, and hides as soon as the NPC portrait closes. Reported by TheDCG.
+**Haven's Almanac** — AZR-739
+- **Fix:** Haven's Almanac no longer breaks game startup when it is installed without its companion mods (Sun Haven Todo, Birthday Reminder, Haven's Birthright, Gifting Assistant). Those mods are optional again. Reported by TheDCG.
+**Trinket Fortune, Faster Races** — lifecycle
+- **Fix:** Scene cleanup no longer unpatches these mods, so they keep running after an unexpected plugin teardown (same rule as Birthday Reminder).
+
+**Cleanup** — logging
+- Birthday Reminder's Ctrl+Shift+B test hint and Senpai's Chest chest-panel scheduling traces are debug-only. Nothing you use changes.
+**Cleanup** — logging
+- Museum Utility Tracker no longer Info-logs every scene load or character-name resolve. Birthday Reminder HUD init/show/style traces are debug-only. Nothing you use changes.
+**Haven's Almanac**
+- **Fix:** The Mod Health dashboard showed raw `almanac.provider.healthbridge.*` keys. Those strings are in `strings.json` again (English; other languages fall back).
+
+**Haven's Almanac, Haven Dev Tools, The Vault**
+- Removed unused localization keys: Vault `vault.door.*` (DoorPatches was already gone), leftover Dev Tools labels, and unused Almanac `health.empty` / `gifting.gifted` strings.
+**Haven's Almanac, Haven's Birthright, Crop Optimizer** — lifecycle
+- **Fix:** Scene cleanup no longer unpatches these mods, so they keep running after an unexpected plugin teardown (same rule as Birthday Reminder / AZR-437).
+**Cleanup** — unused helpers across several mods
+- Removed leftover unused methods and accessors. Nothing you use changes, and saves are untouched.
+**Docs / Mod Hub**
+- **Crop Optimizer card:** Hub listing now names only The Vault and Haven's Almanac as soft integrations (Todo and Birthday Reminder never ran).
+- **GitHub links:** Hub, feedback, Respec docs, and download buttons point at the renamed `SunhavenMods` repository.
+**Senpai's Chest** — scan logs
+- Per-item chest-scan traces no longer appear at Info; the scan-complete summary is unchanged.
+**Cleanup follow-up** — Haven's Birthright, Crop Optimizer, The Vault, Gifting Assistant
+- **Cleanup:** Leftover unused helpers removed from those mods. Nothing you use changes, and saves are untouched.
+**Logging:** Routine BepInEx Info traces in Senpai's Chest, Birthday Reminder, Haven's Mirror, Trinket Fortune, The Vault, Haven's Birthright, and Haven Dev Tools now stay on Debug. Startup, load/save, and major-action lines are unchanged.
+
 **Maintenance releases: The Vault 4.3.1, Crop Optimizer 2.3.1, Haven's Birthright 3.1.4, Haven Dev Tools 2.1.3, Haven's Almanac 2.2.3, Museum Utility Tracker 3.1.3, A Squirrel's Birthday Reminder 2.1.4, Sun Haven Todo 2.1.3, Senpai's Chest 3.1.4, Gifting Assistant 1.1.4**
 - **Cleanup:** Unused and unreachable code removed across these mods. Nothing you use changes, and saves are untouched.
 - **Museum Utility Tracker:** The hidden F10/F11 debug keys are gone. F11 clashed with the Haven Dev Tools overlay.
@@ -13,15 +50,14 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 - **Crop Optimizer:** The startup health log no longer lists Todo and Birthday integrations that never ran.
 - **Haven Dev Tools:** The startup log and the ToggleKey setting no longer say the debug window needs authorization.
 
+**Haven Dev Tools** — unused tab cleanup
+- Removed the unused Bundles and Race Bonuses draw methods from the debug window. DrawWindow still only shows Health, Tools, Azrael's Mods, and Extensions. Museum and race UI stays on the Azrael's Mods panel.
+
+**Gifting Assistant** — unused lookup cleanup
+- Removed unused `FindNpc` / `GetTryGetValueMethod` (zero callers). Gift lists still come from the NPC roster scan.
+
 **Sunhaven Todo** — unused API cleanup
 - Removed unused `ShowUI` / `HideUI` / `IsCharacterDataLoaded`, `ClearData`, the string `AddTodo` overload, `GetTodosByPriority`, `SearchTodos`, and `TodoSaveSystem.Delete`. Suite mods already go through `TodoSoftClient` (`GetTodoManager` + `AddTodo(TodoItem)`).
-**Haven's Mirror** — AZR-450
-**Haven's Mirror (1.0.1 → 1.0.2)** — AZR-450
-- **Fix:** Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation. It still closes with the NPC's portrait when the conversation ends. Reported by AnnaBanana4411.
-
-**The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
-- **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
-- **Fix:** The save key no longer depends on whether Steam finished loading before the mod started, so a vault saved in one session is not unreadable in the next.
 
 **Senpai's Chest 3.1.3, Haven's Birthright 3.1.3, Museum Utility Tracker 3.1.2, A Squirrel's Birthday Reminder 2.1.3, Sunhaven Todo 2.1.2, Haven Dev Tools 2.1.2, Haven's Almanac 2.2.2, Faster Races 2.1.2, Trinket Fortune 2.1.3, Crop Optimizer 2.2.3, Haven's Respec 2.1.4, Gifting Assistant 1.1.3, Haven's Mirror 1.0.1** — AZR-257
 - **Update checks:** One download of the version list per game launch, shared by every installed mod, instead of one request per mod. The list is read with a real JSON parser, and an installed or published version that can't be compared now reports a failed check instead of "up to date". Checks point at the renamed `SunhavenMods` repository.
@@ -46,7 +82,18 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 **Gifting Assistant (1.1.1 → 1.1.2)** — AZR-437
 - **Fix:** Player-load and gift patches are isolated so an exception in this mod cannot skip Birthday Reminder's hooks on the same game methods.
 
+## 2026-10-11
+
+**Haven's Mirror (1.0.1 → 1.0.2)** — AZR-450
+- **Fix:** Your portrait now stays on screen after you pick a dialogue option, instead of vanishing for the rest of the conversation. It still closes with the NPC's portrait when the conversation ends. Reported by AnnaBanana4411.
+
+---
+
 ## 2026-10-10
+
+**The Vault (4.2.2 → 4.3.0)** — AZR-242, AZR-243
+- **Save format:** Vault files are now saved as CSVAULT3. Each vault gets its own random salt and a fresh IV on every save, and an integrity check (HMAC-SHA256) rejects a corrupted or edited file instead of loading half of it. Older vault files still load and are rewritten in the new format right away.
+- **Fix:** The save key no longer depends on whether Steam finished loading before the mod started, so a vault saved in one session is not unreadable in the next.
 
 **Haven's Respec (2.1.2 → 2.1.3)** — AZR-356
 - **Fix:** Respec now rolls back Max Mana from refunded skill nodes (e.g. Mental Focus, Town Spirit). Deactivate passes the live node rank into `SetActive`, and leftover permanent mana / character progress is cleared (Undo restores it).

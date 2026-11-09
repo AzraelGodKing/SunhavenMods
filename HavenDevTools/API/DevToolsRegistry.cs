@@ -39,7 +39,7 @@ namespace HavenDevTools.API
                     return;
                 }
                 _panels.Add(panel);
-                HavenDevTools.Plugin.Log?.LogInfo($"[DevToolsRegistry] Registered panel: {panel.DisplayName} ({panel.ModGuid})");
+                HavenDevTools.Plugin.Log?.LogDebug($"[DevToolsRegistry] Registered panel: {panel.DisplayName} ({panel.ModGuid})");
             }
         }
 

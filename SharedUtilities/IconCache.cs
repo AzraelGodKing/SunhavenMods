@@ -177,14 +177,6 @@ namespace SunhavenMods.Shared
             return _currencyToItemId.TryGetValue(currencyId, out int itemId) && IsIconLoaded(itemId);
         }
 
-        /// <summary>
-        /// Get item ID for a currency ID.
-        /// </summary>
-        public static int GetItemIdForCurrency(string currencyId)
-        {
-            return _currencyToItemId.TryGetValue(currencyId, out int itemId) ? itemId : -1;
-        }
-
         private static bool InitializeReflection()
         {
             if (_reflectionInitialized)

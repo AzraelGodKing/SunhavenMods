@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -58,8 +57,6 @@ namespace SunhavenTodo
         // State
         private Harmony _harmony;
         private static float _lastAutoSaveTime;
-        private bool _isDataLoaded;
-        private string _loadedCharacterName;
         private bool _wasInMenuScene = true;
         private static bool _applicationQuitting;
         private static bool _overnightHooked;
@@ -82,8 +79,11 @@ namespace SunhavenTodo
         {
             Instance = this;
             Log = Logger;
-            ConfigFile = CreateNamedConfig();
-            SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
+            ConfigFile = ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "SunhavenTodo.cfg",
+                message => Log?.LogWarning(message));
+            ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
 
             Log.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}");
             IconCache.Initialize(Log);
@@ -213,22 +213,6 @@ namespace SunhavenTodo
             };
         }
 
-        private static ConfigFile CreateNamedConfig()
-        {
-            string configPath = Path.Combine(Paths.ConfigPath, "SunhavenTodo.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to SunhavenTodo.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
-        }
-
         private void CreatePersistentRunner()
         {
             if (_persistentRunner != null && _persistentRunnerComponent != null) return;
@@ -353,10 +337,7 @@ namespace SunhavenTodo
                     Log?.LogInfo("[EnsureUI] Recreating TodoUI...");
                     var uiObject = new GameObject("SunhavenTodo_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
-                    // NOTE: Do NOT use HideFlags.HideAndDontSave on TodoUI!
-                    // That flag prevents Unity's OnGUI from being called, which breaks the UI rendering.
-                    // Only PersistentRunner needs HideFlags (it only uses Update, not OnGUI).
-
+                    // HideAndDontSave on TodoUI suppresses OnGUI.
                     _staticTodoUI = uiObject.AddComponent<TodoUI>();
                     _staticTodoUI.Initialize(_staticTodoManager);
                     _staticTodoUI.SetScale(_staticUIScale);
@@ -420,16 +401,11 @@ namespace SunhavenTodo
                 return;
             }
 
-            // Save previous character's data if switching
-            if (_isDataLoaded && _loadedCharacterName != characterName)
-            {
-                SaveData();
-            }
+            PlayerPatches.SaveIfSwitching(characterName);
 
             var data = _staticSaveSystem.Load(characterName);
             _staticTodoManager.LoadForCharacter(characterName, data);
-            _isDataLoaded = true;
-            _loadedCharacterName = characterName;
+            PlayerPatches.MarkLoaded(characterName);
             Log.LogInfo($"Loaded todo list for character: {characterName}");
             TryHookOvernight();
         }
@@ -578,7 +554,6 @@ namespace SunhavenTodo
 
     /// <summary>
     /// Persistent runner that survives game cleanup for hotkey detection.
-    /// Uses HideFlags.HideAndDontSave to survive Unity cleanup.
     /// </summary>
     public class PersistentRunner : MonoBehaviour
     {
@@ -641,17 +616,12 @@ namespace SunhavenTodo
 
                 string characterName = GetCurrentCharacterName(__instance);
 
-                if (_isDataLoaded && _loadedCharacterName != characterName)
-                {
-                    Plugin.SaveData();
-                    ResetState();
-                }
+                SaveIfSwitching(characterName);
 
                 if (!string.IsNullOrEmpty(characterName))
                 {
                     Plugin.Instance?.LoadDataForCharacter(characterName);
-                    _isDataLoaded = true;
-                    _loadedCharacterName = characterName;
+                    MarkLoaded(characterName);
                 }
                 else
                 {
@@ -662,6 +632,25 @@ namespace SunhavenTodo
             {
                 Plugin.Log?.LogError($"Error in OnPlayerInitialized: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Saves dirty todos when switching characters. PlayerPatches owns load-state so
+        /// Plugin.LoadDataForCharacter (including TodoSoftClient) uses the same flag.
+        /// </summary>
+        internal static void SaveIfSwitching(string characterName)
+        {
+            if (_isDataLoaded && _loadedCharacterName != characterName)
+            {
+                Plugin.SaveData();
+                ResetState();
+            }
+        }
+
+        internal static void MarkLoaded(string characterName)
+        {
+            _isDataLoaded = true;
+            _loadedCharacterName = characterName;
         }
 
         private static string GetCurrentCharacterName(object player)

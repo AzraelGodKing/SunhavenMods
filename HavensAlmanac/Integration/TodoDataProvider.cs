@@ -1,16 +1,27 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using HavensAlmanac.Data;
 using SunhavenMods.Shared;
-using SunhavenTodo;
-using SunhavenTodo.Data;
 using UnityEngine;
 
 namespace HavensAlmanac.Integration
 {
+    /// <summary>
+    /// Soft integration with Sun Haven Todo.
+    /// SunhavenTodo types may only appear inside method bodies (never in fields,
+    /// signatures, or lambdas) so this assembly still loads and reflects cleanly
+    /// when Sun Haven Todo is not installed (AZR-739).
+    /// </summary>
     public class TodoDataProvider : IModDataProvider
     {
+        private sealed class HighPriorityTodo
+        {
+            public int Priority;
+            public int Order;
+            public string Title;
+            public bool IsUrgent;
+        }
+
         public string ModName => "Todo";
         public string ModIcon => "\u270E";
 
@@ -18,7 +29,7 @@ namespace HavensAlmanac.Integration
         private int _totalCount;
         private int _completedCount;
         private float _completionPercent;
-        private List<TodoItem> _highPriorityItems = new List<TodoItem>();
+        private List<HighPriorityTodo> _highPriorityItems = new List<HighPriorityTodo>();
         private string _hudSummary = "Loading...";
         private bool _isReady;
 
@@ -39,11 +50,24 @@ namespace HavensAlmanac.Integration
                 _activeCount = stats.active;
                 _completionPercent = manager.GetCompletionPercent();
 
-                _highPriorityItems = manager.GetActiveTodos()
-                    .Where(t => t.Priority >= TodoPriority.High)
-                    .OrderByDescending(t => (int)t.Priority)
-                    .Take(5)
-                    .ToList();
+                var highPriority = new List<HighPriorityTodo>();
+                foreach (var todo in manager.GetActiveTodos())
+                {
+                    if (todo == null || todo.Priority < SunhavenTodo.Data.TodoPriority.High)
+                        continue;
+                    highPriority.Add(new HighPriorityTodo
+                    {
+                        Priority = (int)todo.Priority,
+                        Order = highPriority.Count,
+                        Title = todo.Title,
+                        IsUrgent = todo.Priority == SunhavenTodo.Data.TodoPriority.Urgent
+                    });
+                }
+                // Highest priority first; keep original order within a priority (stable, like OrderByDescending).
+                highPriority.Sort(CompareHighPriority);
+                if (highPriority.Count > MaxHighPriorityItems)
+                    highPriority.RemoveRange(MaxHighPriorityItems, highPriority.Count - MaxHighPriorityItems);
+                _highPriorityItems = highPriority;
 
                 _hudSummary = _totalCount == 0
                     ? "No tasks"
@@ -56,6 +80,14 @@ namespace HavensAlmanac.Integration
                 _isReady = false;
                 HavensAlmanac.Plugin.Log?.LogWarning($"[TodoProvider] Refresh error: {ex.Message}");
             }
+        }
+
+        private const int MaxHighPriorityItems = 5;
+
+        private static int CompareHighPriority(HighPriorityTodo a, HighPriorityTodo b)
+        {
+            int byPriority = b.Priority.CompareTo(a.Priority);
+            return byPriority != 0 ? byPriority : a.Order.CompareTo(b.Order);
         }
 
         public void DrawDashboardSection()
@@ -78,7 +110,7 @@ namespace HavensAlmanac.Integration
                 GUILayout.Label(ModLocalization.T("almanac.provider.todo.highPriority"), GUI.skin.label);
                 foreach (var item in _highPriorityItems)
                 {
-                    string priority = item.Priority == TodoPriority.Urgent ? "[!] " : "[*] ";
+                    string priority = item.IsUrgent ? "[!] " : "[*] ";
                     GUILayout.Label($"  {priority}{item.Title}");
                 }
             }

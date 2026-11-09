@@ -143,21 +143,19 @@ namespace HavenDevTools
             _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
             SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
             _persistentRunnerComponent = _persistentRunner.AddComponent<PersistentRunner>();
-            Log.LogInfo("[PersistentRunner] Created hidden persistent runner");
+            Log.LogDebug("[PersistentRunner] Created hidden persistent runner");
         }
 
         private void CreateUIComponents()
         {
             var uiObject = new GameObject("HavenDevTools_UI");
             DontDestroyOnLoad(uiObject);
-            // NOTE: Do NOT use HideFlags.HideAndDontSave on UI objects!
-            // That flag prevents Unity's OnGUI from being called.
 
             _staticDebugWindow = uiObject.AddComponent<DebugWindow>();
             _staticDebugOverlay = uiObject.AddComponent<DebugOverlay>();
             _staticFpsCounterOverlay = uiObject.AddComponent<FpsCounterOverlay>();
 
-            Log.LogInfo("UI components created");
+            Log.LogDebug("UI components created");
         }
 
         /// <summary>
@@ -171,19 +169,19 @@ namespace HavenDevTools
                 // Check if PersistentRunner was destroyed and recreate it
                 if (_persistentRunner == null || _persistentRunnerComponent == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating PersistentRunner...");
+                    Log?.LogDebug("[EnsureUI] Recreating PersistentRunner...");
                     _persistentRunner = new GameObject("HavenDevTools_PersistentRunner");
                     UnityEngine.Object.DontDestroyOnLoad(_persistentRunner);
                     _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
                     SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
                     _persistentRunnerComponent = _persistentRunner.AddComponent<PersistentRunner>();
-                    Log?.LogInfo("[EnsureUI] PersistentRunner recreated");
+                    Log?.LogDebug("[EnsureUI] PersistentRunner recreated");
                 }
 
                 // Check if UI was destroyed and recreate it
                 if (_staticDebugWindow == null || _staticDebugOverlay == null || _staticFpsCounterOverlay == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating UI components...");
+                    Log?.LogDebug("[EnsureUI] Recreating UI components...");
                     var uiObject = new GameObject("HavenDevTools_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
 
@@ -191,7 +189,7 @@ namespace HavenDevTools
                     _staticDebugOverlay = uiObject.AddComponent<DebugOverlay>();
                     _staticFpsCounterOverlay = uiObject.AddComponent<FpsCounterOverlay>();
 
-                    Log?.LogInfo("[EnsureUI] UI components recreated");
+                    Log?.LogDebug("[EnsureUI] UI components recreated");
                 }
 
                 // Ensure services exist
@@ -281,7 +279,7 @@ namespace HavenDevTools
                 {
                     var postfix = AccessTools.Method(typeof(Plugin), nameof(OnPlayerInitialized));
                     _harmony.Patch(initMethod, postfix: new HarmonyMethod(postfix));
-                    Log.LogInfo("Patched Player.InitializeAsOwner");
+                    Log.LogDebug("Patched Player.InitializeAsOwner");
                 }
             }
             catch (Exception ex)
@@ -292,7 +290,7 @@ namespace HavenDevTools
 
         private static void OnPlayerInitialized()
         {
-            Log?.LogInfo("[HavenDevTools] Player initialized, ensuring UI exists...");
+            Log?.LogDebug("[HavenDevTools] Player initialized, ensuring UI exists...");
             EnsureUIComponentsExist();
             UpdatePlayerContext();
         }
@@ -317,12 +315,13 @@ namespace HavenDevTools
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            ModConfig.UnsubscribeSettingChanged();
 
             string sceneName = SceneManager.GetActiveScene().name ?? string.Empty;
             string sceneLower = sceneName.ToLowerInvariant();
             bool expectedTeardown = _applicationQuitting || !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
-                Log?.LogInfo($"[Lifecycle] Plugin OnDestroy during expected teardown (scene: {sceneName})");
+                Log?.LogDebug($"[Lifecycle] Plugin OnDestroy during expected teardown (scene: {sceneName})");
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
@@ -370,8 +369,6 @@ namespace HavenDevTools
         public static BundleInspector GetBundleInspector() => _staticBundleInspector;
         public static RaceModifierTracker GetRaceModifierTracker() => _staticRaceModifierTracker;
 
-        public static DebugWindow GetDebugWindow() => _staticDebugWindow;
-        public static DebugOverlay GetDebugOverlay() => _staticDebugOverlay;
         public static CommandConsole GetCommandConsole() => _staticCommandConsole;
         public static LogViewerPanel GetLogViewer() => _staticLogViewer;
 
@@ -402,7 +399,7 @@ namespace HavenDevTools
         private void Awake()
         {
             gameObject.hideFlags = HideFlags.HideAndDontSave;
-            Plugin.Log?.LogInfo("[PersistentRunner] Awake - hidden persistent runner active");
+            Plugin.Log?.LogDebug("[PersistentRunner] Awake - hidden persistent runner active");
         }
 
         private void Update()
@@ -458,7 +455,7 @@ namespace HavenDevTools
             bool expectedTeardown = !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
+                Plugin.Log?.LogDebug("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
             }
             else
             {
