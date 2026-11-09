@@ -610,10 +610,6 @@ namespace TheVault
         public static void SetConfigAltToggleKey(KeyCode k) { if (Instance?._altToggleKey != null) Instance._altToggleKey.Value = k; }
         public static bool GetConfigControllerOpenEnabled() => Instance?._controllerOpenEnabled?.Value ?? true;
         public static void SetConfigControllerOpenEnabled(bool v) { if (Instance?._controllerOpenEnabled != null) Instance._controllerOpenEnabled.Value = v; }
-        public static KeyCode GetConfigControllerOpenModifier() => Instance?._controllerOpenModifier?.Value ?? KeyCode.JoystickButton4;
-        public static void SetConfigControllerOpenModifier(KeyCode k) { if (Instance?._controllerOpenModifier != null) Instance._controllerOpenModifier.Value = k; }
-        public static KeyCode GetConfigControllerOpenButton() => Instance?._controllerOpenButton?.Value ?? KeyCode.JoystickButton3;
-        public static void SetConfigControllerOpenButton(KeyCode k) { if (Instance?._controllerOpenButton != null) Instance._controllerOpenButton.Value = k; }
         public static bool GetConfigHUDEnabled() => Instance?._enableHUD?.Value ?? true;
         public static void SetConfigHUDEnabled(bool v) { if (Instance?._enableHUD != null) Instance._enableHUD.Value = v; }
         public static float GetConfigHUDScale() => Instance?._hudScale?.Value ?? 1f;

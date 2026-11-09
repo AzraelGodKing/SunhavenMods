@@ -22,6 +22,9 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-17
 
 - **Senpai's Chest scan logs:** Per-stack `[Scan]` eject/move lines in `SmartChestManager` demoted from `LogInfo` to `LogDebug` (`MOD_LIFECYCLE_AND_LOGGING_CONTRACT` §3). Scan-complete milestone and warnings unchanged. No version bump (`cursor/` branch).
+## 2026-10-17
+
+- **Unused-helper cleanup (no version bump):** Deleted leftover helpers with no callers (repo-wide grep of C#, tests, strings, Harmony, XML). Skipped anything still used. Did not redo drafts #164 (Vault dispatch), #165/#171 (other unused APIs), or #180 (log levels). Haven's Birthright: `GetCurrentHour` / `GetCurrentSeason` / `IsInMine` / `IsDaytime` (live path is `StatFrameCache`). Crop Optimizer: `TryGetFarmTileCenterWorld` / `TryGetCropHighlightCenter` / `TryWorldToFarmTile` and their exclusive reflection fields, plus unused `TryGetTooltipProjectedGold` (`TryGetTooltipProjectedShopValue` stays). The Vault: `WithdrawCurrencyToInventory`, `VaultData.Clone`, `VaultHUD.SetOpacity`, `Get`/`SetConfigControllerOpenModifier` and `Get`/`SetConfigControllerOpenButton` (kept config entries, `StaticControllerOpen*`, and `Get`/`SetConfigControllerOpenEnabled`). Gifting Assistant: TodoIntegration legacy `PublishGiftTodo` / `EnsureGiftTodos` / `RefreshDailyGiftTodos` / `CompleteGiftTodo` (Plugin `Queue*` wrappers still exist on main and stay). Trimmed stale IMGUI/uGUI class comments. Did not touch `TriggerVaultLoad`, `VaultIntegration`, or `token_*` registration.
 
 ## 2026-10-12
 
