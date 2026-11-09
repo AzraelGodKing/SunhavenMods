@@ -6,6 +6,8 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ## 2026-11-09
 
+- **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.
+- **Gifting Assistant unused NPC lookup:** Deleted `FindNpc`, `GetTryGetValueMethod`, and `_tryGetValueMethod` / `_tryGetValueDictType` (zero callers; roster scan uses `ReadNpcName` + `NormalizeNpcName`). No player-facing change; no version bump.
 - **Senpai's Chest unused locale keys:** Removed `chest.summary`, `chest.summary.accepts`, `chest.summary.rules`, `chest.tips.header`, `chest.tips.filter`, `chest.tips.transfer`, `chest.tips.wildcard`, and `chest.tips.wildcardGroups` (all language rows) from `SenpaisChest/Localization/strings.json`. Live UI never calls `ModLocalization.T` on them (including interpolated keys). No C# change; no version bump.
 
 ## 2026-10-12
