@@ -25,6 +25,8 @@
     <Compile Include="VaultCsvault2HeaderTests.cs" />
     <Compile Include="..\..\SharedUtilities\VaultCsvault3.cs" Link="Shared\VaultCsvault3.cs" />
     <Compile Include="VaultCsvault3Tests.cs" />
+    <Compile Include="..\Vault\VaultCurrencyIds.cs" Link="Vault\VaultCurrencyIds.cs" />
+    <Compile Include="VaultCurrencyIdsResolveTests.cs" />
   </ItemGroup>
 
 </Project>

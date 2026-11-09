@@ -28,7 +28,6 @@ namespace CropOptimizer
         internal CropForecast _forecast;
         private CropHUD _hud;
         private VaultIntegration _vaultIntegration;
-        private bool _hudVisible = true;
         private bool _applicationQuitting;
         private bool _isVaultLoadedEventSubscribed;
         private EventInfo _vaultLoadedEventInfo;
@@ -67,7 +66,6 @@ namespace CropOptimizer
             _hud.SetPlacement(_config.HudPositionX.Value, _config.HudPositionY.Value);
             _hud.SetScale(_config.HudScale.Value);
             _hud.SetVisible(_config.HudEnabled.Value);
-            _hudVisible = _config.HudEnabled.Value;
             _hud.PlacementChanged += OnCropHudPlacementChanged;
             _hud.SetHoverConfig(_config.HoverTooltipEnabled, _config.HoverTooltipMaxWorldDistance);
             _hud.SetHighlightConfig(_config);
@@ -103,7 +101,9 @@ namespace CropOptimizer
             if (_hud != null)
                 _hud.PlacementChanged -= OnCropHudPlacementChanged;
 
-            _harmony?.UnpatchSelf();
+            // Leave patches applied. UnpatchSelf here dropped crop-growth and LoadCharacter hooks when this
+            // component was destroyed during scene cleanup, so Crop Optimizer stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
 
             if (_isVaultLoadedEventSubscribed && _vaultLoadedEventInfo != null && _vaultLoadedHandler != null)
             {
@@ -133,21 +133,6 @@ namespace CropOptimizer
                 return;
             _config.HudPositionX.Value = x;
             _config.HudPositionY.Value = y;
-        }
-
-        private void Update()
-        {
-            if (_config == null || _hud == null)
-                return;
-
-            if (TextInputFocusGuard.ShouldDeferModHotkeys(Plugin.Log))
-                return;
-
-            if (_config.ToggleHudKey.Value != KeyCode.None && Input.GetKeyDown(_config.ToggleHudKey.Value))
-            {
-                _hudVisible = !_hudVisible;
-                _hud.SetVisible(_hudVisible);
-            }
         }
 
         public static string GetHudSummary()

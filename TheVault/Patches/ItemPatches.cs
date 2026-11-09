@@ -1027,37 +1027,16 @@ namespace TheVault.Patches
             var vaultManager = Plugin.GetVaultManager();
             if (vaultManager == null) return 0;
 
-            if (currencyId.StartsWith(VaultCurrencyIds.PrefixSeasonal))
+            var resolved = VaultCurrencyIds.Resolve(currencyId);
+            switch (resolved.Kind)
             {
-                string typeName = currencyId.Substring(VaultCurrencyIds.PrefixSeasonal.Length);
-                if (Enum.TryParse<SeasonalTokenType>(typeName, out var tokenType))
-                {
-                    return vaultManager.GetSeasonalTokens(tokenType);
-                }
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixCommunity))
-            {
-                return vaultManager.GetCommunityTokens(currencyId.Substring(VaultCurrencyIds.PrefixCommunity.Length));
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixSpecial))
-            {
-                return vaultManager.GetSpecial(currencyId.Substring(VaultCurrencyIds.PrefixSpecial.Length));
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixKey))
-            {
-                return vaultManager.GetKeys(currencyId.Substring(VaultCurrencyIds.PrefixKey.Length));
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixTicket))
-            {
-                return vaultManager.GetTickets(currencyId.Substring(VaultCurrencyIds.PrefixTicket.Length));
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixOrb))
-            {
-                return vaultManager.GetOrbs(currencyId.Substring(VaultCurrencyIds.PrefixOrb.Length));
-            }
-            else if (currencyId.StartsWith(VaultCurrencyIds.PrefixCustom, StringComparison.Ordinal))
-            {
-                return vaultManager.GetCustomCurrency(currencyId.Substring(VaultCurrencyIds.PrefixCustom.Length));
+                case CurrencyIdKind.Seasonal: return vaultManager.GetSeasonalTokens(resolved.SeasonalToken);
+                case CurrencyIdKind.Community: return vaultManager.GetCommunityTokens(resolved.ShortId);
+                case CurrencyIdKind.Special: return vaultManager.GetSpecial(resolved.ShortId);
+                case CurrencyIdKind.Key: return vaultManager.GetKeys(resolved.ShortId);
+                case CurrencyIdKind.Ticket: return vaultManager.GetTickets(resolved.ShortId);
+                case CurrencyIdKind.Orb: return vaultManager.GetOrbs(resolved.ShortId);
+                case CurrencyIdKind.Custom: return vaultManager.GetCustomCurrency(resolved.ShortId);
             }
 
             return 0;
@@ -1095,12 +1074,9 @@ namespace TheVault.Patches
                 if (!IsPlayerMainInventory(__instance)) return;
 
                 int vaultAmount = GetVaultAmount(id);
+                // No per-call logging: GetAmount runs many times per frame while crafting UIs are open (AZR-732).
                 if (vaultAmount > 0)
-                {
-                    int originalResult = __result;
                     __result += vaultAmount;
-                    Plugin.Log?.LogDebug($"GetAmount for item {id}: inventory={originalResult}, vault={vaultAmount}, total={__result}");
-                }
             }
             catch (Exception ex)
             {
@@ -1129,10 +1105,7 @@ namespace TheVault.Patches
                 int bagAmount = GetRawInventoryCount(id);
                 int vaultAmount = GetVaultAmount(id);
                 if (bagAmount + vaultAmount >= amount)
-                {
                     __result = true;
-                    Plugin.Log?.LogDebug($"HasEnough for item {id}: bag={bagAmount}, vault={vaultAmount}, need={amount} - TRUE");
-                }
             }
             catch (Exception ex)
             {
