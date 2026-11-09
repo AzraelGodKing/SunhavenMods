@@ -16,6 +16,9 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-13
 
 - **Localization cleanup:** Restored the five `almanac.provider.healthbridge.*` English keys that `ModHealthBridgeProvider` already called (existing `almanac.provider.health.empty` did not match, so it was not renamed). Deleted unused keys after a repo-wide T()/constructed-key grep: TheVault `vault.door.*` (10), HavenDevTools `azrael.gifting.unavailable` / `azrael.races.unavailable` / `azrael.respec.ready` / `azrael.respec.title` / `azrael.trinket.not_loaded` / `devtools.close` / `devtools.overlay.title` / `devtools.tab.azraels_mods`, Almanac `almanac.provider.health.empty` and `almanac.provider.gifting.gifted`. Left `almanac.provider.devtools.authorized` and `generate_translations.py` alone (#165 / #162). No version bump (`cursor/` branch).
+## 2026-10-16
+
+- **Docs/site leftover cleanup:** Hub Crop Optimizer card copy is Vault + Almanac only. Removed GitHub Pages deployment cleanup from `remove-stale-github-releases.yml` (and the unused `deployments: write` permission). `docs/404.html` favicon is relative `favicon.svg`. Dropped the Pages-root comment in `docs/scripts/stats-display.js` and pointed live stats at `SunhavenMods`. Retargeted remaining hub/docs GitHub links from `SunhavenMod` to `SunhavenMods`. Deleted `docs/.gitignore` and the unused root `docs-app/dist/` ignore.
 
 ## 2026-10-12
 
