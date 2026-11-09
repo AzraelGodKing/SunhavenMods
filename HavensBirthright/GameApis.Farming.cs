@@ -43,9 +43,9 @@ namespace HavensBirthright
                 DayCycleType = ReflectionHelper.FindWishType("DayCycle");
 
                 if (CropType != null)
-                    Plugin.Log.LogInfo("[GameApis] Found Crop type");
+                    Plugin.Log.LogDebug("[GameApis] Found Crop type");
                 if (DayCycleType != null)
-                    Plugin.Log.LogInfo("[GameApis] Found DayCycle type");
+                    Plugin.Log.LogDebug("[GameApis] Found DayCycle type");
 
                 CacheTileManager();
             }
@@ -79,7 +79,7 @@ namespace HavensBirthright
                 FarmingTileMapField = TileManagerType.GetField("farmingTileMap",
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
 
-                Plugin.Log.LogInfo($"[GameApis] TileManager cached — " +
+                Plugin.Log.LogDebug($"[GameApis] TileManager cached — " +
                     $"IsWatered:{IsWateredMethod != null}, Water:{WaterTileMethod != null}, " +
                     $"farmingData:{FarmingDataField != null}");
 
@@ -97,7 +97,7 @@ namespace HavensBirthright
             {
                 if (TileManagerInstance is UnityEngine.Object unityObj && unityObj == null)
                 {
-                    Plugin.Log?.LogInfo("[GameApis] TileManager instance stale — clearing");
+                    Plugin.Log?.LogDebug("[GameApis] TileManager instance stale — clearing");
                     TileManagerInstance = null;
                 }
                 else
@@ -111,7 +111,7 @@ namespace HavensBirthright
                 TileManagerInstance = ReflectionHelper.GetSingletonInstance(TileManagerType);
                 if (TileManagerInstance != null)
                 {
-                    Plugin.Log?.LogInfo("[GameApis] TileManager instance acquired");
+                    Plugin.Log?.LogDebug("[GameApis] TileManager instance acquired");
 
                     if (WorldToCellMethod == null && FarmingTileMapField != null)
                     {
@@ -121,7 +121,7 @@ namespace HavensBirthright
                             if (tilemap != null)
                             {
                                 WorldToCellMethod = tilemap.GetType().GetMethod("WorldToCell", new[] { typeof(Vector3) });
-                                Plugin.Log?.LogInfo($"[GameApis] WorldToCell: {(WorldToCellMethod != null ? "ok" : "missing")}");
+                                Plugin.Log?.LogDebug($"[GameApis] WorldToCell: {(WorldToCellMethod != null ? "ok" : "missing")}");
                             }
                         }
                         catch (Exception ex)
@@ -143,7 +143,7 @@ namespace HavensBirthright
                                 {
                                     GridCellToWorldMethod = GridInstance.GetType().GetMethod("CellToWorld",
                                         new[] { typeof(Vector3Int) });
-                                    Plugin.Log?.LogInfo($"[GameApis] Grid CellToWorld: {(GridCellToWorldMethod != null ? "ok" : "missing")}");
+                                    Plugin.Log?.LogDebug($"[GameApis] Grid CellToWorld: {(GridCellToWorldMethod != null ? "ok" : "missing")}");
                                 }
                             }
                         }
@@ -154,7 +154,7 @@ namespace HavensBirthright
                     }
                 }
                 else
-                    Plugin.Log?.LogInfo("[GameApis] TileManager singleton null");
+                    Plugin.Log?.LogDebug("[GameApis] TileManager singleton null");
             }
             catch (Exception ex)
             {
@@ -190,7 +190,7 @@ namespace HavensBirthright
                     ?? invType.GetMethod("GetItemAmount", new[] { typeof(int) });
                 _cachedRemoveItemMethod = invType.GetMethod("RemoveAll", new[] { typeof(int) });
 
-                Plugin.Log.LogInfo($"[GameApis] Inventory methods — GetAmount:{_cachedGetAmountMethod?.Name ?? "null"}, Remove:{_cachedRemoveItemMethod?.Name ?? "null"}");
+                Plugin.Log.LogDebug($"[GameApis] Inventory methods — GetAmount:{_cachedGetAmountMethod?.Name ?? "null"}, Remove:{_cachedRemoveItemMethod?.Name ?? "null"}");
             }
             catch (Exception ex)
             {

@@ -137,7 +137,7 @@ namespace SenpaisChest
         {
             if (_persistentRunner != null)
             {
-                Log.LogInfo("PersistentRunner already exists");
+                Log.LogDebug("PersistentRunner already exists");
                 return;
             }
 
@@ -147,7 +147,7 @@ namespace SenpaisChest
             SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
             _updateRunner = _persistentRunner.AddComponent<SmartChestPersistentRunner>();
 
-            Log.LogInfo("Created hidden PersistentRunner");
+            Log.LogDebug("Created hidden PersistentRunner");
         }
 
         public static void EnsureUIComponentsExist()
@@ -156,7 +156,7 @@ namespace SenpaisChest
             {
                 if (_persistentRunner == null || _updateRunner == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating PersistentRunner...");
+                    Log?.LogDebug("[EnsureUI] Recreating PersistentRunner...");
                     _persistentRunner = new GameObject("SenpaisChest_PersistentRunner");
                     UnityEngine.Object.DontDestroyOnLoad(_persistentRunner);
                     _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
@@ -166,7 +166,7 @@ namespace SenpaisChest
 
                 if (_staticUI == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating SmartChestUI...");
+                    Log?.LogDebug("[EnsureUI] Recreating SmartChestUI...");
                     var uiObject = new GameObject("SenpaisChest_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
                     _staticUI = uiObject.AddComponent<SmartChestUI>();
@@ -197,9 +197,9 @@ namespace SenpaisChest
                 }
                 else
                 {
-                    if (!hasSmut) Log.LogInfo("[Integrations] S.M.U.T. not found");
-                    if (!hasTodo) Log.LogInfo("[Integrations] SunhavenTodo not found");
-                    Log.LogInfo("[Integrations] Museum todo integration disabled (requires both S.M.U.T. and Todo)");
+                    if (!hasSmut) Log.LogDebug("[Integrations] S.M.U.T. not found");
+                    if (!hasTodo) Log.LogDebug("[Integrations] SunhavenTodo not found");
+                    Log.LogDebug("[Integrations] Museum todo integration disabled (requires both S.M.U.T. and Todo)");
                 }
             }
             catch (Exception ex)
@@ -229,7 +229,7 @@ namespace SenpaisChest
                 {
                     var prefix = new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnChestEndInteract_Prefix)));
                     _harmony.Patch(endInteractOriginal, prefix: prefix);
-                    Log.LogInfo("Patched Chest.EndInteract (prefix)");
+                    Log.LogDebug("Patched Chest.EndInteract (prefix)");
                 }
                 else
                 {
@@ -246,7 +246,7 @@ namespace SenpaisChest
                     {
                         var openUIPostfix = new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnUIHandlerOpenUI_Postfix)));
                         _harmony.Patch(openUIMethod, postfix: openUIPostfix);
-                        Log.LogInfo("Patched UIHandler.OpenUI (postfix)");
+                        Log.LogDebug("Patched UIHandler.OpenUI (postfix)");
                     }
                     else
                     {
@@ -263,19 +263,19 @@ namespace SenpaisChest
                 if (inputGetKeyDown != null)
                 {
                     _harmony.Patch(inputGetKeyDown, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetKeyDown_Prefix))));
-                    Log.LogInfo("Patched Input.GetKeyDown (prefix)");
+                    Log.LogDebug("Patched Input.GetKeyDown (prefix)");
                 }
                 var inputGetKey = AccessTools.Method(typeof(UnityEngine.Input), "GetKey", new[] { typeof(UnityEngine.KeyCode) });
                 if (inputGetKey != null)
                 {
                     _harmony.Patch(inputGetKey, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetKey_Prefix))));
-                    Log.LogInfo("Patched Input.GetKey (prefix)");
+                    Log.LogDebug("Patched Input.GetKey (prefix)");
                 }
                 var inputGetButtonDown = AccessTools.Method(typeof(UnityEngine.Input), "GetButtonDown", new[] { typeof(string) });
                 if (inputGetButtonDown != null)
                 {
                     _harmony.Patch(inputGetButtonDown, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetButtonDown_Prefix))));
-                    Log.LogInfo("Patched Input.GetButtonDown (prefix)");
+                    Log.LogDebug("Patched Input.GetButtonDown (prefix)");
                 }
 
                 // Wish.PlayerInput.GetButtonDown(string) → the game uses Rewired via this custom class,
@@ -289,7 +289,7 @@ namespace SenpaisChest
                     if (getButtonDownStr != null)
                     {
                         _harmony.Patch(getButtonDownStr, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnPlayerInputGetButtonDown_Prefix))));
-                        Log.LogInfo("Patched PlayerInput.GetButtonDown(string) (prefix)");
+                        Log.LogDebug("Patched PlayerInput.GetButtonDown(string) (prefix)");
                     }
                     else
                     {
@@ -304,7 +304,7 @@ namespace SenpaisChest
                 // Chest Labels (labels above chests - enabled via config)
                 ApplyChestLabelPatches();
 
-                Log.LogInfo("Harmony patches applied successfully");
+                Log.LogDebug("Harmony patches applied successfully");
             }
             catch (Exception ex)
             {
@@ -325,7 +325,7 @@ namespace SenpaisChest
                 if (target != null)
                 {
                     _harmony.Patch(target, postfix: new HarmonyMethod(setMetaPostfix));
-                    Log.LogInfo($"Patched Chest.{methodName} (labels)");
+                    Log.LogDebug($"Patched Chest.{methodName} (labels)");
                 }
             }
 
@@ -333,14 +333,14 @@ namespace SenpaisChest
             if (onEnable != null)
             {
                 _harmony.Patch(onEnable, postfix: new HarmonyMethod(onEnablePostfix));
-                Log.LogInfo("Patched Chest.OnEnable (labels)");
+                Log.LogDebug("Patched Chest.OnEnable (labels)");
             }
 
             var getInteractionPoint = AccessTools.Method(typeof(Chest), "get_InteractionPoint");
             if (getInteractionPoint != null)
             {
                 _harmony.Patch(getInteractionPoint, postfix: new HarmonyMethod(interactionPostfix));
-                Log.LogInfo("Patched Chest.get_InteractionPoint (labels)");
+                Log.LogDebug("Patched Chest.get_InteractionPoint (labels)");
             }
         }
 
@@ -359,7 +359,7 @@ namespace SenpaisChest
 
             var postfix = AccessTools.Method(patchType, patchMethodName);
             _harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-            Log.LogInfo($"Patched {targetType.Name}.{methodName}");
+            Log.LogDebug($"Patched {targetType.Name}.{methodName}");
         }
 
         private static void OnPlayerInitialized(Player __instance)
@@ -712,7 +712,7 @@ namespace SenpaisChest
             _museumTodoIntegration = null;
 
             // Do NOT unpatch Harmony — patches survive and enable reloads
-            Log?.LogInfo("Plugin OnDestroy called — static references preserved");
+            Log?.LogDebug("Plugin OnDestroy called — static references preserved");
             _staticSaveSystem?.Save();
         }
 
@@ -853,7 +853,7 @@ namespace SenpaisChest
             bool expectedTeardown = !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
+                Plugin.Log?.LogDebug("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
             }
             else
             {

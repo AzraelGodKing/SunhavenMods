@@ -164,7 +164,7 @@ namespace HavenDevTools.Config
                 _theVaultInspectorHooked = true;
             }
 
-            global::HavenDevTools.Plugin.Log?.LogInfo("Configuration initialized");
+            global::HavenDevTools.Plugin.Log?.LogDebug("Configuration initialized");
         }
 
         public static void UnsubscribeSettingChanged()

@@ -57,7 +57,7 @@ namespace TheVault.Patches
                     // If vault already loaded for this character, skip
                     if (_isVaultLoaded && _loadedCharacterName == characterName)
                     {
-                        Plugin.Log?.LogInfo($"Vault already loaded for {characterName}");
+                        Plugin.Log?.LogDebug($"Vault already loaded for {characterName}");
                         return;
                     }
 
@@ -202,7 +202,7 @@ namespace TheVault.Patches
 
             _lastCharacterSourceLog = source;
             _lastCharacterNameLog = characterName;
-            Plugin.Log?.LogInfo($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
+            Plugin.Log?.LogDebug($"GetCurrentCharacterName: Using {source} character name = '{characterName}'");
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace TheVault.Patches
                 {
                     if (_isVaultLoaded && string.Equals(_loadedCharacterName, norm, StringComparison.Ordinal))
                     {
-                        Plugin.Log?.LogInfo($"TriggerVaultLoad: vault already loaded for {norm}");
+                        Plugin.Log?.LogDebug($"TriggerVaultLoad: vault already loaded for {norm}");
                         return;
                     }
 
