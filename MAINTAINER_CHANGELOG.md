@@ -4,6 +4,11 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-09
+
+- **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.
+- **Gifting Assistant unused NPC lookup:** Deleted `FindNpc`, `GetTryGetValueMethod`, and `_tryGetValueMethod` / `_tryGetValueDictType` (zero callers; roster scan uses `ReadNpcName` + `NormalizeNpcName`). No player-facing change; no version bump.
+
 ## 2026-10-12
 
 - **Website downloads manifest (AZR-453):** `scripts/publish_site_download.py` read `downloads.json`, added its entry and wrote the whole file back once. The 2026-10-11 batch released 11 mods at the same moment and the jobs overwrote each other, so only Gifting Assistant and Haven Dev Tools were recorded and the mods website kept linking older zips. The script now uploads the zip and checksum first, then writes the manifest, waits, reads it back, and writes again until its entry stays (5 attempts). A failed read no longer replaces the manifest with a one-entry file. If the entry still is not recorded, the step warns and the release carries on. The bucket manifest was repaired by hand on 2026-10-12.
