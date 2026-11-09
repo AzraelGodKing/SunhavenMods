@@ -53,10 +53,34 @@ namespace HavensMirror.Hotkeys
                 return;
 
             KeyCode modifier = MirrorOptions.ReloadModifier?.Value ?? KeyCode.None;
-            if (modifier != KeyCode.None && !UnityEngine.Input.GetKey(modifier))
+            if (modifier != KeyCode.None && !IsModifierHeld(modifier))
                 return;
 
+            Plugin.Log?.LogInfo("[Gallery] Reload hotkey pressed.");
             Plugin.ReloadGallery(notify: MirrorOptions.NotifyOnReload?.Value ?? true);
+        }
+
+        /// <summary>
+        /// Treat left/right variants of Ctrl, Shift, Alt and Cmd as the same key, so the default
+        /// LeftControl also accepts Right Ctrl.
+        /// </summary>
+        private static bool IsModifierHeld(KeyCode modifier)
+        {
+            if (UnityEngine.Input.GetKey(modifier))
+                return true;
+
+            switch (modifier)
+            {
+                case KeyCode.LeftControl: return UnityEngine.Input.GetKey(KeyCode.RightControl);
+                case KeyCode.RightControl: return UnityEngine.Input.GetKey(KeyCode.LeftControl);
+                case KeyCode.LeftShift: return UnityEngine.Input.GetKey(KeyCode.RightShift);
+                case KeyCode.RightShift: return UnityEngine.Input.GetKey(KeyCode.LeftShift);
+                case KeyCode.LeftAlt: return UnityEngine.Input.GetKey(KeyCode.RightAlt);
+                case KeyCode.RightAlt: return UnityEngine.Input.GetKey(KeyCode.LeftAlt);
+                case KeyCode.LeftCommand: return UnityEngine.Input.GetKey(KeyCode.RightCommand);
+                case KeyCode.RightCommand: return UnityEngine.Input.GetKey(KeyCode.LeftCommand);
+                default: return false;
+            }
         }
 
         private void TickFolderSync()

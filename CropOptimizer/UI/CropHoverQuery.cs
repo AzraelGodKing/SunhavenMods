@@ -181,6 +181,19 @@ namespace CropOptimizer.UI
 
             _nextHoverFullScanTime = now + HoverRescanMinInterval;
 
+            // AZR-733: O(1) tile-index hit covers crops whose grid position resolves.
+            if (CropSceneCache.TryGetCropAtFarmTile(mouseFarmTile, out Component indexed))
+            {
+                crop = indexed;
+                _lastHoverCrop = indexed;
+                return true;
+            }
+
+            // Positional fallback (same tolerance as GameFarmCoords.IsCropOnFarmTile). The expected
+            // tile position is computed once per scan instead of once per crop.
+            Vector3 expectedOnTile = GameFarmCoords.GetSelectionWorldPosition(mouseFarmTile);
+            const float onTileToleranceSq = 0.45f * 0.45f;
+
             Component best = null;
             float bestSq = maxSq;
 
@@ -189,14 +202,17 @@ namespace CropOptimizer.UI
                 if (o is not Component mb || mb == null || !CropPresence.IsPresent(mb))
                     continue;
 
-                if (GameFarmCoords.IsCropOnFarmTile(mb, mouseFarmTile))
+                Vector3 pos = mb.transform.position;
+                float tdx = pos.x - expectedOnTile.x;
+                float tdy = pos.y - expectedOnTile.y;
+                if (tdx * tdx + tdy * tdy <= onTileToleranceSq)
                 {
                     crop = mb;
                     _lastHoverCrop = mb;
                     return true;
                 }
 
-                Vector2 p = new Vector2(mb.transform.position.x, mb.transform.position.y);
+                Vector2 p = new Vector2(pos.x, pos.y);
                 float sq = (p - mouse2).sqrMagnitude;
                 if (sq < bestSq)
                 {
