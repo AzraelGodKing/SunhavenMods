@@ -26,7 +26,7 @@ Per-mod READMEs and Thunderstore packages describe features, hotkeys, and config
 ## Installation
 
 1. Install [BepInEx 5.x](https://docs.bepinex.dev/articles/user_guide/installation/index.html) for Sun Haven.
-2. Download from [Thunderstore](https://thunderstore.io/c/sun-haven/) / [Nexus](https://www.nexusmods.com/sunhaven) / [GitHub Releases](https://github.com/AzraelGodKing/SunhavenMod/releases), or build from this repo.
+2. Download from [Thunderstore](https://thunderstore.io/c/sun-haven/) / [Nexus](https://www.nexusmods.com/sunhaven) / [GitHub Releases](https://github.com/AzraelGodKing/SunhavenMods/releases), or build from this repo.
 3. Copy the mod DLL (and any packaged files) into `Sun Haven/BepInEx/plugins/` (subfolders allowed).
 
 ## Build from source
