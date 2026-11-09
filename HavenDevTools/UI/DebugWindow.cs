@@ -50,8 +50,6 @@ namespace HavenDevTools.UI
         private string _cachedTabLabelsLanguage;
         private string[] _mainTabLabels;
         private string[] _toolsSubTabLabels;
-        private List<string> _raceNamesSource;
-        private string[] _raceNamesForGrid;
 
         private static readonly HashSet<string> AzraelsExtensionGuids =
             new HashSet<string> { "com.azraelgodking.trinketfortune" };
@@ -68,15 +66,6 @@ namespace HavenDevTools.UI
 
         // Currency state
         private Vector2 _currencyScrollPosition;
-
-        // Bundle state
-        private int _selectedSectionIndex;
-        private int _selectedBundleIndex;
-        private Vector2 _bundleScrollPosition;
-
-        // Race state
-        private int _selectedRaceIndex;
-        private Vector2 _raceScrollPosition;
 
         // NPC relationships (CheatEnabler-style)
         private bool _relationshipRomanceOnly = true;
@@ -214,28 +203,6 @@ namespace HavenDevTools.UI
                 ModLocalization.T("devtools.tab.perf"),
                 ModLocalization.T("devtools.tab.utility")
             };
-        }
-
-        private string[] GetRaceNamesForGrid(IReadOnlyList<string> races)
-        {
-            if (_raceNamesSource != null && _raceNamesForGrid != null && _raceNamesSource.Count == races.Count)
-            {
-                bool same = true;
-                for (int i = 0; i < races.Count; i++)
-                {
-                    if (!string.Equals(_raceNamesSource[i], races[i], StringComparison.Ordinal))
-                    {
-                        same = false;
-                        break;
-                    }
-                }
-                if (same)
-                    return _raceNamesForGrid;
-            }
-
-            _raceNamesSource = new List<string>(races);
-            _raceNamesForGrid = _raceNamesSource.ToArray();
-            return _raceNamesForGrid;
         }
 
         private void InitializeStyles()
@@ -1066,195 +1033,6 @@ namespace HavenDevTools.UI
             {
                 GUILayout.Space(5);
                 GUILayout.Label(ModLocalization.T("devtools.currency.vaultMissing"), _labelStyle);
-            }
-
-            GUILayout.EndVertical();
-        }
-
-        #endregion
-
-        #region Bundles Tab
-
-        private void DrawBundlesTab()
-        {
-            GUILayout.BeginVertical(_boxStyle);
-            GUILayout.Label(ModLocalization.T("devtools.museum.title"), _sectionHeaderStyle);
-            GUILayout.Space(5);
-
-            if (!Plugin.HasSMUT)
-            {
-                GUILayout.Label(ModLocalization.T("devtools.museum.notInstalled"), _labelStyle);
-                GUILayout.EndVertical();
-                return;
-            }
-
-            var inspector = Plugin.GetBundleInspector();
-            if (inspector == null)
-            {
-                GUILayout.Label(ModLocalization.T("devtools.museum.unavailable"), _labelStyle);
-                GUILayout.EndVertical();
-                return;
-            }
-
-            // Donation stats
-            var stats = inspector.GetDonationStats();
-            if (stats.IsLoaded)
-            {
-                GUILayout.Label(ModLocalization.T("devtools.museum.character", stats.CharacterName), _labelStyle);
-                GUILayout.Label(ModLocalization.T("devtools.museum.progress", stats.TotalDonated, stats.TotalItems, stats.CompletionPercent), _labelStyle);
-            }
-            else
-            {
-                GUILayout.Label(ModLocalization.T("devtools.museum.notLoaded"), _labelStyle);
-            }
-
-            GUILayout.Space(10);
-
-            // Sections
-            var sections = inspector.GetAllSections();
-            if (sections.Count == 0)
-            {
-                GUILayout.Label(ModLocalization.T("devtools.museum.noData"), _labelStyle);
-                GUILayout.EndVertical();
-                return;
-            }
-
-            // Section selector
-            string[] sectionNames = new string[sections.Count];
-            for (int i = 0; i < sections.Count; i++)
-            {
-                sectionNames[i] = sections[i].Name;
-            }
-
-            GUILayout.Label(ModLocalization.T("devtools.museum.section"), _labelStyle);
-            _selectedSectionIndex = GUILayout.SelectionGrid(_selectedSectionIndex, sectionNames, 3, _buttonStyle);
-
-            if (_selectedSectionIndex >= sections.Count) _selectedSectionIndex = 0;
-            var selectedSection = sections[_selectedSectionIndex];
-
-            GUILayout.Space(5);
-
-            // Bundle selector
-            if (selectedSection.Bundles.Count > 0)
-            {
-                string[] bundleNames = new string[selectedSection.Bundles.Count];
-                for (int i = 0; i < selectedSection.Bundles.Count; i++)
-                {
-                    bundleNames[i] = selectedSection.Bundles[i].Name;
-                }
-
-                if (_selectedBundleIndex >= selectedSection.Bundles.Count) _selectedBundleIndex = 0;
-
-                GUILayout.Label(ModLocalization.T("devtools.museum.bundle"), _labelStyle);
-                _selectedBundleIndex = GUILayout.SelectionGrid(_selectedBundleIndex, bundleNames, 2, _buttonStyle);
-
-                var selectedBundle = selectedSection.Bundles[_selectedBundleIndex];
-
-                GUILayout.Space(5);
-
-                // Items in bundle
-                GUILayout.Label(ModLocalization.T("devtools.museum.itemsIn", selectedBundle.Name), _sectionHeaderStyle);
-                _bundleScrollPosition = GUILayout.BeginScrollView(_bundleScrollPosition, GUILayout.Height(ListHeight(100f, 0.35f)));
-                foreach (var item in selectedBundle.Items)
-                {
-                    bool donated = inspector.HasDonated(item.Id);
-                    string status = donated ? "[X]" : "[ ]";
-                    string qtyLabel = item.Quantity > 1 ? $" x{item.Quantity}" : "";
-                    bool canSpawn = item.GameItemId > 0;
-                    GUILayout.BeginHorizontal();
-                    GUILayout.Label($"{status} {item.Name} (ID: {item.GameItemId})", _labelStyle, GUILayout.Width(320));
-                    var prevEnabled = GUI.enabled;
-                    GUI.enabled = canSpawn;
-                    if (GUILayout.Button(canSpawn ? ModLocalization.T("devtools.museum.spawn", qtyLabel) : "—", _buttonStyle, GUILayout.Width(90)))
-                    {
-                        if (canSpawn) Plugin.GetItemInspector()?.SpawnItem(item.GameItemId, item.Quantity);
-                    }
-                    GUI.enabled = prevEnabled;
-                    if (!canSpawn) GUILayout.Label(ModLocalization.T("devtools.museum.idInAssets"), _labelStyle, GUILayout.Width(100));
-                    GUILayout.EndHorizontal();
-                }
-                GUILayout.EndScrollView();
-            }
-
-            GUILayout.EndVertical();
-        }
-
-        #endregion
-
-        #region Race Bonuses Tab
-
-        private void DrawRaceBonusesTab()
-        {
-            GUILayout.BeginVertical(_boxStyle);
-            GUILayout.Label(ModLocalization.T("devtools.race.title"), _sectionHeaderStyle);
-            GUILayout.Space(5);
-
-            var tracker = Plugin.GetRaceModifierTracker();
-            if (tracker == null)
-            {
-                GUILayout.Label(ModLocalization.T("devtools.race.unavailable"), _labelStyle);
-                GUILayout.EndVertical();
-                return;
-            }
-
-            // Current race
-            string currentRace = tracker.GetCurrentRace();
-            GUILayout.Label(ModLocalization.T("devtools.race.current", currentRace), _labelStyle);
-
-            GUILayout.Space(10);
-
-            // Active bonuses
-            if (Plugin.HasHavensBirthright)
-            {
-                var activeBonuses = tracker.GetActiveRaceBonuses();
-                GUILayout.Label(ModLocalization.T("devtools.race.bonuses"), _sectionHeaderStyle);
-                if (activeBonuses.Count == 0)
-                {
-                    GUILayout.Label(ModLocalization.T("devtools.race.noBonuses"), _labelStyle);
-                }
-                else
-                {
-                    foreach (var bonus in activeBonuses)
-                    {
-                        GUILayout.Label($"  {bonus.Type}: {bonus.GetFormattedValue()}", _labelStyle);
-                        GUILayout.Label($"    {bonus.Description}", _labelStyle);
-                    }
-                }
-            }
-            else
-            {
-                GUILayout.Label(ModLocalization.T("devtools.race.birthrightMissing"), _labelStyle);
-            }
-
-            GUILayout.Space(10);
-
-            // Race browser
-            GUILayout.Label(ModLocalization.T("devtools.race.browse"), _sectionHeaderStyle);
-            var races = tracker.GetAllRaces();
-            if (races.Count > 0)
-            {
-                string[] raceNames = GetRaceNamesForGrid(races);
-                if (_selectedRaceIndex >= races.Count) _selectedRaceIndex = 0;
-
-                _selectedRaceIndex = GUILayout.SelectionGrid(_selectedRaceIndex, raceNames, 4, _buttonStyle);
-
-                GUILayout.Space(5);
-
-                var bonuses = tracker.GetBonusesForRace(races[_selectedRaceIndex]);
-                _raceScrollPosition = GUILayout.BeginScrollView(_raceScrollPosition, GUILayout.Height(ListHeight(100f, 0.35f)));
-                if (bonuses.Count == 0)
-                {
-                    GUILayout.Label(ModLocalization.T("devtools.race.noDefined"), _labelStyle);
-                }
-                else
-                {
-                    foreach (var bonus in bonuses)
-                    {
-                        GUILayout.Label($"  {bonus.Type}: {bonus.GetFormattedValue()}", _labelStyle);
-                        GUILayout.Label($"    {bonus.Description}", _labelStyle);
-                    }
-                }
-                GUILayout.EndScrollView();
             }
 
             GUILayout.EndVertical();

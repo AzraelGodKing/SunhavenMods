@@ -13,7 +13,6 @@ namespace HavensRespec.UI
     {
         // "Tomb ink on parchment" palette — slightly darker than Crop Optimizer so the reset UI
         // feels a bit more serious / weighty (this action is destructive).
-        public static readonly Color Ink = new Color(0.09f, 0.07f, 0.05f, 1f);
         public static readonly Color Parchment = new Color(0.96f, 0.90f, 0.75f, 1f);
         public static readonly Color Wood = new Color(0.38f, 0.25f, 0.16f, 1f);
         public static readonly Color WoodShadow = new Color(0.22f, 0.14f, 0.09f, 1f);

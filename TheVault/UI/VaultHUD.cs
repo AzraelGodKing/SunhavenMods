@@ -126,13 +126,6 @@ namespace TheVault.UI
         }
         public void SetScale(float scale) { _scale = Mathf.Clamp(scale, 0.5f, 3.0f); _stylesForMul = -1f; _layoutDirty = true; }
         public void SetHudDensity(VaultHudDensity density) { _hudDensity = density; _stylesForMul = -1f; _layoutDirty = true; }
-        public void SetOpacity(float opacity)
-        {
-            _opacity = Mathf.Clamp01(opacity);
-            _stylesForMul = -1f;
-            _texturesForOpacity = -1f;
-            _layoutDirty = true;
-        }
 
         public bool IsEnabled => _isEnabled;
         public void Toggle() { _isEnabled = !_isEnabled; Plugin.Log?.LogInfo($"VaultHUD toggled: {(_isEnabled ? "ON" : "OFF")}"); }

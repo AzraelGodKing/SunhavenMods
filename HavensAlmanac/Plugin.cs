@@ -367,13 +367,7 @@ namespace HavensAlmanac
             if (_staticHUD == null)
                 return;
 
-            _staticHUD.OnPositionChanged = (x, y) =>
-            {
-                AlmanacConfig.StaticHUDPositionX = x;
-                AlmanacConfig.StaticHUDPositionY = y;
-                AlmanacConfig.HUDPositionX?.SetSerializedValue(x.ToString());
-                AlmanacConfig.HUDPositionY?.SetSerializedValue(y.ToString());
-            };
+            _staticHUD.OnPositionChanged = AlmanacConfig.SaveHudPosition;
         }
 
         private static object ResolveSingletonInstance(Type targetType)
@@ -404,6 +398,7 @@ namespace HavensAlmanac
         private void OnDestroy()
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
+            ResetOvernightHook();
             AlmanacConfig.UnsubscribeSettingChanged();
 
             string sceneName = SceneManager.GetActiveScene().name ?? string.Empty;
@@ -414,7 +409,9 @@ namespace HavensAlmanac
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
-            _harmony?.UnpatchSelf();
+            // Leave patches applied. UnpatchSelf here dropped the InitializeAsOwner postfix when this
+            // component was destroyed during scene cleanup, so Haven's Almanac stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
         }
 
         private void OnApplicationQuit()

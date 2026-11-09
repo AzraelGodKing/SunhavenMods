@@ -49,19 +49,5 @@ namespace HavenDevTools.Services
 
             return null;
         }
-
-        public static bool IsPluginLoaded(string pluginGuid)
-        {
-            try
-            {
-                return !string.IsNullOrEmpty(pluginGuid)
-                    && Chainloader.PluginInfos != null
-                    && Chainloader.PluginInfos.ContainsKey(pluginGuid);
-            }
-            catch
-            {
-                return false;
-            }
-        }
     }
 }

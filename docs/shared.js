@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!m) return;
 
                 var links = [];
-                var ghBase = 'https://github.com/AzraelGodKing/SunhavenMod/releases';
+                var ghBase = 'https://github.com/AzraelGodKing/SunhavenMods/releases';
 
                 if (m.thunderstore) {
                     links.push({
