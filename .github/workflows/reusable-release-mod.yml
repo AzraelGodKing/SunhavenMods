@@ -322,6 +322,16 @@ jobs:
           draft: false
           prerelease: false
 
+      - name: Stage release scripts outside the workspace
+        # The Thunderstore Docker action moves the workspace into /dist, so
+        # scripts/ is gone for every later step (run #5: duplicate-OK and Nexus
+        # changelog both hit "No such file"). $RUNNER_TEMP survives.
+        if: inputs.publish_discord_only != 'true' && steps.version_check.outputs.has_work == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release-scripts"
+          cp scripts/version/*.py "$RUNNER_TEMP/release-scripts/"
+
       - name: Publish to Thunderstore
         id: publish_thunderstore_step
         if: >-
@@ -348,7 +358,7 @@ jobs:
       - name: Thunderstore already published
         if: steps.publish_thunderstore_step.outcome == 'failure'
         run: |
-          python3 scripts/version/thunderstore_duplicate_ok.py \
+          python3 "$RUNNER_TEMP/release-scripts/thunderstore_duplicate_ok.py" \
             --namespace "${{ env.THUNDERSTORE_NAMESPACE }}" \
             --name "${{ steps.config.outputs.thunderstore_name }}" \
             --version "${{ steps.config.outputs.version }}"
@@ -533,7 +543,7 @@ jobs:
           NEXUS_API_KEY: ${{ secrets.NEXUSMODS_API_KEY }}
           NEXUS_CHANGELOG: ${{ steps.config.outputs.changelog }}
         run: |
-          python3 scripts/version/nexus_post_changelog.py \
+          python3 "$RUNNER_TEMP/release-scripts/nexus_post_changelog.py" \
             --mod-id "${{ steps.nexus_preflight.outputs.nexus_v3_mod_id }}" \
             --version "${{ steps.config.outputs.version }}"
 
