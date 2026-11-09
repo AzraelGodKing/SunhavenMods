@@ -151,19 +151,12 @@ namespace BirthdayReminder.UI
             }
         }
 
-        public (float x, float y) GetPosition()
-        {
-            return (_windowRect.x, _windowRect.y);
-        }
-
         public void SetScale(float scale)
         {
             _scale = Mathf.Clamp(scale, 0.5f, 2.5f);
             _stylesInitialized = false;
             EnsureOnScreen();
         }
-
-        public bool IsVisible => _isVisible;
 
         public void Show()
         {

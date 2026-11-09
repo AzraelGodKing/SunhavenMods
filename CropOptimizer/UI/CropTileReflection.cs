@@ -300,16 +300,6 @@ namespace CropOptimizer.UI
             }
         }
 
-        public static string DescribeFarmingTileState(Vector2Int tile)
-        {
-            return DescribeFarmingTileState(tile, Vector3.zero, false, out _);
-        }
-
-        public static string DescribeFarmingTileState(Vector2Int tile, out Vector2Int matchedTile)
-        {
-            return DescribeFarmingTileState(tile, Vector3.zero, false, out matchedTile);
-        }
-
         /// <summary>True when the crop's farming tile reads as watered on the water tilemap / TileManager.</summary>
         public static bool IsCropTileWatered(Component crop)
         {
