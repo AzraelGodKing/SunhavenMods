@@ -15,7 +15,7 @@ namespace TheVault.Patches
         public static void ResetLastLoadedSlot()
         {
             LastLoadedCharacterName = null;
-            Plugin.Log?.LogInfo("GameSavePatches: Reset LastLoadedCharacterName");
+            Plugin.Log?.LogDebug("GameSavePatches: Reset LastLoadedCharacterName");
         }
 
         public static void OnLoadCharacterAny(object[] __args, MethodBase __originalMethod)

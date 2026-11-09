@@ -10,7 +10,6 @@ using SunhavenMods.Shared;
 using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,8 +62,11 @@ namespace SenpaisChest
         {
             Instance = this;
             Log = Logger;
-            ConfigFile = CreateNamedConfig();
-            SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
+            ConfigFile = ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "SenpaisChest.cfg",
+                message => Log?.LogWarning(message));
+            ConfigFileHelper.ReplacePluginConfig(this, ConfigFile, Log.LogWarning);
 
             Log.LogInfo($"Loading {PluginInfo.PLUGIN_NAME} v{PluginInfo.PLUGIN_VERSION}");
 
@@ -135,7 +137,7 @@ namespace SenpaisChest
         {
             if (_persistentRunner != null)
             {
-                Log.LogInfo("PersistentRunner already exists");
+                Log.LogDebug("PersistentRunner already exists");
                 return;
             }
 
@@ -145,23 +147,7 @@ namespace SenpaisChest
             SceneRootSurvivor.TryRegisterPersistentRunnerGameObject(_persistentRunner);
             _updateRunner = _persistentRunner.AddComponent<SmartChestPersistentRunner>();
 
-            Log.LogInfo("Created hidden PersistentRunner");
-        }
-
-        private static ConfigFile CreateNamedConfig()
-        {
-            string configPath = Path.Combine(Paths.ConfigPath, "SenpaisChest.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to SenpaisChest.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
+            Log.LogDebug("Created hidden PersistentRunner");
         }
 
         public static void EnsureUIComponentsExist()
@@ -170,7 +156,7 @@ namespace SenpaisChest
             {
                 if (_persistentRunner == null || _updateRunner == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating PersistentRunner...");
+                    Log?.LogDebug("[EnsureUI] Recreating PersistentRunner...");
                     _persistentRunner = new GameObject("SenpaisChest_PersistentRunner");
                     UnityEngine.Object.DontDestroyOnLoad(_persistentRunner);
                     _persistentRunner.hideFlags = HideFlags.HideAndDontSave;
@@ -180,7 +166,7 @@ namespace SenpaisChest
 
                 if (_staticUI == null)
                 {
-                    Log?.LogInfo("[EnsureUI] Recreating SmartChestUI...");
+                    Log?.LogDebug("[EnsureUI] Recreating SmartChestUI...");
                     var uiObject = new GameObject("SenpaisChest_UI");
                     UnityEngine.Object.DontDestroyOnLoad(uiObject);
                     _staticUI = uiObject.AddComponent<SmartChestUI>();
@@ -211,9 +197,9 @@ namespace SenpaisChest
                 }
                 else
                 {
-                    if (!hasSmut) Log.LogInfo("[Integrations] S.M.U.T. not found");
-                    if (!hasTodo) Log.LogInfo("[Integrations] SunhavenTodo not found");
-                    Log.LogInfo("[Integrations] Museum todo integration disabled (requires both S.M.U.T. and Todo)");
+                    if (!hasSmut) Log.LogDebug("[Integrations] S.M.U.T. not found");
+                    if (!hasTodo) Log.LogDebug("[Integrations] SunhavenTodo not found");
+                    Log.LogDebug("[Integrations] Museum todo integration disabled (requires both S.M.U.T. and Todo)");
                 }
             }
             catch (Exception ex)
@@ -243,7 +229,7 @@ namespace SenpaisChest
                 {
                     var prefix = new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnChestEndInteract_Prefix)));
                     _harmony.Patch(endInteractOriginal, prefix: prefix);
-                    Log.LogInfo("Patched Chest.EndInteract (prefix)");
+                    Log.LogDebug("Patched Chest.EndInteract (prefix)");
                 }
                 else
                 {
@@ -260,7 +246,7 @@ namespace SenpaisChest
                     {
                         var openUIPostfix = new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnUIHandlerOpenUI_Postfix)));
                         _harmony.Patch(openUIMethod, postfix: openUIPostfix);
-                        Log.LogInfo("Patched UIHandler.OpenUI (postfix)");
+                        Log.LogDebug("Patched UIHandler.OpenUI (postfix)");
                     }
                     else
                     {
@@ -277,19 +263,19 @@ namespace SenpaisChest
                 if (inputGetKeyDown != null)
                 {
                     _harmony.Patch(inputGetKeyDown, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetKeyDown_Prefix))));
-                    Log.LogInfo("Patched Input.GetKeyDown (prefix)");
+                    Log.LogDebug("Patched Input.GetKeyDown (prefix)");
                 }
                 var inputGetKey = AccessTools.Method(typeof(UnityEngine.Input), "GetKey", new[] { typeof(UnityEngine.KeyCode) });
                 if (inputGetKey != null)
                 {
                     _harmony.Patch(inputGetKey, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetKey_Prefix))));
-                    Log.LogInfo("Patched Input.GetKey (prefix)");
+                    Log.LogDebug("Patched Input.GetKey (prefix)");
                 }
                 var inputGetButtonDown = AccessTools.Method(typeof(UnityEngine.Input), "GetButtonDown", new[] { typeof(string) });
                 if (inputGetButtonDown != null)
                 {
                     _harmony.Patch(inputGetButtonDown, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnInputGetButtonDown_Prefix))));
-                    Log.LogInfo("Patched Input.GetButtonDown (prefix)");
+                    Log.LogDebug("Patched Input.GetButtonDown (prefix)");
                 }
 
                 // Wish.PlayerInput.GetButtonDown(string) → the game uses Rewired via this custom class,
@@ -303,7 +289,7 @@ namespace SenpaisChest
                     if (getButtonDownStr != null)
                     {
                         _harmony.Patch(getButtonDownStr, prefix: new HarmonyMethod(AccessTools.Method(typeof(Plugin), nameof(OnPlayerInputGetButtonDown_Prefix))));
-                        Log.LogInfo("Patched PlayerInput.GetButtonDown(string) (prefix)");
+                        Log.LogDebug("Patched PlayerInput.GetButtonDown(string) (prefix)");
                     }
                     else
                     {
@@ -318,7 +304,7 @@ namespace SenpaisChest
                 // Chest Labels (labels above chests - enabled via config)
                 ApplyChestLabelPatches();
 
-                Log.LogInfo("Harmony patches applied successfully");
+                Log.LogDebug("Harmony patches applied successfully");
             }
             catch (Exception ex)
             {
@@ -339,7 +325,7 @@ namespace SenpaisChest
                 if (target != null)
                 {
                     _harmony.Patch(target, postfix: new HarmonyMethod(setMetaPostfix));
-                    Log.LogInfo($"Patched Chest.{methodName} (labels)");
+                    Log.LogDebug($"Patched Chest.{methodName} (labels)");
                 }
             }
 
@@ -347,14 +333,14 @@ namespace SenpaisChest
             if (onEnable != null)
             {
                 _harmony.Patch(onEnable, postfix: new HarmonyMethod(onEnablePostfix));
-                Log.LogInfo("Patched Chest.OnEnable (labels)");
+                Log.LogDebug("Patched Chest.OnEnable (labels)");
             }
 
             var getInteractionPoint = AccessTools.Method(typeof(Chest), "get_InteractionPoint");
             if (getInteractionPoint != null)
             {
                 _harmony.Patch(getInteractionPoint, postfix: new HarmonyMethod(interactionPostfix));
-                Log.LogInfo("Patched Chest.get_InteractionPoint (labels)");
+                Log.LogDebug("Patched Chest.get_InteractionPoint (labels)");
             }
         }
 
@@ -373,7 +359,7 @@ namespace SenpaisChest
 
             var postfix = AccessTools.Method(patchType, patchMethodName);
             _harmony.Patch(original, postfix: new HarmonyMethod(postfix));
-            Log.LogInfo($"Patched {targetType.Name}.{methodName}");
+            Log.LogDebug($"Patched {targetType.Name}.{methodName}");
         }
 
         private static void OnPlayerInitialized(Player __instance)
@@ -437,7 +423,7 @@ namespace SenpaisChest
                     _pendingChestPanel = chestUi;
                     _pendingChest = __instance;
                     _pendingChestButtonFrames = 3; // Wait 3 frames for UI to be fully initialized
-                    Log?.LogInfo($"[SenpaisChest] Scheduled embedded panel from Chest.Interact (will add in 3 frames) - UI active: {chestUi.activeInHierarchy}");
+                    Log?.LogDebug($"[SenpaisChest] Scheduled embedded panel from Chest.Interact (will add in 3 frames) - UI active: {chestUi.activeInHierarchy}");
                 }
             }
             catch (Exception ex)
@@ -531,7 +517,7 @@ namespace SenpaisChest
                 _pendingChestPanel = ui;
                 _pendingChest = chest;
                 _pendingChestButtonFrames = 3; // add panel after 3 frames so ChestUI.Start and layout are fully ready
-                Log?.LogInfo($"[SenpaisChest] Scheduled embedded panel (will add in 3 frames) - UI active: {ui.activeInHierarchy}");
+                Log?.LogDebug($"[SenpaisChest] Scheduled embedded panel (will add in 3 frames) - UI active: {ui.activeInHierarchy}");
             }
             catch (Exception ex)
             {
@@ -553,11 +539,11 @@ namespace SenpaisChest
             var panel = _pendingChestPanel;
             var c = _pendingChest;
             
-            Log?.LogInfo($"[SenpaisChest] Processing pending panel: panel={panel != null}, active={panel?.activeInHierarchy}, chest={c != null}");
+            Log?.LogDebug($"[SenpaisChest] Processing pending panel: panel={panel != null}, active={panel?.activeInHierarchy}, chest={c != null}");
             
             if (panel == null || !panel.activeInHierarchy)
             {
-                Log?.LogInfo($"[SenpaisChest] Skip add panel: panel null or inactive (panel={panel != null}, active={panel?.activeInHierarchy})");
+                Log?.LogDebug($"[SenpaisChest] Skip add panel: panel null or inactive (panel={panel != null}, active={panel?.activeInHierarchy})");
                 _pendingChestPanel = null;
                 _pendingChest = null;
                 return;
@@ -565,7 +551,7 @@ namespace SenpaisChest
 
             // Verify chest UI components exist
             var canvas = panel.GetComponentInParent<Canvas>();
-            Log?.LogInfo($"[SenpaisChest] Chest UI state - Canvas: {canvas != null}, Canvas active: {canvas?.gameObject.activeInHierarchy}, RenderMode: {canvas?.renderMode}");
+            Log?.LogDebug($"[SenpaisChest] Chest UI state - Canvas: {canvas != null}, Canvas active: {canvas?.gameObject.activeInHierarchy}, RenderMode: {canvas?.renderMode}");
 
             try
             {
@@ -599,7 +585,7 @@ namespace SenpaisChest
             var existingPanel = chestUiRoot.transform.Find(SenpaisChestConfigPanelName);
             if (existingPanel != null)
             {
-                Log?.LogInfo($"[SenpaisChest] Panel already exists, reusing - active: {existingPanel.gameObject.activeInHierarchy}");
+                Log?.LogDebug($"[SenpaisChest] Panel already exists, reusing - active: {existingPanel.gameObject.activeInHierarchy}");
                 var ui = GetUI();
                 if (ui != null)
                 {
@@ -637,7 +623,7 @@ namespace SenpaisChest
                 rt.anchoredPosition = Vector2.zero;
                 rt.sizeDelta = new Vector2(notePanelWidth, notePanelHeight);
                 
-                Log?.LogInfo($"[SenpaisChest] Panel RectTransform - anchorMin={rt.anchorMin}, anchorMax={rt.anchorMax}, sizeDelta={rt.sizeDelta}, rect={rt.rect}");
+                Log?.LogDebug($"[SenpaisChest] Panel RectTransform - anchorMin={rt.anchorMin}, anchorMax={rt.anchorMax}, sizeDelta={rt.sizeDelta}, rect={rt.rect}");
 
                 // Ensure the panel doesn't block raycasts (so it doesn't interfere with chest UI interaction)
                 var canvasGroup = panelGo.AddComponent<CanvasGroup>();
@@ -663,7 +649,7 @@ namespace SenpaisChest
                 if (ui != null)
                 {
                     ui.ShowNoteForChest(chest, panelGo);
-                    Log?.LogInfo($"[SenpaisChest] Added note panel (Press F9 to configure) - chestUiRoot active: {chestUiRoot.activeInHierarchy}, panel active: {panelGo.activeInHierarchy}, rect: {rt.rect}");
+                    Log?.LogDebug($"[SenpaisChest] Added note panel (Press F9 to configure) - chestUiRoot active: {chestUiRoot.activeInHierarchy}, panel active: {panelGo.activeInHierarchy}, rect: {rt.rect}");
                 }
                 else
                 {
@@ -726,7 +712,7 @@ namespace SenpaisChest
             _museumTodoIntegration = null;
 
             // Do NOT unpatch Harmony — patches survive and enable reloads
-            Log?.LogInfo("Plugin OnDestroy called — static references preserved");
+            Log?.LogDebug("Plugin OnDestroy called — static references preserved");
             _staticSaveSystem?.Save();
         }
 
@@ -867,7 +853,7 @@ namespace SenpaisChest
             bool expectedTeardown = !Application.isPlaying || sceneLower.Contains("menu") || sceneLower.Contains("title");
             if (expectedTeardown)
             {
-                Plugin.Log?.LogInfo("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
+                Plugin.Log?.LogDebug("[PersistentRunner] OnDestroy during app quit/menu unload (expected).");
             }
             else
             {

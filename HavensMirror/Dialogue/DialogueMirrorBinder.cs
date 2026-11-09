@@ -57,7 +57,7 @@ namespace HavensMirror.Dialogue
             }
 
             harmony.Patch(awake, postfix: new HarmonyMethod(typeof(DialogueMirrorBinder), nameof(AwakePostfix)));
-            Plugin.Log?.LogInfo("Patched DialogueController.Awake for mirror HUD attach.");
+            Plugin.Log?.LogDebug("Patched DialogueController.Awake for mirror HUD attach.");
         }
 
         private static void TryPatchBustVisualSetters(Harmony harmony, Type dialogueType)
@@ -83,7 +83,7 @@ namespace HavensMirror.Dialogue
                         prefix: new HarmonyMethod(typeof(DialogueMirrorBinder), nameof(BustSetterPrefix)),
                         postfix: new HarmonyMethod(typeof(DialogueMirrorBinder), nameof(BustSetterPostfix)));
                     patched++;
-                    Plugin.Log?.LogInfo($"Patched {dialogueType.Name}.{method.Name} for player bust present.");
+                    Plugin.Log?.LogDebug($"Patched {dialogueType.Name}.{method.Name} for player bust present.");
                 }
                 catch (Exception ex)
                 {
@@ -115,7 +115,7 @@ namespace HavensMirror.Dialogue
                             harmony.Patch(method, prefix: new HarmonyMethod(typeof(DialogueMirrorBinder), nameof(GetInitialBustPrefix)));
                         }
 
-                        Plugin.Log?.LogInfo($"Patched DialogueController.{methodName} for forced look.");
+                        Plugin.Log?.LogDebug($"Patched DialogueController.{methodName} for forced look.");
                     }
                     catch (Exception ex)
                     {
@@ -137,7 +137,7 @@ namespace HavensMirror.Dialogue
                 CaptureEmoteTables(__instance);
                 EnsureHudOn(__instance);
                 if (PlayerBustHud.Instance != null)
-                    Plugin.Log?.LogInfo("[Dialogue] PlayerBustHud attached on DialogueController.Awake.");
+                    Plugin.Log?.LogDebug("[Dialogue] PlayerBustHud attached on DialogueController.Awake.");
                 else
                     Plugin.Log?.LogWarning("[Dialogue] Awake: DialogueController host not found — HUD attach deferred.");
 
@@ -206,7 +206,7 @@ namespace HavensMirror.Dialogue
                 try
                 {
                     harmony.Patch(method, postfix: new HarmonyMethod(typeof(DialogueMirrorBinder), nameof(CancelDialoguePostfix)));
-                    Plugin.Log?.LogInfo($"Patched DialogueController.{method.Name} to hide player bust.");
+                    Plugin.Log?.LogDebug($"Patched DialogueController.{method.Name} to hide player bust.");
                 }
                 catch (Exception ex)
                 {
@@ -255,7 +255,7 @@ namespace HavensMirror.Dialogue
             }
 
             if (created)
-                Plugin.Log?.LogInfo("[Dialogue] PlayerBustHud attached on DialogueController host.");
+                Plugin.Log?.LogDebug("[Dialogue] PlayerBustHud attached on DialogueController host.");
         }
 
         private static bool SetInitialBustPrefix(object __instance, object[] __args)

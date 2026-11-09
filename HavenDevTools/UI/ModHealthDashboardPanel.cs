@@ -274,18 +274,6 @@ namespace HavenDevTools.UI
             _lastRefreshUtc = DateTime.UtcNow;
         }
 
-        public static int GetIssueCount()
-        {
-            RefreshRows(force: false);
-            int issues = 0;
-            for (int i = 0; i < _cachedRows.Count; i++)
-            {
-                if (_cachedRows[i].HasIssue)
-                    issues++;
-            }
-            return issues;
-        }
-
         private static void CheckAllModVersions()
         {
             _isCheckingVersions = true;
