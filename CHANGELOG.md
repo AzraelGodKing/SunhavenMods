@@ -11,6 +11,8 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 - **Fix:** The reload hotkey (Ctrl+F8) now works with either Ctrl key, not just left Ctrl.
 - **Fix:** Your portrait's size and position follow the NPC portrait correctly when the in-game UI scale is turned up.
 - **Help:** When no portrait loads, `BepInEx/LogOutput.log` lists the folders the mod checked and the files it found, and a picture that isn't a real PNG or JPG (a renamed .webp, for example) says so. Reported by L0stLikeD0ry.
+- **Fix:** Portraits in `gallery/<CharacterName>/` and `gallery/_shared/` are found more reliably (AZR-740). Folder names match loosely (`_shared`, `Shared`, `shared`; `Sun Farmer` vs `sun_farmer`), images inside a subfolder of those folders are found, and images dropped straight into `gallery/` work as a last resort. If the portraits loaded before you picked a save, they reload for that character on the next conversation.
+- **Fix:** Your portrait no longer pops up oversized at the bottom of the screen on the Museum donation screen and stays there until Ctrl+F8 (AZR-740). It now only shows when an NPC portrait is on screen, is kept fully on screen, and hides as soon as the NPC portrait closes. Reported by TheDCG.
 
 **Maintenance releases: The Vault 4.3.1, Crop Optimizer 2.3.1, Haven's Birthright 3.1.4, Haven Dev Tools 2.1.3, Haven's Almanac 2.2.3, Museum Utility Tracker 3.1.3, A Squirrel's Birthday Reminder 2.1.4, Sun Haven Todo 2.1.3, Senpai's Chest 3.1.4, Gifting Assistant 1.1.4**
 - **Cleanup:** Unused and unreachable code removed across these mods. Nothing you use changes, and saves are untouched.

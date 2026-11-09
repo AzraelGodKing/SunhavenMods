@@ -169,6 +169,125 @@ namespace HavensMirror.Gallery
             return ListImageFiles(folder).Count > 0;
         }
 
+        /// <summary>How many folder levels below a character / shared folder are searched for images.</summary>
+        private const int MaxNestedDepth = 3;
+
+        /// <summary>
+        /// Images directly in <paramref name="folder"/>; when there are none, the images of the nearest
+        /// nested subfolder that has any (e.g. gallery/_shared/MyPortraits/spring.png from an extracted zip).
+        /// </summary>
+        public static List<string> ListImageFilesDeep(string folder)
+        {
+            var files = ListImageFiles(folder);
+            if (files.Count > 0 || string.IsNullOrEmpty(folder) || !Directory.Exists(folder))
+                return files;
+
+            var level = new List<string> { folder };
+            for (int depth = 1; depth <= MaxNestedDepth && level.Count > 0; depth++)
+            {
+                var next = new List<string>();
+                foreach (string dir in level)
+                    next.AddRange(ListSubdirectories(dir));
+
+                // First subfolder (alphabetical) that holds images wins, so looks are never mixed across sets.
+                foreach (string dir in next)
+                {
+                    List<string> nested = ListImageFiles(dir);
+                    if (nested.Count > 0)
+                        return nested;
+                }
+
+                level = next;
+            }
+
+            return files;
+        }
+
+        /// <summary>
+        /// The folder for <paramref name="characterName"/>. Prefers the exact sanitized path; otherwise
+        /// matches an existing gallery subfolder ignoring case, spaces, '_' and '-' (so "Sun Farmer",
+        /// "sun_farmer" and "SunFarmer" all find the same folder).
+        /// </summary>
+        public static string ResolveCharacterFolder(string characterName)
+        {
+            string exact = CharacterFolder(characterName);
+            if (string.IsNullOrWhiteSpace(characterName) || Directory.Exists(exact))
+                return exact;
+
+            string match = FindLooseSubfolder(GalleryRoot, characterName, SanitizeFolderName(characterName));
+            return match ?? exact;
+        }
+
+        /// <summary>
+        /// The shared folder. Falls back to "shared" / "_shared" in any case when the configured name is missing.
+        /// </summary>
+        public static string ResolveSharedFolder()
+        {
+            string exact = SharedFolder;
+            if (Directory.Exists(exact))
+                return exact;
+
+            string match = FindLooseSubfolder(GalleryRoot, SharedFolderName, "_shared", "shared");
+            return match ?? exact;
+        }
+
+        private static string FindLooseSubfolder(string parent, params string[] names)
+        {
+            var wanted = new HashSet<string>(StringComparer.Ordinal);
+            foreach (string name in names)
+            {
+                string key = LooseKey(name);
+                if (key.Length > 0)
+                    wanted.Add(key);
+            }
+
+            if (wanted.Count == 0)
+                return null;
+
+            foreach (string dir in ListSubdirectories(parent))
+            {
+                if (wanted.Contains(LooseKey(Path.GetFileName(dir))))
+                    return dir;
+            }
+
+            return null;
+        }
+
+        private static string LooseKey(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+                return string.Empty;
+
+            var sb = new System.Text.StringBuilder(name.Length);
+            foreach (char c in name)
+            {
+                if (char.IsWhiteSpace(c) || c == '_' || c == '-')
+                    continue;
+                sb.Append(char.ToLowerInvariant(c));
+            }
+
+            return sb.ToString();
+        }
+
+        private static List<string> ListSubdirectories(string folder)
+        {
+            var dirs = new List<string>();
+            if (string.IsNullOrEmpty(folder) || !Directory.Exists(folder))
+                return dirs;
+
+            try
+            {
+                dirs.AddRange(Directory.GetDirectories(folder));
+            }
+            catch (Exception ex)
+            {
+                Plugin.Log?.LogDebug($"[Gallery] Could not list subfolders of '{folder}': {ex.Message}");
+            }
+
+            dirs.Sort(StringComparer.OrdinalIgnoreCase);
+            return dirs;
+        }
+
         public static void EnsureStarterLayout(Action<string> logInfo = null)
         {
             if (MirrorOptions.CreateStarterFolders == null || !MirrorOptions.CreateStarterFolders.Value)
@@ -196,6 +315,8 @@ namespace HavensMirror.Gallery
                     "---------------\n" +
                     "  gallery/<YourCharacterName>/   (created automatically from saves)\n" +
                     "  gallery/_shared/               (this folder — used if a character folder is empty)\n" +
+                    "  gallery/                       (last resort: images placed directly here)\n" +
+                    "Images inside a subfolder of these folders are found too.\n" +
                     "\n" +
                     "File names (PNG)\n" +
                     "----------------\n" +
