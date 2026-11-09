@@ -13,6 +13,12 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 - **Crop Optimizer:** The startup health log no longer lists Todo and Birthday integrations that never ran.
 - **Haven Dev Tools:** The startup log and the ToggleKey setting no longer say the debug window needs authorization.
 
+**Haven Dev Tools** — unused tab cleanup
+- Removed the unused Bundles and Race Bonuses draw methods from the debug window. DrawWindow still only shows Health, Tools, Azrael's Mods, and Extensions. Museum and race UI stays on the Azrael's Mods panel.
+
+**Gifting Assistant** — unused lookup cleanup
+- Removed unused `FindNpc` / `GetTryGetValueMethod` (zero callers). Gift lists still come from the NPC roster scan.
+
 **Sunhaven Todo** — unused API cleanup
 - Removed unused `ShowUI` / `HideUI` / `IsCharacterDataLoaded`, `ClearData`, the string `AddTodo` overload, `GetTodosByPriority`, `SearchTodos`, and `TodoSaveSystem.Delete`. Suite mods already go through `TodoSoftClient` (`GetTodoManager` + `AddTodo(TodoItem)`).
 **Haven's Mirror** — AZR-450
