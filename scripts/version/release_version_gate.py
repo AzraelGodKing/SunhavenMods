@@ -76,7 +76,11 @@ def truthy(value: str) -> bool:
 
 
 def http_json(url: str, headers: dict[str, str]) -> tuple[int, object]:
-    req = urllib.request.Request(url, headers=headers)
+    # Send a named agent: with urllib's default "Python-urllib/x", every
+    # Thunderstore lookup came back "unfetched" in run #5.
+    req = urllib.request.Request(
+        url, headers={"User-Agent": "SunhavenMods-release-gate", **headers}
+    )
     try:
         with urllib.request.urlopen(req, timeout=30) as resp:
             body = resp.read().decode("utf-8")
