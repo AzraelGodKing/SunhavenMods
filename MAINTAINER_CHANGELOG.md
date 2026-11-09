@@ -31,6 +31,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ## 2026-10-12
 
+- **SMUT leftover dead code:** Removed unused museum-progress discovery (`DiscoverProgressKeyPatterns`, mapping dictionaries, `LogAllMappings`, no-op `ResetReflectionCache`, `IsGameProgressAvailable`), write-only `LastLoadedSlot`, identity `GetProgressKeyForBundle`, empty `ApplyResolvedAquariumFishIfNeeded`, unused `MarkDonatedByGameId` and `DonationData` `MuseumItem` overloads, and `PersistentRunner.CheckSceneChange`. Config creation now uses `ConfigFileHelper.CreateNamedConfig`. No player-visible change; no version bump.
 - **Leftover unused-API cleanup (post #148–#158):** Grepped the whole repo (including reflection strings and tests) before each delete. No version bumps. Did not touch TheVault, SMUT, SenpaisChest, SunhavenTodo, TrinketFortune, or FasterRaces.
   - **Haven's Birthright:** Deleted empty `AbilityPatches.ResetReflectionCache` and its `BirthrightRunner` call, plus unused `ResetNotificationCache`. Trimmed the stale pickup-prefix class comment and ORE→BAR banners. Merged duplicate postfix helpers (`PatchMethod` / `PatchMethodPostfix`) into `PatchMethod`.
   - **Haven's Almanac:** `DevToolsDataProvider` no longer prints the leftover "Authorized" status line (`#150` already removed auth). Dropped `almanac.provider.devtools.authorized` from `strings.json` (all languages) and `generate_translations.py`.
