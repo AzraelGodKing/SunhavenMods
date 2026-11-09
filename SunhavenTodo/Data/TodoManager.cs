@@ -55,11 +55,7 @@ namespace SunhavenTodo.Data
             OnTodosChanged?.Invoke();
         }
 
-        public TodoItem GetTodo(string id)
-        {
-            _todoById.TryGetValue(id, out var item);
-            return item;
-        }
+        public TodoItem GetTodo(string id) => GetTodoById(id);
 
         public void UpdateTodo(TodoItem item)
         {

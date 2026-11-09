@@ -15,6 +15,11 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 - **Fix:** Your portrait no longer pops up oversized at the bottom of the screen on the Museum donation screen and stays there until Ctrl+F8 (AZR-740). It now only shows when an NPC portrait is on screen, is kept fully on screen, and hides as soon as the NPC portrait closes. Reported by TheDCG.
 **Haven's Almanac** — AZR-739
 - **Fix:** Haven's Almanac no longer breaks game startup when it is installed without its companion mods (Sun Haven Todo, Birthday Reminder, Haven's Birthright, Gifting Assistant). Those mods are optional again. Reported by TheDCG.
+**Trinket Fortune, Faster Races** — lifecycle
+- **Fix:** Scene cleanup no longer unpatches these mods, so they keep running after an unexpected plugin teardown (same rule as Birthday Reminder).
+
+**Cleanup** — logging
+- Birthday Reminder's Ctrl+Shift+B test hint and Senpai's Chest chest-panel scheduling traces are debug-only. Nothing you use changes.
 
 **Maintenance releases: The Vault 4.3.1, Crop Optimizer 2.3.1, Haven's Birthright 3.1.4, Haven Dev Tools 2.1.3, Haven's Almanac 2.2.3, Museum Utility Tracker 3.1.3, A Squirrel's Birthday Reminder 2.1.4, Sun Haven Todo 2.1.3, Senpai's Chest 3.1.4, Gifting Assistant 1.1.4**
 - **Cleanup:** Unused and unreachable code removed across these mods. Nothing you use changes, and saves are untouched.
