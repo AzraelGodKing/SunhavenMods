@@ -40,6 +40,18 @@ namespace SenpaisChest.ChestLabels
         private Chest _chest;
         private bool _hasIcon;
         private int _pendingItemId = -1;
+
+        // Anchor cache (AZR-731): chests are static decorations, so resolve the collider once
+        // and only recompute the world anchor when the chest transform actually moves.
+        private BoxCollider2D _anchorCollider;
+        private bool _anchorColliderResolved;
+        private bool _hasCachedAnchor;
+        private Vector3 _cachedChestPosition;
+        private Vector3 _cachedAnchorWorld;
+
+        // Camera.main is a scene search in older Unity; share one lookup per frame across all labels.
+        private static Camera _frameCamera;
+        private static int _frameCameraFrame = -1;
         public bool PlayerOver { get; private set; }
 
         public ChestLabel Init()
@@ -113,6 +125,8 @@ namespace SenpaisChest.ChestLabels
                 _chest = transform.GetComponentInParent<Chest>();
             if (_chest == null) return;
 
+            // DoUpdate runs on chest place/enable/rename; force a fresh anchor in case bounds changed.
+            _hasCachedAnchor = false;
             UpdateAnchor();
             var data = _chest.GetChestData();
             string labelText = data.name;
@@ -195,29 +209,78 @@ namespace SenpaisChest.ChestLabels
 
             UpdateAnchor();
             if (_label != null)
-                _label.enabled = ShouldBeVisible(config.LabelVisibility.Value);
+            {
+                bool labelVisible = ShouldBeVisible(config.LabelVisibility.Value);
+                if (_label.enabled != labelVisible)
+                    _label.enabled = labelVisible;
+            }
             if (_iconImage != null)
-                _iconImage.enabled = _hasIcon && ShouldBeVisible(config.IconVisibility.Value);
+            {
+                bool iconVisible = _hasIcon && ShouldBeVisible(config.IconVisibility.Value);
+                if (_iconImage.enabled != iconVisible)
+                    _iconImage.enabled = iconVisible;
+            }
         }
 
-        private void UpdateAnchor(BoxCollider2D fallbackCollider = null)
+        private static Camera GetFrameCamera()
+        {
+            int frame = Time.frameCount;
+            if (frame != _frameCameraFrame || _frameCamera == null)
+            {
+                _frameCameraFrame = frame;
+                _frameCamera = Camera.main;
+            }
+            return _frameCamera;
+        }
+
+        private static void SetActiveIfChanged(GameObject go, bool active)
+        {
+            if (go.activeSelf != active)
+                go.SetActive(active);
+        }
+
+        private Vector3 GetAnchorWorldPosition()
+        {
+            Vector3 chestPos = _chest.transform.position;
+            if (_hasCachedAnchor && chestPos == _cachedChestPosition)
+                return _cachedAnchorWorld;
+
+            if (!_anchorColliderResolved || _anchorCollider == null)
+            {
+                _anchorColliderResolved = true;
+                _anchorCollider = _chest.GetComponent<BoxCollider2D>();
+                if (_anchorCollider == null)
+                    _anchorCollider = _chest.GetComponentInChildren<BoxCollider2D>();
+            }
+
+            _cachedAnchorWorld = ResolveAnchorWorldPosition(_chest, _anchorCollider);
+            _cachedChestPosition = chestPos;
+            _hasCachedAnchor = true;
+            return _cachedAnchorWorld;
+        }
+
+        private void UpdateAnchor()
         {
             if (_labelRoot == null) return;
             if (_chest == null)
+            {
                 _chest = transform.GetComponentInParent<Chest>();
+                _hasCachedAnchor = false;
+                _anchorColliderResolved = false;
+            }
             if (_chest == null) return;
 
-            var anchor = ResolveAnchorWorldPosition(_chest, fallbackCollider);
-            var cam = Camera.main;
+            var anchor = GetAnchorWorldPosition();
+            var cam = GetFrameCamera();
             if (cam == null)
                 return;
             Vector3 screen = cam.WorldToScreenPoint(anchor);
             if (screen.z <= 0f)
             {
-                _labelRoot.gameObject.SetActive(false);
+                SetActiveIfChanged(_labelRoot.gameObject, false);
                 return;
             }
-            _labelRoot.gameObject.SetActive(true);
+            SetActiveIfChanged(_labelRoot.gameObject, true);
             if (_overlayRoot == null)
                 return;
             var screenPoint = new Vector2(screen.x, screen.y + ScreenYOffset);
@@ -230,7 +293,11 @@ namespace SenpaisChest.ChestLabels
         private static Vector3 ResolveAnchorWorldPosition(Chest chest, BoxCollider2D fallbackCollider)
         {
             // Primary anchor: chest collider top-center is the most stable "above chest" point.
-            var collider = fallbackCollider ?? chest.GetComponent<BoxCollider2D>() ?? chest.GetComponentInChildren<BoxCollider2D>();
+            var collider = fallbackCollider;
+            if (collider == null)
+                collider = chest.GetComponent<BoxCollider2D>();
+            if (collider == null)
+                collider = chest.GetComponentInChildren<BoxCollider2D>();
             if (collider != null)
             {
                 var b = collider.bounds;

@@ -49,6 +49,18 @@ namespace SunhavenTodo.UI
         private float _lastUpdateTime;
         private const float UPDATE_INTERVAL = 1f;
 
+        // Per-row layout cache (AZR-734): CalcHeight on word-wrapped text ran for every row twice per
+        // OnGUI event. Rebuilt only when the item list, scale, language or styles change.
+        private readonly List<string> _rowTitles = new List<string>();
+        private readonly List<float> _rowTitleHeights = new List<float>();
+        private readonly List<float> _rowHeights = new List<float>();
+        private readonly GUIContent _measureContent = new GUIContent();
+        private List<TodoItem> _layoutItems;
+        private float _layoutScale = -1f;
+        private string _layoutLanguage;
+        private int _layoutStyleGeneration = -1;
+        private int _styleGeneration;
+
         // Sun Haven themed colors (matching TodoUI)
         private readonly Color _parchmentLight = new Color(0.96f, 0.93f, 0.86f, 0.95f);
         private readonly Color _parchment = new Color(0.92f, 0.87f, 0.78f, 0.95f);
@@ -200,9 +212,10 @@ namespace SunhavenTodo.UI
             }
             else
             {
-                for (int i = 0; i < _cachedItems.Count; i++)
+                EnsureRowLayout();
+                for (int i = 0; i < _rowHeights.Count; i++)
                 {
-                    contentHeight += GetItemRowHeight(_cachedItems[i]);
+                    contentHeight += _rowHeights[i];
                 }
                 contentHeight += Scaled(4);
             }
@@ -294,6 +307,7 @@ namespace SunhavenTodo.UI
             }
             else
             {
+                EnsureRowLayout();
                 for (int i = 0; i < _cachedItems.Count; i++)
                 {
                     DrawItem(_cachedItems[i], i);
@@ -306,12 +320,12 @@ namespace SunhavenTodo.UI
         private void DrawItem(TodoItem item, int index)
         {
             var bgTex = index % 2 == 0 ? _itemEven : _itemOdd;
-            var titleText = string.IsNullOrWhiteSpace(item.Title) ? ModLocalization.T("todo.item.noTitle") : item.Title;
+            var titleText = _rowTitles[index];
 
             var wrappedTitleStyle = _wrappedTitleStyle;
             float titleAvailableWidth = GetTitleAvailableWidth(item);
-            float titleHeight = Mathf.Ceil(wrappedTitleStyle.CalcHeight(new GUIContent(titleText), titleAvailableWidth));
-            float rowHeight = Mathf.Max(ItemHeight, titleHeight + Scaled(6));
+            float titleHeight = _rowTitleHeights[index];
+            float rowHeight = _rowHeights[index];
 
             // Use row style with background so content stays in layout flow (avoids blank title in some setups)
             var rowStyle = _rowStyle;
@@ -330,7 +344,7 @@ namespace SunhavenTodo.UI
             var categoryColor = _categoryColors.TryGetValue(item.Category, out var cc) ? cc : _textDark;
             var categoryStyle = _categoryStyle;
             categoryStyle.normal.textColor = categoryColor;
-            GUILayout.Label($"[{GetCategoryShort(item.Category)}]", categoryStyle, GUILayout.Width(Scaled(36)));
+            GUILayout.Label(GetCategoryLabel(item.Category), categoryStyle, GUILayout.Width(Scaled(36)));
 
             GUILayout.Space(Scaled(4));
 
@@ -359,14 +373,54 @@ namespace SunhavenTodo.UI
             GUILayout.EndHorizontal();
         }
 
-        private float GetItemRowHeight(TodoItem item)
+        private void EnsureRowLayout()
         {
-            if (item == null) return ItemHeight;
+            string language = ModLocalization.CurrentLanguage;
+            if (ReferenceEquals(_layoutItems, _cachedItems)
+                && _layoutScale == _scale
+                && _layoutStyleGeneration == _styleGeneration
+                && string.Equals(_layoutLanguage, language, StringComparison.Ordinal)
+                && _rowHeights.Count == _cachedItems.Count)
+                return;
 
-            var titleText = string.IsNullOrWhiteSpace(item.Title) ? ModLocalization.T("todo.item.noTitle") : item.Title;
-            float titleWidth = GetTitleAvailableWidth(item);
-            float titleHeight = Mathf.Ceil(_wrappedTitleStyle.CalcHeight(new GUIContent(titleText), titleWidth));
-            return Mathf.Max(ItemHeight, titleHeight + Scaled(6));
+            _layoutItems = _cachedItems;
+            _layoutScale = _scale;
+            _layoutStyleGeneration = _styleGeneration;
+            _layoutLanguage = language;
+            _rowTitles.Clear();
+            _rowTitleHeights.Clear();
+            _rowHeights.Clear();
+
+            for (int i = 0; i < _cachedItems.Count; i++)
+            {
+                var item = _cachedItems[i];
+                string titleText = item == null || string.IsNullOrWhiteSpace(item.Title)
+                    ? ModLocalization.T("todo.item.noTitle")
+                    : item.Title;
+                _measureContent.text = titleText;
+                float titleHeight = Mathf.Ceil(_wrappedTitleStyle.CalcHeight(_measureContent, GetTitleAvailableWidth(item)));
+                _rowTitles.Add(titleText);
+                _rowTitleHeights.Add(titleHeight);
+                _rowHeights.Add(item == null ? ItemHeight : Mathf.Max(ItemHeight, titleHeight + Scaled(6)));
+            }
+            _measureContent.text = null;
+        }
+
+        private static string GetCategoryLabel(TodoCategory category)
+        {
+            switch (category)
+            {
+                case TodoCategory.General: return "[GEN]";
+                case TodoCategory.Farming: return "[FRM]";
+                case TodoCategory.Mining: return "[MIN]";
+                case TodoCategory.Fishing: return "[FSH]";
+                case TodoCategory.Combat: return "[CMB]";
+                case TodoCategory.Crafting: return "[CRF]";
+                case TodoCategory.Social: return "[SOC]";
+                case TodoCategory.Quests: return "[QST]";
+                case TodoCategory.Collection: return "[COL]";
+                default: return "[GEN]";
+            }
         }
 
         private float GetTitleAvailableWidth(TodoItem item)
@@ -389,23 +443,6 @@ namespace SunhavenTodo.UI
             }
         }
 
-        private string GetCategoryShort(TodoCategory category)
-        {
-            switch (category)
-            {
-                case TodoCategory.General: return "GEN";
-                case TodoCategory.Farming: return "FRM";
-                case TodoCategory.Mining: return "MIN";
-                case TodoCategory.Fishing: return "FSH";
-                case TodoCategory.Combat: return "CMB";
-                case TodoCategory.Crafting: return "CRF";
-                case TodoCategory.Social: return "SOC";
-                case TodoCategory.Quests: return "QST";
-                case TodoCategory.Collection: return "COL";
-                default: return "GEN";
-            }
-        }
-
         #region Style Initialization
 
         private void InitializeStyles()
@@ -416,6 +453,7 @@ namespace SunhavenTodo.UI
             CreateStyles();
 
             _stylesInitialized = true;
+            _styleGeneration++;
         }
 
         private void CreateTextures()

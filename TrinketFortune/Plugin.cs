@@ -4,7 +4,6 @@ using BepInEx.Logging;
 using HarmonyLib;
 using SunhavenMods.Shared;
 using TrinketFortune.Patches;
-using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,8 +19,11 @@ namespace TrinketFortune
         private void Awake()
         {
             Log = Logger;
-            var namedConfig = CreateNamedConfig();
-            SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, namedConfig, Log.LogWarning);
+            var namedConfig = ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "TrinketFortune.cfg",
+                message => Log?.LogWarning(message));
+            ConfigFileHelper.ReplacePluginConfig(this, namedConfig, Log.LogWarning);
             TrinketFortune.Config.Bind(namedConfig);
 
             _harmony = new Harmony(PluginInfo.PLUGIN_GUID);
@@ -56,23 +58,9 @@ namespace TrinketFortune
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
-            _harmony?.UnpatchSelf();
-        }
-
-        private static BepInEx.Configuration.ConfigFile CreateNamedConfig()
-        {
-            string configPath = Path.Combine(Paths.ConfigPath, "TrinketFortune.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (System.Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to TrinketFortune.cfg failed: {ex.Message}");
-            }
-            return new BepInEx.Configuration.ConfigFile(configPath, true);
+            // Leave patches applied. UnpatchSelf here dropped fishing loot hooks when this
+            // component was destroyed during scene cleanup, so Trinket Fortune stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
         }
 
         /// <summary>

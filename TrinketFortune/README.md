@@ -4,7 +4,7 @@ Increases the odds of **unowned fishing trinkets** dropping as you complete the 
 
 ## Version
 
-**2.0.1** — published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
+Published in [`docs/versions.json`](../docs/versions.json). Player-facing store text: [`thunderstore/README.md`](thunderstore/README.md).
 
 ## Notes
 
