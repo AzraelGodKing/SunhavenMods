@@ -37,16 +37,6 @@ namespace HavenDevTools.UI
             Plugin.Log?.LogInfo($"[DebugOverlay] {(_isVisible ? "Shown" : "Hidden")}");
         }
 
-        public void Show()
-        {
-            _isVisible = true;
-        }
-
-        public void Hide()
-        {
-            _isVisible = false;
-        }
-
         private void Update()
         {
             if (!_isVisible) return;

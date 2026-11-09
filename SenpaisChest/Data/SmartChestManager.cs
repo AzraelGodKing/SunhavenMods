@@ -27,6 +27,20 @@ namespace SenpaisChest.Data
         private static MethodInfo _databaseGetDataMethod;
         private static bool _reflectionInitialized;
 
+        // AZR-730: chest IDs are position strings; cache per chest instance and only re-format when it moves.
+        private static readonly Dictionary<int, CachedChestId> _chestIdCache = new Dictionary<int, CachedChestId>();
+
+        private struct CachedChestId
+        {
+            public int X, Y, Z;
+            public string Id;
+        }
+
+        // AZR-730: per-scan memo of rule results, keyed by rule list then item id. Every source chest
+        // is checked against every smart chest, so the same (rules, item) pair repeats many times per scan.
+        // Only non-null while ExecuteScan runs, so UI-side rule edits never see stale results.
+        private Dictionary<List<SmartChestRule>, Dictionary<int, bool>> _scanMatchCache;
+
         // Museum donation check cache (S.M.U.T. integration via reflection)
         private static bool _museumReflectionInitialized;
         private static bool _museumModAvailable;
@@ -132,12 +146,6 @@ namespace SenpaisChest.Data
             return data;
         }
 
-        public SmartChestData GetSmartChest(string chestId)
-        {
-            _smartChests.TryGetValue(chestId, out var data);
-            return data;
-        }
-
         public bool IsSmartChest(string chestId)
         {
             return _smartChests.ContainsKey(chestId)
@@ -225,7 +233,14 @@ namespace SenpaisChest.Data
             int x = (int)Math.Round((double)pos.x);
             int y = (int)Math.Round((double)pos.y);
             int z = (int)Math.Round((double)pos.z);
-            return $"{x}_{y}_{z}";
+
+            int key = chest.GetInstanceID();
+            if (_chestIdCache.TryGetValue(key, out var cached) && cached.X == x && cached.Y == y && cached.Z == z)
+                return cached.Id;
+
+            string id = $"{x}_{y}_{z}";
+            _chestIdCache[key] = new CachedChestId { X = x, Y = y, Z = z, Id = id };
+            return id;
         }
 
         #region Reflection Helpers
@@ -329,6 +344,19 @@ namespace SenpaisChest.Data
         #region Scan Engine
 
         public void ExecuteScan(int maxItemsPerScan, bool enableNotifications)
+        {
+            _scanMatchCache = new Dictionary<List<SmartChestRule>, Dictionary<int, bool>>();
+            try
+            {
+                ExecuteScanCore(maxItemsPerScan, enableNotifications);
+            }
+            finally
+            {
+                _scanMatchCache = null;
+            }
+        }
+
+        private void ExecuteScanCore(int maxItemsPerScan, bool enableNotifications)
         {
             if (_smartChests.Count == 0)
             {
@@ -578,10 +606,7 @@ namespace SenpaisChest.Data
 
                 int amountToAccept;
                 if (!targetInv.CanAcceptItem(slotData.item, slotData.amount, out amountToAccept))
-                {
-                    Plugin.Log?.LogDebug($"[Scan] Target cannot accept item {slotData.id} (amount={slotData.amount})");
                     continue;
-                }
 
                 if (amountToAccept <= 0)
                     continue;
@@ -626,12 +651,34 @@ namespace SenpaisChest.Data
 
         private bool MatchesAnyRule(int itemId, List<SmartChestRule> rules)
         {
+            var scanCache = _scanMatchCache;
+            Dictionary<int, bool> perRules = null;
+            if (scanCache != null)
+            {
+                if (!scanCache.TryGetValue(rules, out perRules))
+                {
+                    perRules = new Dictionary<int, bool>();
+                    scanCache[rules] = perRules;
+                }
+                else if (perRules.TryGetValue(itemId, out bool cachedResult))
+                {
+                    return cachedResult;
+                }
+            }
+
+            bool result = false;
             foreach (var rule in rules)
             {
                 if (MatchesRule(itemId, rule))
-                    return true;
+                {
+                    result = true;
+                    break;
+                }
             }
-            return false;
+
+            if (perRules != null)
+                perRules[itemId] = result;
+            return result;
         }
 
         private bool MatchesRule(int itemId, SmartChestRule rule)
@@ -644,7 +691,7 @@ namespace SenpaisChest.Data
                 case RuleType.ByItemType:
                     var sellInfo = GetItemSellInfo(itemId);
                     if (sellInfo == null) return false;
-                    return sellInfo.itemType.ToString() == rule.ItemTypeName;
+                    return EnumNameCache.Get(sellInfo.itemType) == rule.ItemTypeName;
 
                 case RuleType.ByProperty:
                     if (rule.PropertyName == "isNotDonated")
@@ -829,5 +876,26 @@ namespace SenpaisChest.Data
         }
 
         #endregion
+    }
+
+    /// <summary>Caches ToString() of enum-like values so rule matching does not allocate a string per slot (AZR-730).</summary>
+    internal static class EnumNameCache
+    {
+        public static string Get<T>(T value) => value == null ? null : Cache<T>.Get(value);
+
+        private static class Cache<T>
+        {
+            private static readonly Dictionary<T, string> Names = new Dictionary<T, string>();
+
+            public static string Get(T value)
+            {
+                if (!Names.TryGetValue(value, out var name))
+                {
+                    name = value.ToString();
+                    Names[value] = name;
+                }
+                return name;
+            }
+        }
     }
 }

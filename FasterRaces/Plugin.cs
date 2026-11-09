@@ -5,7 +5,6 @@ using HarmonyLib;
 using SunhavenMods.Shared;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,8 +37,11 @@ namespace FasterRaces
         private void Awake()
         {
             Log = Logger;
-            var configFile = CreateNamedConfig();
-            SunhavenMods.Shared.ConfigFileHelper.ReplacePluginConfig(this, configFile, Log.LogWarning);
+            var configFile = ConfigFileHelper.CreateNamedConfig(
+                PluginInfo.PLUGIN_GUID,
+                "FasterRaces.cfg",
+                message => Log?.LogWarning(message));
+            ConfigFileHelper.ReplacePluginConfig(this, configFile, Log.LogWarning);
             EnableMod = configFile.Bind("General", "Enabled", true,
                 "Enable Faster Races movement speed bonus. When enabled, Haven's Birthright will not apply its own movement speed bonuses to avoid double speed.");
 
@@ -167,22 +169,6 @@ namespace FasterRaces
             return SpeedBonusPercent?.Value ?? 0f;
         }
 
-        private static ConfigFile CreateNamedConfig()
-        {
-            string configPath = Path.Combine(Paths.ConfigPath, "FasterRaces.cfg");
-            string legacyPath = Path.Combine(Paths.ConfigPath, $"{PluginInfo.PLUGIN_GUID}.cfg");
-            try
-            {
-                if (!File.Exists(configPath) && File.Exists(legacyPath))
-                    File.Copy(legacyPath, configPath);
-            }
-            catch (System.Exception ex)
-            {
-                Log?.LogWarning($"[Config] Migration to FasterRaces.cfg failed: {ex.Message}");
-            }
-            return new ConfigFile(configPath, true);
-        }
-
         private void OnApplicationQuit()
         {
             _applicationQuitting = true;
@@ -198,7 +184,9 @@ namespace FasterRaces
             else
                 Log?.LogWarning($"[Lifecycle] Plugin OnDestroy outside expected teardown (scene: {sceneName})");
 
-            _harmony?.UnpatchSelf();
+            // Leave patches applied. UnpatchSelf here dropped the movement-speed postfix when this
+            // component was destroyed during scene cleanup, so Faster Races stayed dead until
+            // restart. Same rule as Birthday Reminder (AZR-437), The Vault, and Gifting Assistant.
         }
 
         public static class SpeedPatch

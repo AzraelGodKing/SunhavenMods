@@ -370,8 +370,6 @@ namespace HavenDevTools
         public static BundleInspector GetBundleInspector() => _staticBundleInspector;
         public static RaceModifierTracker GetRaceModifierTracker() => _staticRaceModifierTracker;
 
-        public static DebugWindow GetDebugWindow() => _staticDebugWindow;
-        public static DebugOverlay GetDebugOverlay() => _staticDebugOverlay;
         public static CommandConsole GetCommandConsole() => _staticCommandConsole;
         public static LogViewerPanel GetLogViewer() => _staticLogViewer;
 

@@ -2,7 +2,7 @@
 
 **Version 2.3.1**
 
-Crop Optimizer provides crop forecast HUD data and soft integrations for Todo/Birthday/Vault workflows.
+Crop Optimizer provides crop forecast HUD data and soft integrations with The Vault and Haven's Almanac.
 
 Nel'Vari and Withergate farm totals use orb and ticket shop prices (not gold-only).
 

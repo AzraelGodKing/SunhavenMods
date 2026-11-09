@@ -12,7 +12,6 @@ Maintainer tooling for version sync, mod matrix, stats, build checks, and locali
 | [`version/`](version/) | Version bump, sync, and CI consistency checks |
 | [`build/`](build/) | Self-hosted runner preflight (game DLL refs) |
 | [`localization/`](localization/) | `strings.json` validation, translation, audits |
-| [`archive/`](archive/) | One-time migration scripts (do not run in CI) |
 
 `py -3` alone isn't reliable on every machine: on a box that was ever registered as a self-hosted GitHub Actions runner, the `py` launcher's entries can still point at a stale runner tool-cache path (e.g. `C:\actions-runner\_work\_tool\Python\3.14.0\x64\python.exe`) that no longer exists, and plain `python` on PATH may resolve to the Windows Store stub under `%LocalAppData%\Microsoft\WindowsApps\` instead of a real interpreter. `scripts/lib/Resolve-Python.ps1` validates every candidate (runs it and checks `sys.version_info[0] == 3`) before using it, so both failure modes are skipped automatically.
 
@@ -51,15 +50,18 @@ npm run stats
 
 # Full MyMemory pass (long-running; optional log file)
 .\scripts\localization\translate-all-localization.ps1 -ForceRetranslate -LogPath scripts\translate-run.log
+
+# Apply a native-speaker pt-BR review markdown in-place (does not reformat strings.json)
+python scripts/localization/apply-ptbr-review.py path/to/pt-BR-translation-review.md .
 ```
 
 ## CI wiring
 
 | Workflow | Scripts |
 |----------|---------|
-| `release-publish.yml` | `matrix/sync-docs-mod-matrix.js`, `version/verify-version-consistency.py`, `version/set-versions-changelog.py`, `version/pre-push-build.ps1` |
-| `sync-mod-versions.yml` | `version/pre-push-build.ps1`, `version/stage-version-sync-files.py` |
-| `build-mods.yml` | `localization/validate-localization.ps1` |
+| `release-publish.yml` | `matrix/sync-docs-mod-matrix.js`, `version/verify-version-consistency.py`, `version/set-versions-changelog.py`, `version/pre-push-build.ps1`, `version/stage-version-sync-files.py` |
+| `sync-mod-versions.yml` | `version/pre-push-build.ps1`, `version/verify-version-consistency.py`, `version/stage-version-sync-files.py` |
+| `build-mods.yml` | `build/check-sharedutilities-links.mjs`, `localization/validate-localization.ps1` |
 | `live-stats.yml` | `stats/fetch-stats.js` (npm) |
 
 ## Mod matrix
