@@ -101,58 +101,6 @@ body.hub-page {
 .skip-to-content:focus { left: 0; }
 
 /* -------------------------------------------------------------------
-   3. ANNOUNCEMENT RIBBON (JS: #announcementBanner, .visible/.hiding)
-   ------------------------------------------------------------------- */
-.announcement-banner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 6px 14px;
-    padding: 10px 110px 10px 20px; /* right inset clears the fixed theme toggle */
-    position: relative;
-    background: linear-gradient(90deg, var(--accent-dim), var(--accent-muted));
-    color: #fff8ec;
-    font-size: 0.92em;
-    opacity: 0;
-    transform: translateY(-100%);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-}
-
-.announcement-banner.visible { opacity: 1; transform: translateY(0); }
-.announcement-banner.hiding { opacity: 0; transform: translateY(-100%); }
-
-.announcement-banner .announcement-icon { font-size: 1.1em; }
-
-.announcement-banner .announcement-link {
-    color: #fff;
-    font-weight: 700;
-    text-decoration: none;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
-    white-space: nowrap;
-}
-
-.announcement-banner .announcement-link:hover { border-bottom-color: #fff; }
-
-.announcement-banner .announcement-dismiss {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.12);
-    border: none;
-    color: #fff;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    font-size: 1.1em;
-    line-height: 1;
-    cursor: pointer;
-}
-
-.announcement-banner .announcement-dismiss:hover { background: rgba(255, 255, 255, 0.25); }
-
-/* -------------------------------------------------------------------
    4. STICKY TOP BAR
    ------------------------------------------------------------------- */
 .topbar {

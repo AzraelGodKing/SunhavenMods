@@ -484,32 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
     })();
 
     // -----------------------------------------------------------------
-    // 8. ANNOUNCEMENT BANNER (Index Page)
-    // -----------------------------------------------------------------
-    (function() {
-        var banner = document.getElementById('announcementBanner');
-        if (!banner) return;
-
-        var key = banner.getAttribute('data-dismiss-key') || 'announce-default';
-        if (localStorage.getItem('sh-dismiss-' + key)) {
-            banner.remove();
-            return;
-        }
-
-        banner.classList.add('visible');
-
-        var dismissBtn = banner.querySelector('.announcement-dismiss');
-        if (dismissBtn) {
-            dismissBtn.addEventListener('click', function() {
-                banner.classList.remove('visible');
-                banner.classList.add('hiding');
-                setTimeout(function() { banner.remove(); }, 400);
-                localStorage.setItem('sh-dismiss-' + key, '1');
-            });
-        }
-    })();
-
-    // -----------------------------------------------------------------
     // 9. REPORT A BUG FLOATING BUTTON
     // -----------------------------------------------------------------
     (function() {

@@ -6,6 +6,8 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Website**
+- Removed the stale "The Vault 4.2.0" announcement banner from the Mod Hub. The Vault is at 4.3.1.
 **Cleanup follow-up** — Haven's Birthright, Haven's Almanac, Gifting Assistant, Crop Optimizer, SharedUtilities
 - **Haven's Almanac:** The Dev Tools dashboard no longer shows an "Authorized" status line. Authorization was already removed.
 - **Cleanup:** Leftover unused APIs removed from those mods and SharedUtilities. Nothing you use changes, and saves are untouched.
