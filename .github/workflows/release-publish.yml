@@ -390,3 +390,38 @@ jobs:
               echo ""
             } >> "$GITHUB_STEP_SUMMARY"
           done
+
+  website:
+    name: Rebuild website
+    # The site reads changelogs and versions from this repo when it builds, so
+    # start a mod-website build on Buildkite after a real release. An API-started
+    # build deploys (scripts/ci-queue-deploy.sh in mod-website).
+    needs: [release]
+    if: always() && github.event.inputs.dry_run != 'true' && github.event.inputs.build_only != 'true' && github.event.inputs.test_discord != 'true' && github.event.inputs.publish_discord_only != 'true' && needs.release.result != 'skipped' && needs.release.result != 'cancelled'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Start a mod-website build on Buildkite
+        env:
+          BUILDKITE_TOKEN: ${{ secrets.BUILDKITE_TOKEN }}
+          MOD: ${{ github.event.inputs.mod }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BUILDKITE_TOKEN}" ]; then
+            echo "::warning::BUILDKITE_TOKEN is not set, so the website was not rebuilt. It picks up this release on its next build."
+            exit 0
+          fi
+          BODY="$(jq -n --arg msg "${GITHUB_REPOSITORY} released ${MOD}" \
+            '{commit: "HEAD", branch: "main", message: $msg}')"
+          if ! curl -fsS -X POST \
+            -H "Authorization: Bearer ${BUILDKITE_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            -o build.json \
+            "https://api.buildkite.com/v2/organizations/azraelgodking/pipelines/mod-website/builds"; then
+            echo "::warning::Buildkite did not accept the website build. Start it by hand or wait for the next build."
+            exit 0
+          fi
+          URL="$(jq -r '.web_url' build.json)"
+          echo "Website build: ${URL}"
+          echo "Website build started: ${URL}" >> "$GITHUB_STEP_SUMMARY"
