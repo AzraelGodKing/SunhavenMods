@@ -13,6 +13,9 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-10-13
 
 - **Repeated Info logs demoted (MOD_LIFECYCLE_AND_LOGGING_CONTRACT; no version bumps):** SMUT `OnSceneLoaded` scene-name line is `LogDebug` (same pattern as Haven Dev Tools / The Vault). SMUT `GetCurrentCharacterName` / `GameSave.LoadCharacter` / name-extract traces are `LogDebug`. Birthday HUD Awake/Initialize/position/Show/style-init traces are `LogDebug`. Did not touch Birthday `Plugin.cs` or Senpai's Chest (#166), SMUT dead-code / `LastLoadedSlot` / HideFlags (#163), or other #162–#165 files.
+## 2026-10-13
+
+- **Localization cleanup:** Restored the five `almanac.provider.healthbridge.*` English keys that `ModHealthBridgeProvider` already called (existing `almanac.provider.health.empty` did not match, so it was not renamed). Deleted unused keys after a repo-wide T()/constructed-key grep: TheVault `vault.door.*` (10), HavenDevTools `azrael.gifting.unavailable` / `azrael.races.unavailable` / `azrael.respec.ready` / `azrael.respec.title` / `azrael.trinket.not_loaded` / `devtools.close` / `devtools.overlay.title` / `devtools.tab.azraels_mods`, Almanac `almanac.provider.health.empty` and `almanac.provider.gifting.gifted`. Left `almanac.provider.devtools.authorized` and `generate_translations.py` alone (#165 / #162). No version bump (`cursor/` branch).
 
 ## 2026-10-12
 
