@@ -1,4 +1,3 @@
-using HarmonyLib;
 using SunhavenMods.Shared;
 using System;
 using System.Collections;
@@ -20,7 +19,6 @@ namespace HavensBirthright
         internal static object TileManagerInstance;
         internal static MethodInfo IsWateredMethod;
         internal static MethodInfo WaterTileMethod;
-        internal static MethodInfo IsHoedOrWateredMethod;
         internal static FieldInfo FarmingDataField;
         internal static FieldInfo FarmingTileMapField;
         internal static MethodInfo WorldToCellMethod;
@@ -75,7 +73,6 @@ namespace HavensBirthright
 
                 IsWateredMethod = TileManagerType.GetMethod("IsWatered", new[] { typeof(Vector2Int) });
                 WaterTileMethod = TileManagerType.GetMethod("Water", new[] { typeof(Vector2Int), typeof(short) });
-                IsHoedOrWateredMethod = TileManagerType.GetMethod("IsHoedOrWatered", new[] { typeof(Vector2Int) });
 
                 FarmingDataField = TileManagerType.GetField("farmingData",
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);

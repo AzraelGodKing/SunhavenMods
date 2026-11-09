@@ -399,6 +399,7 @@ namespace HavensAlmanac
         {
             SceneManager.sceneLoaded -= OnSceneLoaded;
             ResetOvernightHook();
+            AlmanacConfig.UnsubscribeSettingChanged();
 
             string sceneName = SceneManager.GetActiveScene().name ?? string.Empty;
             string sceneLower = sceneName.ToLowerInvariant();

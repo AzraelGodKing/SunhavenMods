@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using BepInEx.Configuration;
 using UnityEngine;
@@ -34,31 +35,43 @@ namespace HavensAlmanac.Config
         internal static float StaticBriefingAutoDismiss = 0f;
         internal static float StaticUIScale = 1f;
 
+        private static EventHandler _dashboardToggleKeyChanged;
+        private static EventHandler _dashboardRequireCtrlChanged;
+        private static EventHandler _hudToggleKeyChanged;
+        private static EventHandler _hudEnabledChanged;
+        private static EventHandler _briefingEnabledChanged;
+        private static EventHandler _briefingAutoDismissChanged;
+        private static EventHandler _uiScaleChanged;
+
         public static void Initialize(ConfigFile config)
         {
             DashboardToggleKey = config.Bind(
                 "Hotkeys", "DashboardToggleKey", KeyCode.F5,
                 "Key to toggle the full dashboard");
             StaticDashboardToggleKey = DashboardToggleKey.Value;
-            DashboardToggleKey.SettingChanged += (_, _) => StaticDashboardToggleKey = DashboardToggleKey.Value;
+            _dashboardToggleKeyChanged = (_, _) => StaticDashboardToggleKey = DashboardToggleKey.Value;
+            DashboardToggleKey.SettingChanged += _dashboardToggleKeyChanged;
 
             DashboardRequireCtrl = config.Bind(
                 "Hotkeys", "DashboardRequireCtrl", true,
                 "Require Ctrl modifier for dashboard toggle");
             StaticDashboardRequireCtrl = DashboardRequireCtrl.Value;
-            DashboardRequireCtrl.SettingChanged += (_, _) => StaticDashboardRequireCtrl = DashboardRequireCtrl.Value;
+            _dashboardRequireCtrlChanged = (_, _) => StaticDashboardRequireCtrl = DashboardRequireCtrl.Value;
+            DashboardRequireCtrl.SettingChanged += _dashboardRequireCtrlChanged;
 
             HUDToggleKey = config.Bind(
                 "Hotkeys", "HUDToggleKey", KeyCode.F4,
                 "Key to toggle HUD visibility");
             StaticHUDToggleKey = HUDToggleKey.Value;
-            HUDToggleKey.SettingChanged += (_, _) => StaticHUDToggleKey = HUDToggleKey.Value;
+            _hudToggleKeyChanged = (_, _) => StaticHUDToggleKey = HUDToggleKey.Value;
+            HUDToggleKey.SettingChanged += _hudToggleKeyChanged;
 
             HUDEnabled = config.Bind(
                 "HUD", "Enabled", true,
                 "Show the compact HUD");
             StaticHUDEnabled = HUDEnabled.Value;
-            HUDEnabled.SettingChanged += (_, _) => StaticHUDEnabled = HUDEnabled.Value;
+            _hudEnabledChanged = (_, _) => StaticHUDEnabled = HUDEnabled.Value;
+            HUDEnabled.SettingChanged += _hudEnabledChanged;
 
             HUDPositionX = config.Bind(
                 "HUD", "PositionX", -1f,
@@ -74,13 +87,15 @@ namespace HavensAlmanac.Config
                 "DailyBriefing", "Enabled", true,
                 "Show daily briefing when you wake up");
             StaticBriefingEnabled = BriefingEnabled.Value;
-            BriefingEnabled.SettingChanged += (_, _) => StaticBriefingEnabled = BriefingEnabled.Value;
+            _briefingEnabledChanged = (_, _) => StaticBriefingEnabled = BriefingEnabled.Value;
+            BriefingEnabled.SettingChanged += _briefingEnabledChanged;
 
             BriefingAutoDismissSeconds = config.Bind(
                 "DailyBriefing", "AutoDismissSeconds", 0f,
                 "Auto-dismiss briefing after this many seconds (0 to require manual dismiss)");
             StaticBriefingAutoDismiss = BriefingAutoDismissSeconds.Value;
-            BriefingAutoDismissSeconds.SettingChanged += (_, _) => StaticBriefingAutoDismiss = BriefingAutoDismissSeconds.Value;
+            _briefingAutoDismissChanged = (_, _) => StaticBriefingAutoDismiss = BriefingAutoDismissSeconds.Value;
+            BriefingAutoDismissSeconds.SettingChanged += _briefingAutoDismissChanged;
 
             CheckForUpdates = config.Bind(
                 "Updates", "CheckForUpdates", true,
@@ -93,11 +108,12 @@ namespace HavensAlmanac.Config
                     new BepInEx.Configuration.AcceptableValueRange<float>(0.5f, 2.5f)
                 ));
             StaticUIScale = Mathf.Clamp(UIScale.Value, 0.5f, 2.5f);
-            UIScale.SettingChanged += (_, _) =>
+            _uiScaleChanged = (_, _) =>
             {
                 StaticUIScale = Mathf.Clamp(UIScale.Value, 0.5f, 2.5f);
                 Plugin.Instance?.ApplyUIScaleToAllUI();
             };
+            UIScale.SettingChanged += _uiScaleChanged;
 
             RelationshipsEnabled = config.Bind(
                 "Relationships", "Enabled", true,
@@ -141,6 +157,32 @@ namespace HavensAlmanac.Config
         private static void WriteInvariantFloat(ConfigEntry<float> entry, float value)
         {
             entry?.SetSerializedValue(value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        public static void UnsubscribeSettingChanged()
+        {
+            if (DashboardToggleKey != null && _dashboardToggleKeyChanged != null)
+                DashboardToggleKey.SettingChanged -= _dashboardToggleKeyChanged;
+            if (DashboardRequireCtrl != null && _dashboardRequireCtrlChanged != null)
+                DashboardRequireCtrl.SettingChanged -= _dashboardRequireCtrlChanged;
+            if (HUDToggleKey != null && _hudToggleKeyChanged != null)
+                HUDToggleKey.SettingChanged -= _hudToggleKeyChanged;
+            if (HUDEnabled != null && _hudEnabledChanged != null)
+                HUDEnabled.SettingChanged -= _hudEnabledChanged;
+            if (BriefingEnabled != null && _briefingEnabledChanged != null)
+                BriefingEnabled.SettingChanged -= _briefingEnabledChanged;
+            if (BriefingAutoDismissSeconds != null && _briefingAutoDismissChanged != null)
+                BriefingAutoDismissSeconds.SettingChanged -= _briefingAutoDismissChanged;
+            if (UIScale != null && _uiScaleChanged != null)
+                UIScale.SettingChanged -= _uiScaleChanged;
+
+            _dashboardToggleKeyChanged = null;
+            _dashboardRequireCtrlChanged = null;
+            _hudToggleKeyChanged = null;
+            _hudEnabledChanged = null;
+            _briefingEnabledChanged = null;
+            _briefingAutoDismissChanged = null;
+            _uiScaleChanged = null;
         }
     }
 }
