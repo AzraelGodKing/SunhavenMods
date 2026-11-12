@@ -18,19 +18,5 @@ namespace SunhavenMods.Shared
             tex.Apply();
             return tex;
         }
-
-        /// <summary>
-        /// Creates a Texture2D with a specified width and height, filled with a solid color.
-        /// </summary>
-        public static Texture2D MakeSolidTexture(int width, int height, Color color)
-        {
-            var tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
-            var pixels = new Color[width * height];
-            for (int i = 0; i < pixels.Length; i++)
-                pixels[i] = color;
-            tex.SetPixels(pixels);
-            tex.Apply();
-            return tex;
-        }
     }
 }

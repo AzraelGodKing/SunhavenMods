@@ -23,7 +23,6 @@ namespace CropOptimizer.Data
             public float NextHarvestEtaHours { get; }
             public float QualityMultiplier { get; }
             public CropShopValue ProjectedSell { get; }
-            public int ProjectedSellGold => ProjectedSell.Gold;
             public int ItemId { get; }
             public bool SellLookupComplete { get; }
         }
@@ -39,7 +38,6 @@ namespace CropOptimizer.Data
 
             public int ItemId { get; }
             public CropShopValue Total { get; }
-            public int TotalGold => Total.Gold;
             public int CropCount { get; }
         }
 

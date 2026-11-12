@@ -770,30 +770,6 @@ namespace HavensBirthright
             }
         }
 
-        /// <summary>
-        /// Gets the player's current HP ratio (0-1).
-        /// </summary>
-        public static float GetPlayerHPRatio()
-        {
-            try
-            {
-                var player = Wish.Player.Instance;
-                if (player == null)
-                    return 1f;
-
-                float maxHP = player.MaxHealth;
-                if (maxHP <= 0) return 1f;
-
-                float currentHP = ReflectionHelper.TryGetValue<float>(player, "health", maxHP);
-                return currentHP / maxHP;
-            }
-            catch (Exception ex)
-            {
-                Plugin.Log?.LogDebug($"[BirthrightRunner] Failed to read player HP ratio: {ex.Message}");
-                return 1f;
-            }
-        }
-
         // ===================== ABILITY TOGGLE HOTKEY =====================
 
         /// <summary>
