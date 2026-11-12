@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-12
+
+- **The Vault leftover prefix parse after #189 / AZR-732:** `ItemPatches.AddCurrencyToVault` / `RemoveCurrencyFromVault` now switch on `VaultCurrencyIds.Resolve(...).Kind` the same way `GetVaultAmount` does. Deleted the private `TryStripPrefix` duplicate. Prefix order, `Enum.TryParse` seasonal tokens, `ticket_` dispatch, and Add's call-then-`return true` are unchanged. Invalid `seasonal_` suffixes still fail; Add now logs the generic unrecognized warning instead of a separate invalid-type line (Resolve returns `None`). Left `Plugin.TryMutateCurrency` and `VaultHUD.GetShortName` uncached if-chains alone. No version bump.
+
 ## 2026-11-09
 
 - **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.

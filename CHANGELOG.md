@@ -6,6 +6,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Cleanup follow-up** — The Vault
+- **Cleanup:** Deposit and shop vault credit now parse currency ids the same way inventory amounts already do. Nothing you use changes, and saves are untouched.
+
 **Website**
 - Removed the stale "The Vault 4.2.0" announcement banner from the Mod Hub. The Vault is at 4.3.1.
 
