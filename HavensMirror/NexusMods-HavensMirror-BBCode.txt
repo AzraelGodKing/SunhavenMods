@@ -1,17 +1,17 @@
 [b][size=5]Haven's Mirror[/size][/b]
 
-Drop custom PNG bust portraits into a gallery folder and see your farmer in dialogue. Optional forced look for NPC busts and seasonal outfits.
+Drop custom PNG or JPG bust portraits into a gallery folder and see your farmer in dialogue. Nested folders, loose names, and gallery-root fallback work. Optional forced look for NPC busts and seasonal outfits. The bust hides when the museum portrait closes.
 
 [line]
 
 [size=4][b]Features[/b][/size]
 [list]
-[*]Custom player dialogue bust from drop-in PNG gallery folders
-[*]Per-character folders under [b]BepInEx/plugins/HavensMirror/gallery/[/b] (auto-created from save slots) plus [b]gallery/_shared/[/b]
-[*]Seasonal / special slots: [b]spring.png[/b], [b]summer.png[/b], [b]autumn.png[/b], [b]winter.png[/b], [b]vows.png[/b], [b]shore.png[/b], [b]costume.png[/b]
-[*]Player bust anchors on the left opposite the NPC, sized to match
+[*]Custom player dialogue bust from drop-in PNG or JPG gallery folders (nested subfolders and doubled extensions like [b]spring.png.png[/b] work)
+[*]Per-character folders under [b]BepInEx/plugins/HavensMirror/gallery/[/b] (auto-created from save slots; names match loosely) plus [b]gallery/_shared/[/b], with images dropped in [b]gallery/[/b] as last fallback
+[*]Seasonal / special slots: [b]spring.png[/b], [b]summer.png[/b], [b]autumn.png[/b], [b]winter.png[/b], [b]vows.png[/b], [b]shore.png[/b], [b]costume.png[/b] ([b].jpg[/b] also works)
+[*]Player bust anchors on the left opposite the NPC, sized to match, and hides when that portrait closes (including the Museum donation screen)
 [*]Optional [b]ForcedLook[/b] overrides NPC dialogue bust season / outfit
-[*]Reload portraits in-game with [b]Ctrl+F8[/b] (configurable)
+[*]Reload portraits in-game with [b]Ctrl+F8[/b] (either Ctrl key; configurable)
 [/list]
 
 [line]
@@ -26,7 +26,7 @@ Drop custom PNG bust portraits into a gallery folder and see your farmer in dial
 [list]
 [*]Place [b]HavensMirror.dll[/b] in [b]Sun Haven/BepInEx/plugins/HavensMirror/[/b]
 [*]Launch once so gallery folders and [b]HOWTO.txt[/b] appear
-[*]Drop transparent PNG busts into [b]gallery/_shared/[/b] or [b]gallery/YourCharacterName/[/b]
+[*]Drop transparent PNG or JPG busts into [b]gallery/_shared/[/b], [b]gallery/YourCharacterName/[/b], or directly in [b]gallery/[/b]
 [/list]
 
 [line]

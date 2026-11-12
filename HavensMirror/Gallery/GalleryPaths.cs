@@ -160,15 +160,6 @@ namespace HavensMirror.Gallery
             return false;
         }
 
-        /// <summary>
-        /// True when the folder exists and contains at least one image file.
-        /// Empty character folders (created from saves) are ignored for display.
-        /// </summary>
-        public static bool FolderHasPortraitFiles(string folder)
-        {
-            return ListImageFiles(folder).Count > 0;
-        }
-
         /// <summary>How many folder levels below a character / shared folder are searched for images.</summary>
         private const int MaxNestedDepth = 3;
 

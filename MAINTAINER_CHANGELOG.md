@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-12
+
+- **Haven's Mirror 1.0.3 leftovers (AZR-740):** Deleted unused `GalleryPaths.FolderHasPortraitFiles` (zero callers after repo-wide grep of C#, XML, translations, Harmony strings, and reflection). Synced player-facing docs (`docs/HavensMirror/HavensMirror.html`, Nexus BBCode, Mod Hub chip) to shipped 1.0.3 behavior already in `HavensMirror/README.md` / `docs/versions.json`. Dropped stale "site mirror" wording from root README (`sync-cloudflare-site-mirror.yml` was removed). No version bump.
+
 ## 2026-11-09
 
 - **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.
