@@ -918,45 +918,30 @@ namespace TheVault.Patches
             if (vaultManager == null || string.IsNullOrEmpty(currencyId) || amount <= 0)
                 return false;
 
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixSeasonal, out string suffix))
+            var resolved = VaultCurrencyIds.Resolve(currencyId);
+            switch (resolved.Kind)
             {
-                if (Enum.TryParse<SeasonalTokenType>(suffix, out var tokenType))
-                {
-                    vaultManager.AddSeasonalTokens(tokenType, amount);
+                case CurrencyIdKind.Seasonal:
+                    vaultManager.AddSeasonalTokens(resolved.SeasonalToken, amount);
                     return true;
-                }
-                Plugin.Log?.LogWarning($"AddCurrencyToVault: invalid seasonal type '{suffix}' in '{currencyId}'");
-                return false;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixCommunity, out suffix))
-            {
-                vaultManager.AddCommunityTokens(suffix, amount);
-                return true;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixSpecial, out suffix))
-            {
-                vaultManager.AddSpecial(suffix, amount);
-                return true;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixKey, out suffix))
-            {
-                vaultManager.AddKeys(suffix, amount);
-                return true;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixTicket, out suffix))
-            {
-                vaultManager.AddTickets(suffix, amount);
-                return true;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixOrb, out suffix))
-            {
-                vaultManager.AddOrbs(suffix, amount);
-                return true;
-            }
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixCustom, out suffix))
-            {
-                vaultManager.AddCustomCurrency(suffix, amount);
-                return true;
+                case CurrencyIdKind.Community:
+                    vaultManager.AddCommunityTokens(resolved.ShortId, amount);
+                    return true;
+                case CurrencyIdKind.Special:
+                    vaultManager.AddSpecial(resolved.ShortId, amount);
+                    return true;
+                case CurrencyIdKind.Key:
+                    vaultManager.AddKeys(resolved.ShortId, amount);
+                    return true;
+                case CurrencyIdKind.Ticket:
+                    vaultManager.AddTickets(resolved.ShortId, amount);
+                    return true;
+                case CurrencyIdKind.Orb:
+                    vaultManager.AddOrbs(resolved.ShortId, amount);
+                    return true;
+                case CurrencyIdKind.Custom:
+                    vaultManager.AddCustomCurrency(resolved.ShortId, amount);
+                    return true;
             }
 
             Plugin.Log?.LogWarning($"AddCurrencyToVault: unrecognized currency id '{currencyId}'");
@@ -965,49 +950,18 @@ namespace TheVault.Patches
 
         private static bool RemoveCurrencyFromVault(VaultManager vaultManager, string currencyId, int amount)
         {
-            if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixSeasonal, out string suffix))
+            var resolved = VaultCurrencyIds.Resolve(currencyId);
+            switch (resolved.Kind)
             {
-                if (Enum.TryParse<SeasonalTokenType>(suffix, out var tokenType))
-                {
-                    return vaultManager.RemoveSeasonalTokens(tokenType, amount);
-                }
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixCommunity, out suffix))
-            {
-                return vaultManager.RemoveCommunityTokens(suffix, amount);
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixSpecial, out suffix))
-            {
-                return vaultManager.RemoveSpecial(suffix, amount);
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixKey, out suffix))
-            {
-                return vaultManager.RemoveKeys(suffix, amount);
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixTicket, out suffix))
-            {
-                return vaultManager.RemoveTickets(suffix, amount);
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixOrb, out suffix))
-            {
-                return vaultManager.RemoveOrbs(suffix, amount);
-            }
-            else if (TryStripPrefix(currencyId, VaultCurrencyIds.PrefixCustom, out suffix))
-            {
-                return vaultManager.RemoveCustomCurrency(suffix, amount);
+                case CurrencyIdKind.Seasonal: return vaultManager.RemoveSeasonalTokens(resolved.SeasonalToken, amount);
+                case CurrencyIdKind.Community: return vaultManager.RemoveCommunityTokens(resolved.ShortId, amount);
+                case CurrencyIdKind.Special: return vaultManager.RemoveSpecial(resolved.ShortId, amount);
+                case CurrencyIdKind.Key: return vaultManager.RemoveKeys(resolved.ShortId, amount);
+                case CurrencyIdKind.Ticket: return vaultManager.RemoveTickets(resolved.ShortId, amount);
+                case CurrencyIdKind.Orb: return vaultManager.RemoveOrbs(resolved.ShortId, amount);
+                case CurrencyIdKind.Custom: return vaultManager.RemoveCustomCurrency(resolved.ShortId, amount);
             }
 
-            return false;
-        }
-
-        private static bool TryStripPrefix(string id, string prefix, out string suffix)
-        {
-            if (id.StartsWith(prefix, StringComparison.Ordinal))
-            {
-                suffix = id.Substring(prefix.Length);
-                return true;
-            }
-            suffix = null;
             return false;
         }
 
