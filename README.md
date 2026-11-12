@@ -51,7 +51,7 @@ Multi-mod solution (subset of mods): [`HavensBirthright/HavensBirthright.sln`](H
 | [`scripts/`](scripts/) | Maintainer tooling: mod matrix, version sync, stats, build checks, localization (see [`scripts/README.md`](scripts/README.md)) |
 | [`docs/`](docs/) | `versions.json`, mod guides (not a hosted site) |
 | [`maintainer-docs/`](maintainer-docs/) | Internal engineering docs (not published) — release process, compatibility contract, lifecycle/save policies |
-| [`.github/workflows/`](.github/workflows/) | CI, release, stats, site mirror |
+| [`.github/workflows/`](.github/workflows/) | CI, release, stats |
 
 The `builds/` directory is **ephemeral** (CI/local staging); do not commit it — see [`builds/README.md`](builds/README.md).
 

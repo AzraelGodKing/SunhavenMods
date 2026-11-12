@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haven's Mirror - Custom Dialogue Bust Portraits for Sun Haven</title>
-    <meta name="description" content="Drop PNG bust portraits into a gallery folder and see your farmer in dialogue. Optional NPC look override and hotkey reload.">
+    <meta name="description" content="Drop PNG or JPG bust portraits into a gallery folder and see your farmer in dialogue. Nested folders, loose names, and gallery-root fallback. Optional NPC look override; Ctrl+F8 (either Ctrl) reloads. Hides when the museum bust closes.">
     <meta property="og:title" content="Haven's Mirror">
-    <meta property="og:description" content="Custom player dialogue bust portraits from a PNG gallery. Optional ForcedLook for NPCs.">
+    <meta property="og:description" content="Custom player dialogue busts from PNG or JPG files, including nested folders and gallery-root fallback. Optional ForcedLook for NPCs.">
     <meta property="og:type" content="website">
     <link rel="canonical" href="https://www.azraelsmods.com/sun-haven/havens-mirror/">
     <meta property="og:url" content="https://www.azraelsmods.com/sun-haven/havens-mirror/">
@@ -23,7 +23,7 @@
         <a href="../index.html" class="nav-home">Mod Hub</a>
         <span class="nav-divider">/</span>
         <span class="nav-current">Haven's Mirror</span>
-        <span class="breadcrumb-date">Updated Sep 2026</span>
+        <span class="breadcrumb-date">Updated Nov 2026</span>
     </nav>
 
     <div class="container" id="main-content" role="main">
@@ -63,12 +63,12 @@
         </nav>
 
         <section class="intro-section" id="overview">
-            <p>Haven's Mirror shows a <strong>custom player bust</strong> during dialogue. Drop PNGs into a gallery folder &mdash; one per look. Optional config can keep NPC portraits (and seasonal outfits) on a look you choose. Reload from disk with a hotkey; no restart required.</p>
+            <p>Haven's Mirror shows a <strong>custom player bust</strong> during dialogue. Drop PNG or JPG files into a gallery folder &mdash; one per look. Nested folders, doubled extensions, and loose names all work. Optional config can keep NPC portraits (and seasonal outfits) on a look you choose. Reload from disk with Ctrl+F8 (either Ctrl key); no restart required. The bust only shows while an NPC portrait is on screen and hides when that portrait closes (including the Museum donation screen).</p>
         </section>
 
         <section class="folder-section" id="gallery" aria-labelledby="gallery-title">
             <h2 class="section-title" id="gallery-title">Where portraits go</h2>
-            <p class="section-lead">On launch the mod scans your character saves and creates empty folders. Empty folders are ignored until you add PNGs. <code>gallery/_shared/</code> is the fallback for every character.</p>
+            <p class="section-lead">On launch the mod scans your character saves and creates empty folders. Empty folders are ignored until you add PNG or JPG files. Folder names match loosely. <code>gallery/_shared/</code> is the fallback for every character; images placed directly in <code>gallery/</code> are the last resort. Images in a nested subfolder are found too.</p>
             <div class="folder-map">
                 <div class="folder-path" aria-label="Plugin gallery path">
                     <span>BepInEx</span><span class="folder-sep">/</span>
@@ -79,17 +79,17 @@
                 <div class="folder-cards">
                     <article class="folder-card">
                         <h3><code>_shared</code></h3>
-                        <p>Fallback looks used when a character folder is empty or a slot file is missing.</p>
+                        <p>Fallback looks used when a character folder is empty or a slot file is missing. Names like <code>_shared</code>, <code>Shared</code>, and <code>shared</code> all match.</p>
                     </article>
                     <article class="folder-card folder-card-character">
                         <h3><code>&lt;CharacterName&gt;</code></h3>
-                        <p>Created from your saves. Drop PNGs here to override the shared gallery for that farmer.</p>
+                        <p>Created from your saves. Drop PNG or JPG files here to override the shared gallery for that farmer. Nested subfolders and names like <code>Sun Farmer</code> vs <code>sun_farmer</code> are found.</p>
                     </article>
                 </div>
-                <p class="folder-note">Missing slots reuse the first PNG found in that folder.</p>
+                <p class="folder-note">Missing slots reuse the first image found in that folder. Images dropped straight into <code>gallery/</code> are the last fallback.</p>
             </div>
 
-            <h3 class="slot-heading">Expected file names</h3>
+            <h3 class="slot-heading">Expected file names (PNG or JPG; doubled extensions like spring.png.png are fine)</h3>
             <ul class="slot-grid">
                 <li class="slot-card slot-spring">
                     <span class="slot-name">Spring</span>
@@ -133,16 +133,16 @@
             <h2 class="section-title">Features</h2>
             <div class="features-grid">
                 <article class="feature-card">
-                    <h3>PNG gallery</h3>
-                    <p>Per-character folders under <code>gallery/</code>, with a shared fallback. Missing slots reuse the first PNG found.</p>
+                    <h3>PNG / JPG gallery</h3>
+                    <p>Per-character folders under <code>gallery/</code>, with a shared fallback and a gallery-root last resort. Nested subfolders and loose names work. Missing slots reuse the first image found.</p>
                 </article>
                 <article class="feature-card">
                     <h3>Season &amp; special looks</h3>
-                    <p>Spring, summer, autumn, winter, vows, shore, and costume files map to dialogue contexts.</p>
+                    <p>Spring, summer, autumn, winter, vows, shore, and costume files map to dialogue contexts. PNG or JPG, any case.</p>
                 </article>
                 <article class="feature-card">
                     <h3>Hotkey reload</h3>
-                    <p>Press <kbd>Ctrl</kbd>+<kbd>F8</kbd> (configurable) to reload PNGs from disk while playing.</p>
+                    <p>Press <kbd>Ctrl</kbd>+<kbd>F8</kbd> (either Ctrl key; configurable) to reload portraits from disk while playing.</p>
                 </article>
                 <article class="feature-card">
                     <h3>Forced look</h3>
@@ -219,7 +219,7 @@
                     <span class="step-num" aria-hidden="true">3</span>
                     <div class="step-info">
                         <h3>Install &amp; add portraits</h3>
-                        <p>Place the DLL in <code>BepInEx/plugins/HavensMirror/</code>, then drop PNGs into <code>gallery/_shared/</code> or a character-named subfolder.</p>
+                        <p>Place the DLL in <code>BepInEx/plugins/HavensMirror/</code>, then drop PNG or JPG files into <code>gallery/_shared/</code>, a character-named subfolder, or directly in <code>gallery/</code>.</p>
                     </div>
                 </li>
             </ol>
