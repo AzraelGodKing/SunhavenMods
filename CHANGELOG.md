@@ -6,6 +6,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Cleanup** — leftover locale keys
+- Removed unused Almanac, Crop Optimizer, and Haven Dev Tools strings left after earlier UI cleanup. Nothing you use changes.
+
 **Website**
 - Removed the stale "The Vault 4.2.0" announcement banner from the Mod Hub. The Vault is at 4.3.1.
 

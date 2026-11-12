@@ -485,24 +485,6 @@
         "zh-TW": "玩家： {0}",
         "uk": "Гравець: {0}"
     },
-    "almanac.provider.devtools.status": {
-        "en": "Status: {0}",
-        "da": "Tilstand: {0}",
-        "de": "Zustand: {0}",
-        "es": "Estado: {0}",
-        "fr": "Statut : {0}",
-        "it": "Stato: {0}",
-        "ja": "ステータス： {0}",
-        "ko": "상태: {0}",
-        "nl": "Toestand: {0}",
-        "pt": "Estado: {0}",
-        "pt-BR":  "Estado: {0}",
-        "ru": "Статус: {0}",
-        "sv": "Tillstånd: {0}",
-        "zh-CN": "状态： {0}",
-        "zh-TW": "状态： {0}",
-        "uk": "Статус: {0}"
-    },
     "almanac.provider.healthbridge.ok": {
         "en": "Shared code revisions match.",
         "da": "Shared code revisions match.",

@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-12
+
+- **Leftover locale keys after #165/#194:** Removed unused keys (all language rows) that had no remaining `ModLocalization.T` callers, including interpolated `T($"…")`. Haven's Almanac `almanac.provider.devtools.status`; Crop Optimizer `crop.guess.yes` / `crop.guess.yesValue` / `crop.guess.no`; Haven Dev Tools `devtools.museum.{title,notInstalled,notLoaded,noData,idInAssets}` and `devtools.race.{title,bonuses,noBonuses,birthrightMissing,browse,noDefined}`. Kept `devtools.race.unavailable` / `devtools.race.current`, `azrael.birthright.*`, other museum keys used by AzraelsModsPanel, and `gift.priority.*` (`GiftingWindow.cs:507`). JSON still parses; no C# change; no version bump.
+
 ## 2026-11-09
 
 - **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.
