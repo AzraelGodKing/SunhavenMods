@@ -6,6 +6,12 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 
 ## Unreleased
 
+**Haven's Mirror** — docs leftovers from 1.0.3 (AZR-740)
+- Hub page, Nexus description, and Mod Hub chip now match the already-shipped 1.0.3 behavior: JPG files, doubled extensions, nested folders, loose names, gallery-root fallback, Ctrl+F8 with either Ctrl key, and hiding when the museum bust closes. Copy only; no gameplay change.
+
+**Cleanup follow-up** — The Vault
+- **Cleanup:** Deposit and shop vault credit now parse currency ids the same way inventory amounts already do. Nothing you use changes, and saves are untouched.
+
 **Cleanup** — leftover locale keys
 - Removed unused Almanac, Crop Optimizer, and Haven Dev Tools strings left after earlier UI cleanup. Nothing you use changes.
 
