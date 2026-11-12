@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using CropOptimizer.Data;
 using CropOptimizer.Patches;
-using HarmonyLib;
 using SunhavenMods.Shared;
 using UnityEngine;
 using ReflectionProbe = SunhavenMods.Shared.ReflectionProbe;
@@ -14,8 +13,6 @@ namespace CropOptimizer.UI
     /// </summary>
     internal static class CropHoverQuery
     {
-        private static Type _cropType;
-
         private static Camera _cachedGameplayCamera;
         private static float _nextGameplayCameraSearchTime;
 
@@ -33,8 +30,6 @@ namespace CropOptimizer.UI
 
         /// <summary>After a successful camera search, wait before scanning all cameras again (avoids per-frame <c>FindObjectsOfType&lt;Camera&gt;</c>).</summary>
         private const float GameplayCameraSearchCooldown = 2f;
-
-        private static Type CropType => _cropType ??= AccessTools.TypeByName("Wish.Crop");
 
         /// <summary>
         /// Prefer <see cref="Camera.main"/>; many scenes never tag the farm camera as MainCamera.

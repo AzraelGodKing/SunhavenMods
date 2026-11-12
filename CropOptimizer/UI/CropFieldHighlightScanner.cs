@@ -109,10 +109,5 @@ namespace CropOptimizer.UI
                 return false;
             }
         }
-
-        public static void InvalidateCache()
-        {
-            CropSceneCache.Invalidate();
-        }
     }
 }

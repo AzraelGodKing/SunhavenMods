@@ -4,6 +4,10 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 
 ---
 
+## 2026-11-12
+
+- **Unused-helper leftovers after the Nov 9 cache/cleanup batch (no version bump):** Repo-wide grep of C#, tests, strings, Harmony, XML, and reflection before each delete. Crop Optimizer: unused `CropHoverQuery` `_cropType` / `CropType` (live path is `CropSceneCache`) and the now-unused `HarmonyLib` using; unused `CropFieldHighlightScanner.InvalidateCache` (`CropHUD` already calls `CropSceneCache.Invalidate`); unused `CropForecast.CropState.ProjectedSellGold` and `CropTypeSummary.TotalGold` (Almanac reads `CropOptimizerDataProvider.CropTypeSummary.TotalGold`, a different type). Haven's Birthright: unused `BirthrightRunner.GetPlayerHPRatio` (live path is `StatFrameCache.CachedHPRatio`) and the stale StatPatches comment that named it. SharedUtilities: unused sized `GUIStyleHelper.MakeSolidTexture(int,int,Color)` (1x1 overload stays; Almanac is the only caller). `SharedCodeRevision.Value` `2026.10.10` → `2026.11.12` because #190 changed linked `ReflectionHelper` caching and this PR touches linked shared code. `VERSION_AND_RELEASE.md`: no store/`versions.json` bump — unused-helper cleanup, same as #163/#171/#183.
+
 ## 2026-11-09
 
 - **Haven Dev Tools unused tabs:** `DrawWindow` only draws Health / Tools / AzraelsModsPanel / Extensions. Deleted unreachable `DrawBundlesTab`, `DrawRaceBonusesTab`, `GetRaceNamesForGrid`, and DebugWindow-only `_selectedSectionIndex` / `_selectedBundleIndex` / `_bundleScrollPosition` / `_selectedRaceIndex` / `_raceScrollPosition` plus the grid cache `_raceNamesSource` / `_raceNamesForGrid` (only used by `GetRaceNamesForGrid`). Kept `Plugin.GetBundleInspector` / `GetRaceModifierTracker` (AzraelsModsPanel + DebugOverlay). Left Show/Hide and Utility-tab `LogInfo` lines for #180. No player-facing change; no version bump.
