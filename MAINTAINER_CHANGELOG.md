@@ -7,6 +7,7 @@ Internal engineering log: **CI**, **release automation**, **scripts**, **docs in
 ## 2026-11-12
 
 - **Haven's Mirror 1.0.3 leftovers (AZR-740):** Deleted unused `GalleryPaths.FolderHasPortraitFiles` (zero callers after repo-wide grep of C#, XML, translations, Harmony strings, and reflection). Synced player-facing docs (`docs/HavensMirror/HavensMirror.html`, Nexus BBCode, Mod Hub chip) to shipped 1.0.3 behavior already in `HavensMirror/README.md` / `docs/versions.json`. Dropped stale "site mirror" wording from root README (`sync-cloudflare-site-mirror.yml` was removed). No version bump.
+- **The Vault leftover prefix parse after #189 / AZR-732:** `ItemPatches.AddCurrencyToVault` / `RemoveCurrencyFromVault` now switch on `VaultCurrencyIds.Resolve(...).Kind` the same way `GetVaultAmount` does. Deleted the private `TryStripPrefix` duplicate. Prefix order, `Enum.TryParse` seasonal tokens, `ticket_` dispatch, and Add's call-then-`return true` are unchanged. Invalid `seasonal_` suffixes still fail; Add now logs the generic unrecognized warning instead of a separate invalid-type line (Resolve returns `None`). Left `Plugin.TryMutateCurrency` and `VaultHUD.GetShortName` uncached if-chains alone. No version bump.
 
 ## 2026-11-09
 

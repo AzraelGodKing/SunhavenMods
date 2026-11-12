@@ -9,6 +9,9 @@ Notes for **players and release readers**. Per-mod blurbs and upstream metadata 
 **Haven's Mirror** — docs leftovers from 1.0.3 (AZR-740)
 - Hub page, Nexus description, and Mod Hub chip now match the already-shipped 1.0.3 behavior: JPG files, doubled extensions, nested folders, loose names, gallery-root fallback, Ctrl+F8 with either Ctrl key, and hiding when the museum bust closes. Copy only; no gameplay change.
 
+**Cleanup follow-up** — The Vault
+- **Cleanup:** Deposit and shop vault credit now parse currency ids the same way inventory amounts already do. Nothing you use changes, and saves are untouched.
+
 **Website**
 - Removed the stale "The Vault 4.2.0" announcement banner from the Mod Hub. The Vault is at 4.3.1.
 
