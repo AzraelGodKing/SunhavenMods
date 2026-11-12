@@ -449,24 +449,6 @@
                                      "zh-TW":  "\u003cb\u003eMana infused\u003c/b\u003e",
                                      "uk":  "\u003cb\u003eMana infused\u003c/b\u003e"
                                  },
-    "crop.guess.yes":  {
-                           "en":  "yes",
-                           "da":  "yes",
-                           "de":  "yes",
-                           "es":  "yes",
-                           "fr":  "yes",
-                           "it":  "yes",
-                           "ja":  "yes",
-                           "ko":  "yes",
-                           "nl":  "yes",
-                           "pt":  "yes",
-                           "pt-BR":  "sim",
-                           "ru":  "yes",
-                           "sv":  "yes",
-                           "zh-CN":  "yes",
-                           "zh-TW":  "yes",
-                           "uk":  "yes"
-                       },
     "crop.tooltip.etaUnknown":  {
                                     "en":  "\u003ccolor={0}\u003eETA unknown - grow once to calibrate\u003c/color\u003e",
                                     "da":  "\u003ccolor={0}\u003eETA unknown - grow once to calibrate\u003c/color\u003e",
@@ -485,24 +467,6 @@
                                     "zh-TW":  "\u003ccolor={0}\u003eETA unknown - grow once to calibrate\u003c/color\u003e",
                                     "uk":  "\u003ccolor={0}\u003eETA unknown - grow once to calibrate\u003c/color\u003e"
                                 },
-    "crop.guess.yesValue":  {
-                                "en":  "yes ({0})",
-                                "da":  "yes ({0})",
-                                "de":  "yes ({0})",
-                                "es":  "yes ({0})",
-                                "fr":  "yes ({0})",
-                                "it":  "yes ({0})",
-                                "ja":  "yes ({0})",
-                                "ko":  "yes ({0})",
-                                "nl":  "yes ({0})",
-                                "pt":  "yes ({0})",
-                                "pt-BR":  "sim ({0})",
-                                "ru":  "yes ({0})",
-                                "sv":  "yes ({0})",
-                                "zh-CN":  "yes ({0})",
-                                "zh-TW":  "yes ({0})",
-                                "uk":  "yes ({0})"
-                            },
     "crop.water.watered":  {
                                "en":  "\u003cb\u003e\u003ccolor=#8AD4FF\u003eWatered\u003c/color\u003e\u003c/b\u003e",
                                "da":  "\u003cb\u003e\u003ccolor=#8AD4FF\u003eWatered\u003c/color\u003e\u003c/b\u003e",
@@ -592,23 +556,5 @@
                                           "zh-CN":  "\u003cb\u003e\u003ccolor={0}\u003e~{1:N0} 票券\u003c/color\u003e\u003c/b\u003e at shop",
                                           "zh-TW":  "\u003cb\u003e\u003ccolor={0}\u003e~{1:N0} 票券\u003c/color\u003e\u003c/b\u003e at shop",
                                           "uk":  "\u003cb\u003e\u003ccolor={0}\u003e~{1:N0} квитків\u003c/color\u003e\u003c/b\u003e at shop"
-                                      },
-    "crop.guess.no":  {
-                          "en":  "no",
-                          "da":  "no",
-                          "de":  "no",
-                          "es":  "no",
-                          "fr":  "no",
-                          "it":  "no",
-                          "ja":  "no",
-                          "ko":  "no",
-                          "nl":  "no",
-                          "pt":  "no",
-                          "pt-BR":  "não",
-                          "ru":  "no",
-                          "sv":  "no",
-                          "zh-CN":  "no",
-                          "zh-TW":  "no",
-                          "uk":  "no"
-                      }
+                                      }
 }
